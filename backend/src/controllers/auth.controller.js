@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 import { generateToken } from "../lib/utils.js"
 
 export const signup = async (req,res) => {
+    const { fullName , email , password } = req.body;
     try{
-        const { fullName , email , password } = req.body;
 
         if(!fullName || !email || !password){
-            return res.status(400).json({ message : "Fill all fields." })
+            return res.status(400).json({ message : "Fill all fields." });
         }
 
         if(fullName.length < 4){
@@ -60,10 +60,48 @@ export const signup = async (req,res) => {
     }
 }
 
-export const login = (req,res) => {
-    res.send("Login route")
+export const login = async (req,res) => {
+    const { email, password } = req.body;
+    try{
+
+        if(!email || !password){
+            return res.status(400).json({ message : "Fill all fields."});
+        }
+
+        if(!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)){
+            return res.status(400).json({ message : "Invalid email." });
+        }
+
+        const user = await User.findOne({ email });
+        if(!user){
+            return res.status(400).json({ message : "Invalid credentials." })
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if(!isPasswordCorrect){
+            return res.status(400).json({ message : "Invalid credentials" });
+        }
+
+        generateToken(user._id, res);
+        res.status(200).json({
+            _id : user._id,
+            fullName : user.fullName,
+            email : user.email,
+            profilePic : user.profilePic
+        })
+        
+    }catch(error){
+        console.log("error in login controller");
+        return res.status(500).json({ message : "Internal server error." });
+    }
 }
 
 export const logout = (req,res) => {
-    res.send("Logout route")
+    try{
+        res.cookie("jwt","",{ maxAge : 0});
+        return res.status(200).json({ message : "Logged out successfully." });
+    }catch(error){
+        console.log("error in logout controller.");
+        return req.status(500).json({ message : "Internal server error." })
+    }
 }
