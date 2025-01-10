@@ -1,9 +1,25 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
+import { generateToken } from "../lib/utils.js"
 
 export const signup = async (req,res) => {
-    const { fullName , email , password } = req.body;
     try{
+        const { fullName , email , password } = req.body;
+
+        if(!fullName || !email || !password){
+            return res.status(400).json({ message : "Fill all fields." })
+        }
+
+        if(fullName.length < 4){
+            return res.status(400).json({ message : "Fullname must be at least 4 characters." });
+        }else if(fullName.length > 40){
+            return res.status(400).json({ message : "Fullname must be less than 40 characters." });
+        }
+
+        if(!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)){
+            return res.status(400).json({ message : "Invalid email." });
+        }
+
 
         if(password.length < 6){
             return res.status(400).json({ message : "Password must be at least 6 characters." });
@@ -26,12 +42,12 @@ export const signup = async (req,res) => {
         });
 
         if(newUser){
-            await generateToken(newUser._id, res);
+            generateToken(newUser._id, res);
             await newUser.save();
             
-            return res.status(201).sjon({
+            return res.status(201).json({
                 id : newUser._id,
-                fullName : newUser.fullname,
+                fullName : newUser.fullName,
                 email : newUser.email,
                 profilePic : newUser.profilePic,
             })

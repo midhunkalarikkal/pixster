@@ -7,7 +7,7 @@ export const userSchema = new mongoose.Schema(
             required : true,
             unique : true
         },
-        fullname : {
+        fullName : {
             type : String,
             required : true,
         },
