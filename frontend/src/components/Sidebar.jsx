@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
+// import { useAuthStore } from "../store/useAuthStore";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
     useChatStore();
 
-  const { onlineUsers } =  useAuthStore();
+  // const { onlineUsers } =  useAuthStore();
+  const onlineUsers = []
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   useEffect(() => {
@@ -75,9 +76,9 @@ const Sidebar = () => {
           </button>
         ))}
 
-        {filteredUsers.length === 0 && (
+        {/* {filteredUsers.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No online users</div>
-        )}
+        )} */}
       </div>
     </aside>
   );
