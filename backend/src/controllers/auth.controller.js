@@ -1,9 +1,7 @@
-import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
+import User from '../models/user.model.js';
+import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
-import cloudinaryConfig from '../lib/cloudinary.js';
-
-const { cloudinary, upload } = cloudinaryConfig;
 
 export const signup = async (req,res) => {
     const { fullName , email , password } = req.body;
@@ -111,38 +109,54 @@ export const logout = (req,res) => {
 
 export const updateProfile = async (req,res) => {
     try{
-        console.log("updating profile");
-        console.log("req.file : ",req.file);
-        const userId = req.user._id;
-        let updateUser = {};
+        // console.log("updating profile");
+        // console.log("req.file : ",req.file);
+        // const userId = req.user._id;
+        // let updateUser = {};
 
-        if(!req.file){
-            return res.status(400).json({ message : "Profile image is required." });
+        // if(!req.file){
+        //     return res.status(400).json({ message : "Profile image is required." });
+        // }
+
+        // const uploadStream = cloudinary.uploader.upload_stream(
+        //     { resource_type: "image" },
+        //     async (error, result) => {
+        //         if (error) {
+        //             console.error("Cloudinary Upload Error:", error);
+        //             return res.status(500).json({ message: "Image upload failed." });
+        //         }
+        
+        //         try {
+        //         updateUser = await User.findByIdAndUpdate(
+        //                 userId,
+        //                 { profilePic: result.secure_url },
+        //                 { new: true }
+        //             );
+        
+        //             return res.status(200).json(updateUser);
+        //         } catch (dbError) {
+        //             console.error("Database Update Error:", dbError);
+        //             return res.status(500).json({ message: "Database update failed." });
+        //         }
+        //     }
+        // );
+        // uploadStream.end(req.file.buffer);
+
+        const { profilePic } = req.body;
+        const userId = req.user._id;
+
+        if (!profilePic) {
+        return res.status(400).json({ message: "Profile pic is required" });
         }
 
-        const uploadStream = cloudinary.uploader.upload_stream(
-            { resource_type: "image" },
-            async (error, result) => {
-                if (error) {
-                    console.error("Cloudinary Upload Error:", error);
-                    return res.status(500).json({ message: "Image upload failed." });
-                }
-        
-                try {
-                updateUser = await User.findByIdAndUpdate(
-                        userId,
-                        { profilePic: result.secure_url },
-                        { new: true }
-                    );
-        
-                    return res.status(200).json(updateUser);
-                } catch (dbError) {
-                    console.error("Database Update Error:", dbError);
-                    return res.status(500).json({ message: "Database update failed." });
-                }
-            }
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { profilePic: uploadResponse.secure_url },
+        { new: true }
         );
-        uploadStream.end(req.file.buffer);
+
+        res.status(200).json(updatedUser);
     }catch(error){
         console.log("error in user profile image updation controller", error);
         return res.status(500).json({ message : "Internal server error." });
