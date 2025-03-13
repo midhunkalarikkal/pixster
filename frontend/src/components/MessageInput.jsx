@@ -38,8 +38,7 @@ const MessageInput = () => {
             });
             setText("");
             setImagePreview("");
-        }catch(error){
-            console.log(error);
+        }catch{
             toast.error("failed to send message.");
         }
     }

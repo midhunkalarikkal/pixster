@@ -56,7 +56,6 @@ export const signup = async (req,res) => {
             return res.status(400).json({ message : "Invalid user data." });
         } 
     }catch(error){
-        console.log("error in signup controller ",error);
         return res.status(500).json({ message : "Internal server error." });
     }
 }
@@ -92,7 +91,6 @@ export const login = async (req,res) => {
         })
         
     }catch(error){
-        console.log("error in login controller");
         return res.status(500).json({ message : "Internal server error." });
     }
 }
@@ -102,46 +100,12 @@ export const logout = (req,res) => {
         res.cookie("jwt","",{ maxAge : 0});
         return res.status(200).json({ message : "Logged out successfully." });
     }catch(error){
-        console.log("error in logout controller.");
         return req.status(500).json({ message : "Internal server error." })
     }
 }
 
 export const updateProfile = async (req,res) => {
     try{
-        // console.log("updating profile");
-        // console.log("req.file : ",req.file);
-        // const userId = req.user._id;
-        // let updateUser = {};
-
-        // if(!req.file){
-        //     return res.status(400).json({ message : "Profile image is required." });
-        // }
-
-        // const uploadStream = cloudinary.uploader.upload_stream(
-        //     { resource_type: "image" },
-        //     async (error, result) => {
-        //         if (error) {
-        //             console.error("Cloudinary Upload Error:", error);
-        //             return res.status(500).json({ message: "Image upload failed." });
-        //         }
-        
-        //         try {
-        //         updateUser = await User.findByIdAndUpdate(
-        //                 userId,
-        //                 { profilePic: result.secure_url },
-        //                 { new: true }
-        //             );
-        
-        //             return res.status(200).json(updateUser);
-        //         } catch (dbError) {
-        //             console.error("Database Update Error:", dbError);
-        //             return res.status(500).json({ message: "Database update failed." });
-        //         }
-        //     }
-        // );
-        // uploadStream.end(req.file.buffer);
-
         const { profilePic } = req.body;
         const userId = req.user._id;
 
@@ -158,7 +122,6 @@ export const updateProfile = async (req,res) => {
 
         res.status(200).json(updatedUser);
     }catch(error){
-        console.log("error in user profile image updation controller", error);
         return res.status(500).json({ message : "Internal server error." });
     }
 }
@@ -167,7 +130,6 @@ export const checkAuth = async (req,res) => {
     try{
         res.status(200).json(req.user);
     }catch(error){
-        console.log("error in checkAuth controller.",error);
         return res.status(500).json({ message : "Internal server error." });
     }
 }
