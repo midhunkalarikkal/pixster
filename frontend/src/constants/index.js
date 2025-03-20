@@ -1,12 +1,7 @@
 export const THEMES = [
-    "dark",
-    "cupcake",
     "bumblebee",
-    "emerald",
-    "halloween",
-    "garden",
     "black",
-    "sunset",
+    "nord",
   ];
 
   export const pairedMessages = [
