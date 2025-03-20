@@ -12,7 +12,7 @@ export const THEMES = [
   export const pairedMessages = [
     {
         sender: {
-            text: "Hey CodeNinja, the chat app is live on Vercel! Check it out.",
+            text: "Hey, the Talkzy chat app is live on Vercel! Check it out.",
             timestamp: new Date("2023-10-27T10:00:00Z"),
         },
         receiver: {
@@ -50,4 +50,14 @@ export const THEMES = [
             timestamp: new Date("2023-10-27T10:30:00Z"),
         },
     },
+    {
+      sender: {
+          text: "Who created this awesome app?",
+          timestamp: new Date("2023-10-27T10:25:00Z"),
+      },
+      receiver: {
+          text: "Yeah, I know the developer. His name is Midhun K Paniker.",
+          timestamp: new Date("2023-10-27T10:30:00Z"),
+      },
+  }
 ];

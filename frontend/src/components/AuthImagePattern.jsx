@@ -1,27 +1,73 @@
+import gsap from "gsap";
 import PropTypes from "prop-types";
 import { pairedMessages } from "../constants";
+import { useEffect, useRef } from "react";
 
 const AuthImagePattern = ({ title, subtitle }) => {
+  const sendMessageRefs = useRef([]);
+  const recieveMessageRefs = useRef([]);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.to(containerRef.current, {
+      y: 10,
+      duration: 1,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+    });
+
+    sendMessageRefs.current.forEach((ref) => {
+      if (ref) {
+        gsap.to(ref, {
+          x: 50,
+          duration: 2,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
+      }
+    });
+
+    recieveMessageRefs.current.forEach((ref) => {
+      if (ref) {
+        gsap.to(ref, {
+          x: -50,
+          duration: 2,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
+      }
+    });
+  }, []);
+
   return (
     <div className="hidden lg:flex items-center justify-center bg-base-200 p-12">
       <div className="text-center w-xl">
-        <div className="">
+        <div className="" ref={containerRef}>
           {pairedMessages.map((chat, index) => (
-            <div key={index} className="">
-              <div className="chat chat-end my-2">
+            <div key={index}>
+              <div
+                className="chat chat-end my-2"
+                ref={(el) => (sendMessageRefs.current[index * 2] = el)}
+              >
                 <div className="chat-bubble">{chat.sender.text}</div>
               </div>
 
-              <div className="chat chat-start my-2">
-                <div className="chat-bubble">
-                  {chat.receiver.text}
-                </div>
+              <div
+                className="chat chat-start my-2"
+                ref={(el) => (recieveMessageRefs.current[index * 2] = el)}
+              >
+                <div className="chat-bubble">{chat.receiver.text}</div>
               </div>
             </div>
           ))}
         </div>
-        <h2 className="text-2xl font-bold mb-4">{title}</h2>
-        <p className="text-base-content/60">{subtitle}</p>
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-4">{title}</h2>
+          <p className="text-base-content/60">{subtitle}</p>
+        </div>
       </div>
     </div>
   );
