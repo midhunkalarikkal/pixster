@@ -74,7 +74,7 @@ const ChatContainer = () => {
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
-                <p className="text-[13px] md:text-[15px]">{message.text && <p>{message.text}</p>}</p>
+                {message.text && <p className="text-[13px] md:text-[15px]">{message.text}</p>}
                 <time className="text-[10px] md:text-xs opacity-50 ml-auto">{formatMessageTime(message.createdAt)}</time>
             </div>
 
