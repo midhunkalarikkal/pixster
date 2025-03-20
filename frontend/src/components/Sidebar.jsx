@@ -21,8 +21,9 @@ const Sidebar = () => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
-      <div className="border-b border-base-300 w-full p-5">
+    <aside className="h-full w-14 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
+      <div className="border-b border-base-300 w-full p-3 md:p-5">
+        
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Contacts</span>
@@ -40,6 +41,7 @@ const Sidebar = () => {
           </label>
           <span className="text-xs text-zinc-500">({onlineUsers?.length - 1} online)</span>
         </div>
+        
       </div>
 
       <div className="overflow-y-auto w-full py-3">
@@ -48,9 +50,9 @@ const Sidebar = () => {
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-3 flex items-center gap-3
+              w-full p-1 md:p-3 flex items-center gap-3
               hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
+              ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
             <div className="relative mx-auto lg:mx-0">
