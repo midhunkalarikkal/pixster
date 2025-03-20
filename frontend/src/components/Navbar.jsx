@@ -9,13 +9,17 @@ const Navbar = () => {
       <div  className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
 
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8 w-3/12">
             <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
               <h3 className="text-2xl font-bold italic">Talkzy</h3>
             </Link>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex w-6/12 justify-center">
+            <input type="text" placeholder="Search your friends" className="input rounded-md focus:border-0 w-8/12 h-8" />
+          </div>
+
+          <div className="flex items-center gap-2 w-3/12">
           <Link
               to={"/settings"}
               className={`
