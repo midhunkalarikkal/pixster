@@ -57,20 +57,16 @@ const Sidebar = () => {
       <div className="border-b border-base-300 w-full p-3 md:p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
-          <span className="font-medium hidden lg:block">Contacts</span>
-        </div>
-
-        <div className="mt-3 flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
               type="checkbox"
               checked={showOnlineOnly}
               onChange={(e) => setShowOnlineOnly(e.target.checked)}
-              className="checkbox checkbox-sm"
+              className="checkbox checkbox-xs"
             />
             <span className="text-sm">Show online only</span>
           </label>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-zinc-500 mt-1 ml-auto">
             ({onlineUsers?.length - 1} online)
           </span>
         </div>
@@ -83,7 +79,7 @@ const Sidebar = () => {
             onClick={() => setSelectedUser(user)}
             className={`
               w-full p-1 flex gap-3
-              hover:bg-base-300 transition-colors
+              hover:bg-base-300 transition-colors border-b border-base-300
               ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
@@ -105,12 +101,14 @@ const Sidebar = () => {
               <div className="flex justify-between">
                 <p className="font-medium truncate">{user.fullName}</p>
                 {getLastMessage(user._id) && (
-                  <p className="text-xs truncate mt-1">{formatDate(getLastMessage(user._id)?.date)}</p>
+                  <p className="text-xs truncate mt-1 text-stone-500">{formatDate(getLastMessage(user._id)?.date)}</p>
                 )}
               </div>
               <div className="text-sm flex">
-                {getLastMessage(user._id) && (
-                  <p className="font-normal truncate">{getLastMessage(user._id)?.message}</p>
+                {getLastMessage(user._id) ? (
+                  <p className="font-normal truncate text-stone-500">{getLastMessage(user._id)?.message}</p>
+                ) : (
+                  onlineUsers.includes(user._id) ? "Online" : "Offline"
                 )}
               </div>
             </div>
