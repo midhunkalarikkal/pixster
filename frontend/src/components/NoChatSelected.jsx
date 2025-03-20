@@ -1,16 +1,20 @@
-import { MessageSquare } from "lucide-react";
-
 const NoChatSelected = () => {
   return (
     <div className="w-full flex flex-1 flex-col items-center justify-center p-16 bg-base-100/50">
-      <div className="max-w-md text-center space-y-6">
+      <div className="w-full text-center space-y-6">
         <div className="flex justify-center gap-4 mb-4">
-          <div className="relative">
-            <div
-              className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center
-             justify-center animate-bounce"
-            >
-              <MessageSquare className="w-8 h-8 text-primary " />
+          <div className="relative w-8/12 space-y-2">
+            <div className="chat chat-start">
+              <div className="chat-bubble skeleton w-56 h-16 rounded-md"></div>
+            </div>
+            <div className="chat chat-end">
+              <div className="chat-bubble skeleton w-64 rounded-md"></div>
+            </div>
+            <div className="chat chat-start">
+              <div className="chat-bubble skeleton w-60 h-20 rounded-md"></div>
+            </div>
+            <div className="chat chat-end">
+              <div className="chat-bubble skeleton w-56 h-16 rounded-md"></div>
             </div>
           </div>
         </div>
@@ -21,7 +25,7 @@ const NoChatSelected = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NoChatSelected
+export default NoChatSelected;
