@@ -3,8 +3,25 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser } = useChatStore();
-  const { onlineUsers } = useAuthStore();
+  const { selectedUser, setSelectedUser, messages, setLastMessage } = useChatStore();
+  const { onlineUsers, authUser } = useAuthStore()
+
+  
+  const handleCloseChat = () => {
+    const lastMessage = messages[messages.length - 1];
+    const checkUserId = (userOneId, userTwoId) => {
+      const currentUserId = authUser._id;
+      if(currentUserId === userOneId){
+        return userTwoId;
+      }else{
+        return userOneId;
+      }
+    }
+    const userId = checkUserId(lastMessage.senderId, lastMessage.recieverId);
+    console.log("typeof userId : ",typeof userId);
+    setLastMessage(userId, lastMessage.text, lastMessage.createdAt);
+    setSelectedUser(null);
+  }
 
   return (
     <div className="p-2 md:p-2.5 border-b border-base-300 shadow-md">
@@ -26,7 +43,7 @@ const ChatHeader = () => {
 
         </div>
 
-        <button onClick={() => setSelectedUser(null)}>
+        <button onClick={handleCloseChat}>
           <X />
         </button>
 
