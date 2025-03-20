@@ -24,7 +24,7 @@ const LoginPage = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
-                <h3 className="text-2xl font-bold italic">Talkzy</h3>
+              <h3 className="text-2xl font-bold italic">Talkzy</h3>
               <p className="text-base-content/60">Sign in to your account</p>
             </div>
           </div>
