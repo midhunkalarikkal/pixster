@@ -5,6 +5,7 @@ import { axiosInstance } from "../lib/axios";
 export const useSearchStore = create((set) => ({
     searchSelectedUser: null,
     searchSelectedUserLoading: false,
+    connectionStatusLoading: false,
     
     searchLoading: false,
     searchedUsers: null,
@@ -15,7 +16,6 @@ export const useSearchStore = create((set) => ({
             console.log("userId : ",userId);
             const res = await axiosInstance.get(`/user/fetchUserProfile/${userId}`);
             set({ searchSelectedUser : res.data });
-            console.log("res : ",res);
         }catch(error){
             toast.error(error.response.data.message);
         }finally{
@@ -33,6 +33,20 @@ export const useSearchStore = create((set) => ({
             toast.error(error.response.data.message)
         }finally{
             set({ searchLoading : false })
+        }
+    },
+
+    sendConnectionRequest: async (toUserId, status) => {
+        set({ connectionStatusLoading : true });
+        try{
+            const res = await axiosInstance.post(`/connection/sendConnectionRequest/${toUserId}?status=${status}`);
+            console.log("res : ",res);
+            toast.success(res.data.message);
+            set({ searchSelectedUser : res.data });
+        }catch(error){
+            toast.error(error.response.data.message);
+        }finally{
+            set({ connectionStatusLoading : false });
         }
     }
 }))

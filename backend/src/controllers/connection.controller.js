@@ -1,51 +1,51 @@
+import User from "../models/user.model.js";
 import Connection from "../models/connection.model.js";
 
 export const requestConnection = async (req, res) => {
     try {
-        const fromUserId = req.user?._id;
-        const toUserId = req.params.toUserId;
-        const status = req.params.status;
+      const { toUserId } = req.params;
+      const { status } = req.query;
+      const fromUserId = req.user.id;
+
+      console.log("fromUserId : ",fromUserId);
+      console.log("toUserId : ",toUserId);
   
-        if (fromUserId.equals(toUserId)) {
-          throw new Error("Invalid connection request");
+        if (fromUserId === toUserId) {
+          return res.status(400).json({ message:"Invalid request." });
         }
   
-        const allowedStatus = ["ignored", "interested"];
+        const allowedStatus = ["requested", "accepted", "rejected"];
         if (!allowedStatus.includes(status)) {
-          throw new Error("Invalid request");
+          return res.status(400).json({ message:"Invalid request." });
         }
   
         const existingToUser = await User.findById(toUserId);
         if (!existingToUser) {
-          throw new Error("User not found");
+          return res.status(400).json({ message:"User not found." });
         }
   
-        const existingConnection = await ConnectionRequest.findOne({
-          $or: [
-            { fromUserId, toUserId },
-            { fromUserId: toUserId, toUserId: fromUserId },
-          ],
-        });
-  
+        const existingConnection = await Connection.findOne({fromUserId, toUserId, status});
         if (existingConnection) {
-          throw new Error("connection request already exist.");
+          return res.status(400).json({ message:"Connection request pending." });
         }
   
-        const connectionRequest = new ConnectionRequest({
+        const connection = new Connection({
           fromUserId,
           toUserId,
           status,
         });
   
-        const data = await Connection.save();
-        let message;
-        if (status === "interested") {
-          message = `Your request has been send to ${existingToUser.firstName}`;
-        } else {
-          message = `You are ignored ${existingToUser.firstName}`;
+        const data = await connection.save();
+        if(!data) return res.status(400).json({ message : "Please try again." });
+
+        const userData = await User.findById(toUserId);
+        const connectionData = await Connection.findOne({ fromUserId: fromUserId, toUserId: toUserId }, { _id : 0, status : 1 });
+
+        if(status === "requested"){
+          return res.status(200).json({ message: "Your request has been sent.", userData, connectionData });
         }
-        res.send(message);
-      } catch (err) {
+      } catch (error) {
+        console.log("error : ",error);
         res.send("Something went wrong " + err.message);
       }
 }

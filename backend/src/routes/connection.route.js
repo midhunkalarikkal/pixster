@@ -4,6 +4,6 @@ import { requestConnection } from '../controllers/connection.controller.js';
 
 const router = express.Router();
 
-router.post('/requestConnection/:status/:toUserId', protectRoute, requestConnection);
+router.post('/sendConnectionRequest/:toUserId', protectRoute, requestConnection);
 
 export default router;

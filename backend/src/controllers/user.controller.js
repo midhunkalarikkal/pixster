@@ -26,7 +26,7 @@ export const fetchUserProfile = async (req, res) => {
         console.log("userId : ",userId);
         console.log("CurrentUserId : ",req.user?._id);
         const userData = await User.findById(userId).select("_id fullName userName profilePic about postsCount followersCount followingCount");
-        const connectionData = await Connection.findOne({fromUserId : req.user?._id, toUserId : userId }).select("status");
+        const connectionData = await Connection.findOne({fromUserId : req.user?._id, toUserId : userId },{_id: 0, status: 1});
         const userPosts = await Post.find({userId : userId});
         console.log("userData : ",userData);
         console.log("connectionData : ",connectionData);

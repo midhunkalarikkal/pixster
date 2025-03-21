@@ -5,10 +5,11 @@ import { FileText, UserPlus, Users } from "lucide-react";
 import CustomButton from "./CustomButton";
 
 const SearchSelectedUser = () => {
-  const { searchSelectedUser, searchSelectedUserLoading } = useSearchStore();
+  const { searchSelectedUser, searchSelectedUserLoading, sendConnectionRequest, connectionStatusLoading } = useSearchStore();
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+
 
   useEffect(() => {
     if (!searchSelectedUser) return;
@@ -132,13 +133,13 @@ const SearchSelectedUser = () => {
 
             <div className="w-full flex justify-center">
               {connectionData === null ? (
-                <CustomButton text="Follow" />
-              ) : connectionData === "requested" ? (
-                <CustomButton text="Requested" />
-              ) : connectionData === "accepted" ? (
-                <CustomButton text="Following" />
+                <CustomButton text={connectionStatusLoading ? "Requesting" : "Follow"} onClick={() => sendConnectionRequest(userData?._id,"requested")}/>
+              ) : connectionData.status === "requested" ? (
+                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Requested"} />
+              ) : connectionData.status === "accepted" ? (
+                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Following"} />
               ) : (
-                connectionData === "rejected" && <CustomButton text="Follow" />
+                connectionData.status === "rejected" && <CustomButton text={connectionStatusLoading ? "Requesting" : "Follow"} />
               )}
             </div>
 
