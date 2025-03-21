@@ -10,10 +10,9 @@ import {
 } from "../utils/validator.js";
 
 export const signup = async (req, res) => {
-  const { fullName, userName, email, password } = req.body;
-  console.log("Sign up api")
-  console.log(fullName, userName, email, password)
   try {
+    const { fullName, userName, email, password } = req.body;
+
     const fullNameError = validateFullName(fullName);
     const userNameError = validateUsername(userName);
     const emailError = validateEmail(email);
@@ -35,12 +34,14 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: passwordError });
     }
 
-    const userByEmail = await User.findOne({ email });
-    if (userByEmail) {
+    const existingUserByEmail = await User.findOne({ email: email });
+    if (existingUserByEmail) {
+      console.log("Email already exists");
       return res.status(400).json({ message: "Email already exists." });
     }
-    const userByUsername = await User.findOne({ userName });
-    if (userByUsername) {
+
+    const existingUserByUsername = await User.findOne({ userName: userName });
+    if (existingUserByUsername) {
       return res.status(400).json({ message: "Username already exists." });
     }
 
@@ -54,20 +55,18 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    if (newUser) {
-      generateToken(newUser._id, res);
-      await newUser.save();
+    await newUser.save();
+    console.log("User successfully registered");
 
-      return res.status(201).json({
-        id: newUser._id,
-        fullName: newUser.fullName,
-        userName: newUser.userName,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
-      });
-    } else {
-      return res.status(400).json({ message: "Invalid user data." });
-    }
+    generateToken(newUser._id, res);
+
+    return res.status(201).json({
+      id: newUser._id,
+      fullName: newUser.fullName,
+      userName: newUser.userName,
+      email: newUser.email,
+      profilePic: newUser.profilePic,
+    });
   } catch (error) {
     console.error("Signup error:", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -75,8 +74,8 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: "Fill all fields." });
     }
@@ -117,7 +116,6 @@ export const logout = (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-    console.log("update profile");
   try {
     const { profilePic } = req.body;
     const userId = req.user._id;
@@ -126,9 +124,11 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      folder: "usersProfileImage",
+    });
 
-    console.log("uploadResponse : ",uploadResponse);
+    console.log("uploadResponse : ", uploadResponse);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
@@ -137,7 +137,7 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

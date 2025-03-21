@@ -7,9 +7,9 @@ export const validateUsername = (username) => {
         return "Username must be between 6 and 25 characters";
     }
 
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    const usernameRegex = /^[a-z0-9_.]+$/;
     if (!usernameRegex.test(username)) {
-        return "Username can only contain letters, numbers, and underscores";
+        return "Username can only contain small letters, numbers, and underscores";
     }
 
     return null;

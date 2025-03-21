@@ -14,28 +14,28 @@ export const userSchema = new mongoose.Schema(
         email : {
             type : String,
             required : true,
-            unique : true
+            unique : true,
         },
         password : {
             type : String,
             required : true,
-            minlength : 6
+            minlength : 6,
         },
         profilePic : {
             type : String,
-            default : ""
+            default : "",
         },
         followers : {
             type : [Schema.Types.ObjectId],
-            ref : "User"
+            ref : "User",
         },
         following : {
             type : [Schema.Types.ObjectId],
-            ref : "User"
+            ref : "User",
         },
         posts : {
             type : [Schema.Types.ObjectId],
-            ref : "Post"
+            ref : "Post",
         }
     },{
         timestamps : true
