@@ -1,4 +1,5 @@
 import Connection from "../models/connection.model.js";
+import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 export const searchUser = async (req, res) => {
@@ -26,9 +27,10 @@ export const fetchUserProfile = async (req, res) => {
         console.log("CurrentUserId : ",req.user?._id);
         const userData = await User.findById(userId).select("_id fullName userName profilePic about postsCount followersCount followingCount");
         const connectionData = await Connection.findOne({fromUserId : req.user?._id, toUserId : userId }).select("status");
+        const userPosts = await Post.find({userId : userId});
         console.log("userData : ",userData);
         console.log("connectionData : ",connectionData);
-        res.json({ message: "User profile fetched successfully", userData, connectionData});
+        res.json({ message: "User profile fetched successfully", userData, connectionData, userPosts});
     }catch(error){
         return res.status(500).json({ message: "Internal server error." });
     }

@@ -8,19 +8,21 @@ const SearchSelectedUser = () => {
   const { searchSelectedUser, searchSelectedUserLoading } = useSearchStore();
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
+  const [userPosts, setUserPosts] = useState([]);
 
   useEffect(() => {
     if (!searchSelectedUser) return;
     setUserData(searchSelectedUser.userData);
     setConnectionData(searchSelectedUser.connectionData);
+    setUserPosts(searchSelectedUser.userPosts);
   }, [searchSelectedUser]);
 
   return (
-    <div className="max-w-3xl mx-auto p-4 py-4 overflow-y-scroll no-scrollbar">
+    <div className="w-8/12 mx-auto p-4 py-4 overflow-y-scroll no-scrollbar">
       {!searchSelectedUser ? (
         <p>Animation</p>
       ) : searchSelectedUserLoading ? (
-        <div className="rounded-xl p-6 space-y-8 border border-base-300">
+        <div className="w-full rounded-xl p-6 space-y-8 border border-base-300">
           <div className="flex justify-center flex-col items-center">
             <h1 className="text-2xl font-semibold ">Talkzy Profile</h1>
             <p className="mt-2 skeleton h-4 w-20"></p>
@@ -76,8 +78,8 @@ const SearchSelectedUser = () => {
           </div>
         </div>
       ) : (
-        <div className="max-w-3xl mx-auto p-4 py-4">
-          <div className="rounded-xl p-6 space-y-8 border border-base-300">
+        <div className="w-full mx-auto p-4 py-4">
+          <div className="rounded-xl p-6 space-y-8 border border-base-300 bg-base-100">
             <div className="text-center">
               <h1 className="text-2xl font-semibold ">Your Talkzy Profile</h1>
               <p className="mt-2">{userData?.userName}</p>
@@ -130,42 +132,33 @@ const SearchSelectedUser = () => {
 
             <div className="w-full flex justify-center">
               {connectionData === null ? (
-                // <button className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
-                //   Follow
-                // </button>
                 <CustomButton text="Follow" />
               ) : connectionData === "requested" ? (
-                <button className="w-full py-2 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed">
-                  Requested
-                </button>
+                <CustomButton text="Requested" />
               ) : connectionData === "accepted" ? (
-                <button className="w-full py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">
-                  Following
-                </button>
+                <CustomButton text="Following" />
               ) : (
-                connectionData === "rejected" && (
-                  <button className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
-                    Follow
-                  </button>
-                )
+                connectionData === "rejected" && <CustomButton text="Follow" />
               )}
             </div>
 
-            <div className="flex justify-around p-2 md:p-4 text-center border border-base-300">
-              <button className="flex flex-col items-center">
-                <span className="text-sm text-zinc-400">Posts</span>
-              </button>
-              <button className="flex flex-col items-center">
-                <span className="text-sm text-zinc-400">Followers</span>
-              </button>
-              <button className="flex flex-col items-center">
-                <span className="text-sm text-zinc-400">Following</span>
-              </button>
-            </div>
-
-            <div className="flex justify-center w-full py-2 md:py-4">
-              <PostsSkeleton />
-            </div>
+            {connectionData === "Following" && (
+              <div className="flex justify-center w-full py-2 md:py-4">
+                {userPosts && userPosts.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 p-2 gap-2">
+                    {userPosts.map((post) => (
+                      <img
+                        key={post._id}
+                        src={post.media}
+                        className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-36 lg:w-36 rounded-md"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div>no posts yet</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
