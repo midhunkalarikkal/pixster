@@ -17,54 +17,55 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link
-              to={"/"}
-              className={`
+          {authUser && (
+            <div className="flex items-center gap-2">
+              <Link
+                to={"/"}
+                className={`
               btn btn-sm gap-2 transition-colors hidden md:flex
               
               `}
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Chat</span>
-            </Link>
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span className="hidden sm:inline">Chat</span>
+              </Link>
 
-            {authUser && (
-              <Link to={"/profile"} className={`btn btn-sm gap-2 hidden md:flex`}>
-              <User className="size-5" />
-              <span className="hidden sm:inline">Profile</span>
-            </Link>
-            )}
+              <Link
+                to={"/profile"}
+                className={`btn btn-sm gap-2 hidden md:flex`}
+              >
+                <User className="size-5" />
+                <span className="hidden sm:inline">Profile</span>
+              </Link>
 
-            <Link
-              to={"/search"}
-              className={`
+              <Link
+                to={"/search"}
+                className={`
               btn btn-sm gap-2 transition-colors hidden md:flex
               
               `}
-            >
-              <Search className="w-4 h-4" />
-              <span className="hidden sm:inline">Search</span>
-            </Link>
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden sm:inline">Search</span>
+              </Link>
 
-            <Link
-              to={"/settings"}
-              className={`
+              <Link
+                to={"/settings"}
+                className={`
               btn btn-sm gap-2 transition-colors hidden md:flex
               
               `}
-            >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </Link>
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Settings</span>
+              </Link>
 
-            {authUser && (
-                <button className="flex gap-2 items-center" onClick={logout}>
-                  <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
-            )}
-          </div>
+              <button className="flex gap-2 items-center" onClick={logout}>
+                <LogOut className="size-5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
