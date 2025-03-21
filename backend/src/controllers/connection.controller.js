@@ -1,3 +1,5 @@
+import Connection from "../models/connection.model.js";
+
 export const requestConnection = async (req, res) => {
     try {
         const fromUserId = req.user?._id;
@@ -35,7 +37,7 @@ export const requestConnection = async (req, res) => {
           status,
         });
   
-        const data = await connectionRequest.save();
+        const data = await Connection.save();
         let message;
         if (status === "interested") {
           message = `Your request has been send to ${existingToUser.firstName}`;

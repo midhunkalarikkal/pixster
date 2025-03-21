@@ -3,19 +3,18 @@ import { useSearchStore } from "../store/useSearchStore";
 import Dock from "./Dock";
 
 const SearchSidebar = () => {
-  const { searchSelectedUser } = useSearchStore();
   const skeletonContacts = Array(8).fill(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { searchUser, searchLoading, searchedUsers, setSearchSelectedUser } = useSearchStore();
+  const { getSearchUser, searchLoading, searchedUsers, getSearchSelectedUser, searchSelectedUser } = useSearchStore();
 
   useEffect(() => {
     if (searchQuery === "") return;
     const timer = setTimeout(() => {
-      searchUser(searchQuery);
+      getSearchUser(searchQuery);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, searchUser]);
+  }, [searchQuery, getSearchUser]);
 
   return (
     <aside
@@ -53,7 +52,7 @@ const SearchSidebar = () => {
           searchedUsers.map((user) => (
             <button
             key={user._id}
-            onClick={() => setSearchSelectedUser(user)}
+            onClick={() => getSearchSelectedUser(user._id)}
             className={` w-full p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors border-b border-base-300`}
           >

@@ -4,14 +4,26 @@ import { axiosInstance } from "../lib/axios";
 
 export const useSearchStore = create((set) => ({
     searchSelectedUser: null,
+    searchSelectedUserLoading: false,
+    
     searchLoading: false,
     searchedUsers: null,
 
-    setSearchSelectedUser: (userId) => {
-        set({ searchSelectedUser: userId });
+    getSearchSelectedUser: async (userId,) => {
+        set({ searchSelectedUserLoading: true });
+        try{
+            console.log("userId : ",userId);
+            const res = await axiosInstance.get(`/user/fetchUserProfile/${userId}`);
+            set({ searchSelectedUser : res.data });
+            console.log("res : ",res);
+        }catch(error){
+            toast.error(error.response.data.message);
+        }finally{
+            set({ searchSelectedUserLoading : false });
+        }
     },
 
-    searchUser: async(searchQuery) => {
+    getSearchUser: async(searchQuery) => {
         set({ searchLoading : true });
         try{
             console.log("Api query : ",searchQuery);

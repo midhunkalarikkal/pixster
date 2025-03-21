@@ -1,3 +1,4 @@
+import Connection from "../models/connection.model.js";
 import User from "../models/user.model.js";
 
 export const searchUser = async (req, res) => {
@@ -13,6 +14,21 @@ export const searchUser = async (req, res) => {
         const users = await User.find({ userName : { $regex: query, $options: "i" }},{_id: 1, fullName: 1, userName: 1, profilePic: 1 });
         console.log("users : ",users);
         res.json({ message: "Users fetched successfully", users });
+    }catch(error){
+        return res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const fetchUserProfile = async (req, res) => {
+    try{
+        const { userId } = req.params;
+        console.log("userId : ",userId);
+        console.log("CurrentUserId : ",req.user?._id);
+        const userData = await User.findById(userId).select("_id fullName userName profilePic about postsCount followersCount followingCount");
+        const connectionData = await Connection.findOne({fromUserId : req.user?._id, toUserId : userId }).select("status");
+        console.log("userData : ",userData);
+        console.log("connectionData : ",connectionData);
+        res.json({ message: "User profile fetched successfully", userData, connectionData});
     }catch(error){
         return res.status(500).json({ message: "Internal server error." });
     }
