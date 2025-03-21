@@ -5,37 +5,52 @@ export const userSchema = new mongoose.Schema(
         fullName : {
             type : String,
             required : true,
+            trim : true,
+            minLength: 4,
+            maxLength: 25,
         },
         userName : {
             type : String,
             required : true,
             unique: true,
+            trim : true,
+            minLength: 6,
+            maxLength: 25,
         },
         email : {
             type : String,
             required : true,
             unique : true,
+            trim : true,
         },
         password : {
             type : String,
             required : true,
             minlength : 6,
+            trim : true,
         },
         profilePic : {
             type : String,
-            default : "",
+            default : null,
         },
-        followers : {
-            type : [Schema.Types.ObjectId],
-            ref : "User",
+        about : {
+            type: String,
+            minLength: 5,
+            maxLength: 150,
+            default : "This about is from Talkzy, you can update.",
+            trim : true,
         },
-        following : {
-            type : [Schema.Types.ObjectId],
-            ref : "User",
+        followerCount : {
+            type : Number,
+            default: 0,
         },
-        posts : {
-            type : [Schema.Types.ObjectId],
-            ref : "Post",
+        followingCount : {
+            type : Number,
+            default : 0,
+        },
+        postsCount : {
+            type : Number,
+            default : 0,
         }
     },{
         timestamps : true
