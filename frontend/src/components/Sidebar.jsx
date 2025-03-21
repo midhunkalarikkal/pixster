@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
+import Dock from "./Dock";
 
 const Sidebar = () => {
   const {
@@ -72,7 +73,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-1">
+      <div className="overflow-y-auto w-full py-1 flex-1">
         {filteredUsers.map((user) => (
           <button
             key={user._id}
@@ -101,18 +102,23 @@ const Sidebar = () => {
               <div className="flex justify-between">
                 <p className="font-medium truncate">{user.fullName}</p>
                 {getLastMessage(user._id) && (
-                  <p className="text-xs truncate mt-1 text-stone-500">{formatDate(getLastMessage(user._id)?.date)}</p>
+                  <p className="text-xs truncate mt-1 text-stone-500">
+                    {formatDate(getLastMessage(user._id)?.date)}
+                  </p>
                 )}
               </div>
               <div className="text-sm flex">
                 {getLastMessage(user._id) ? (
-                  <p className="font-normal truncate text-stone-500">{getLastMessage(user._id)?.message}</p>
+                  <p className="font-normal truncate text-stone-500">
+                    {getLastMessage(user._id)?.message}
+                  </p>
+                ) : onlineUsers.includes(user._id) ? (
+                  "Online"
                 ) : (
-                  onlineUsers.includes(user._id) ? "Online" : "Offline"
+                  "Offline"
                 )}
               </div>
             </div>
-
           </button>
         ))}
 
@@ -120,6 +126,7 @@ const Sidebar = () => {
           <div className="text-center text-zinc-500 py-4">No online users</div>
         )}
       </div>
+        <Dock />
     </aside>
   );
 };
