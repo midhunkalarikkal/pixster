@@ -17,9 +17,8 @@ const ChatHeader = () => {
         return userOneId;
       }
     }
-    const userId = checkUserId(lastMessage.senderId, lastMessage.recieverId);
-    console.log("typeof userId : ",typeof userId);
-    setLastMessage(userId, lastMessage.text, lastMessage.createdAt);
+    const userId = checkUserId(lastMessage?.senderId, lastMessage?.recieverId);
+    if(userId) setLastMessage(userId, lastMessage?.text, lastMessage?.createdAt);
     setSelectedUser(null);
   }
 

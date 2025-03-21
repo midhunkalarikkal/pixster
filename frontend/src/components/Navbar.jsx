@@ -15,10 +15,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="hidden md:flex w-6/12 justify-center">
-            <input type="text" placeholder="Search your friends" className="input rounded-md focus:border-0 w-8/12 h-8" />
-          </div>
-
           <div className="flex items-center gap-2 w-3/12">
           <Link
               to={"/settings"}

@@ -78,16 +78,16 @@ const Sidebar = () => {
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-1 flex gap-3
+              w-full p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors border-b border-base-300
               ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
-            <div className="relative">
+            <div className="relative w-2/12">
               <img
                 src={user.profilePic || "/user_avatar.jpg"}
                 alt={user.name}
-                className="size-12 object-cover rounded-full"
+                className="size-10 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
                 <span
@@ -97,7 +97,7 @@ const Sidebar = () => {
               )}
             </div>
 
-            <div className="w-full">
+            <div className="w-10/12">
               <div className="flex justify-between">
                 <p className="font-medium truncate">{user.fullName}</p>
                 {getLastMessage(user._id) && (
