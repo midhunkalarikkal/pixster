@@ -65,6 +65,10 @@ export const signup = async (req, res) => {
       userName: newUser.userName,
       email: newUser.email,
       profilePic: newUser.profilePic,
+      about: newUser.about,
+      followersCount: newUser.followerCount,
+      followingCount: newUser.followingCount,
+      postsCount: newUser.postsCount,
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -97,8 +101,13 @@ export const login = async (req, res) => {
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
+      userName: user.userName,
       email: user.email,
       profilePic: user.profilePic,
+      about: user.about,
+      followersCount: user.followersCount,
+      followingCount: user.followingCount,
+      postsCount: user.postsCount,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });

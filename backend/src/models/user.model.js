@@ -40,7 +40,7 @@ export const userSchema = new mongoose.Schema(
             default : "This about is from Talkzy, you can update.",
             trim : true,
         },
-        followerCount : {
+        followersCount : {
             type : Number,
             default: 0,
         },
