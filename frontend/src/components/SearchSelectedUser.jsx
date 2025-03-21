@@ -132,15 +132,13 @@ const SearchSelectedUser = () => {
             </div>
 
             <div className="w-full flex justify-center">
-              {connectionData === null ? (
+              {connectionData === null || connectionData.status === "rejected" || connectionData.status === "cancelled" || connectionData.status === "unfollowed" ? (
                 <CustomButton text={connectionStatusLoading ? "Requesting" : "Follow"} onClick={() => sendConnectionRequest(userData?._id,"requested")}/>
               ) : connectionData.status === "requested" ? (
-                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Requested"} />
-              ) : connectionData.status === "accepted" ? (
-                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Following"} />
-              ) : (
-                connectionData.status === "rejected" && <CustomButton text={connectionStatusLoading ? "Requesting" : "Follow"} />
-              )}
+                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Requested"} onClick={() => sendConnectionRequest(userData?._id,"cancelled")}/>
+              ) : connectionData.status === "accepted" && (
+                <CustomButton text={connectionStatusLoading ? "Unfollowing" : "Following"} onClick={() => sendConnectionRequest(userData?._id,"unfollowed")}/>
+              ) }
             </div>
 
             {connectionData === "Following" && (
