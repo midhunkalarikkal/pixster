@@ -5,11 +5,15 @@ import { FileText, UserPlus, Users } from "lucide-react";
 import CustomButton from "./CustomButton";
 
 const SearchSelectedUser = () => {
-  const { searchSelectedUser, searchSelectedUserLoading, sendConnectionRequest, connectionStatusLoading } = useSearchStore();
+  const {
+    searchSelectedUser,
+    searchSelectedUserLoading,
+    sendConnectionRequest,
+    connectionStatusLoading,
+  } = useSearchStore();
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
-
 
   useEffect(() => {
     if (!searchSelectedUser) return;
@@ -132,17 +136,50 @@ const SearchSelectedUser = () => {
             </div>
 
             <div className="w-full flex justify-center">
-              {connectionData === null || connectionData.status === "rejected" || connectionData.status === "cancelled" || connectionData.status === "unfollowed" ? (
-                <CustomButton text={connectionStatusLoading ? "Requesting" : "Follow"} onClick={() => sendConnectionRequest(userData?._id,"requested")}/>
+              {connectionData === null ||
+              connectionData.status === "rejected" ||
+              connectionData.status === "cancelled" ||
+              connectionData.status === "unfollowed" ? (
+                <CustomButton
+                  text={connectionStatusLoading ? "Requesting" : "Follow"}
+                  onClick={() =>
+                    sendConnectionRequest(userData?._id, "requested")
+                  }
+                />
               ) : connectionData.status === "requested" ? (
-                <CustomButton text={connectionStatusLoading ? "Cancelling" : "Requested"} onClick={() => sendConnectionRequest(userData?._id,"cancelled")}/>
-              ) : connectionData.status === "accepted" && (
-                <CustomButton text={connectionStatusLoading ? "Unfollowing" : "Following"} onClick={() => sendConnectionRequest(userData?._id,"unfollowed")}/>
-              ) }
+                <CustomButton
+                  text={connectionStatusLoading ? "Cancelling" : "Requested"}
+                  onClick={() =>
+                    sendConnectionRequest(userData?._id, "cancelled")
+                  }
+                />
+              ) : (
+                connectionData.status === "accepted" && (
+                  <CustomButton
+                    text={connectionStatusLoading ? "Unfollowing" : "Following"}
+                    onClick={() =>
+                      sendConnectionRequest(userData?._id, "unfollowed")
+                    }
+                  />
+                )
+              )}
             </div>
 
             {connectionData === "Following" && (
               <div className="flex justify-center w-full py-2 md:py-4">
+                
+                <div className="flex justify-around p-2 md:p-4 text-center border border-base-300">
+                  <button className="flex flex-col items-center">
+                    <span className="text-sm text-zinc-400">Posts</span>
+                  </button>
+                  <button className="flex flex-col items-center">
+                    <span className="text-sm text-zinc-400">Followers</span>
+                  </button>
+                  <button className="flex flex-col items-center">
+                    <span className="text-sm text-zinc-400">Following</span>
+                  </button>
+                </div>
+
                 {userPosts && userPosts.length > 0 ? (
                   <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 p-2 gap-2">
                     {userPosts.map((post) => (

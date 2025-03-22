@@ -68,6 +68,9 @@ const ProfilePage = () => {
             <button className="flex flex-col items-center">
               <span className="text-sm text-zinc-400">Following</span>
             </button>
+            <button className="flex flex-col items-center">
+              <span className="text-sm text-zinc-400">Requested</span>
+            </button>
           </div>
 
           <div className="flex justify-center w-full py-2 md:py-4">
