@@ -1,10 +1,9 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
+import { FileText, UserPlus, Users } from "lucide-react";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
-import NotificationBar from "../components/NotificationBar.jsx";
-import { FileText, UserPlus, Users } from "lucide-react";
 import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
 import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
 
@@ -18,9 +17,6 @@ const ProfilePage = () => {
     requestedProfilesLoading,
     getSearchSelectedUser,
     requestedProfiles,
-    getNotifications,
-    notifications,
-    notificationsLoading,
   } = useProfileStore();
 
   const { cancelConnectionRequest } = useSearchStore();
@@ -46,14 +42,12 @@ const ProfilePage = () => {
       });
   };
 
-  const handleViewUser = () => {};
-
   return (
     <div className="min-h-screen w-[84%] px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
       <div className="max-w-5xl mx-auto p-2 md:p-4">
-        <div className="space-y-8 border border-base-300">
+        <div className="space-y-8">
 
-          <div className="flex items-center py-4 space-y-4">
+          <div className="flex items-center">
 
             <div className="relative w-4/12 flex justify-center">
               <img
@@ -64,6 +58,10 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex flex-col w-8/12 justify-center">
+            
+              <div className="flex flex-col my-4">
+                <h2 className="text-lg font-semibold">{authUser?.userName}</h2>
+              </div>
 
               <div className="flex space-x-12">
                 <div className="flex flex-col items-center">
@@ -91,57 +89,56 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col mt-4">
                 <h2 className="text-lg font-semibold">{authUser?.fullName}</h2>
                 <p className="text-zinc-400 text-sm mt-1 line-clamp-2 w-8/12">{authUser?.about}</p>
               </div>
-              
             </div>
-
           </div>
 
-          <div className="flex justify-around p-2 md:p-4 text-center border border-base-300">
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setTab(0)}
-            >
-              <span className="text-sm text-zinc-400">Posts</span>
-            </button>
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setTab(1)}
-            >
-              <span className="text-sm text-zinc-400">Followers</span>
-            </button>
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setTab(2)}
-            >
-              <span className="text-sm text-zinc-400">Following</span>
-            </button>
-            <button
-              className="flex flex-col items-center"
-              onClick={() => {
-                setTab(3);
-                getRequestedProfiles();
-              }}
-            >
-              <span className="text-sm text-zinc-400">Requested</span>
-            </button>
-            <button
-              className="flex flex-col items-center"
-              onClick={() => {
-                setTab(4);
-                getNotifications();
-              }}
-            >
-              <span className="text-sm text-zinc-400">Notifications</span>
-            </button>
+          <div className="border-t-[1px] border-base-300 flex justify-center">
+            <div className="flex justify-around w-8/12">
+              <button
+                className={`flex flex-col items-center w-full ${tab === 0 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                onClick={() => setTab(0)}
+                >
+                <span className="text-sm">Posts</span>
+              </button>
+              <button
+                className={`flex flex-col items-center w-full ${tab === 1 ? "border-t-2 border-whitetext-white" : "text-zinc-400"}`}
+                onClick={() => setTab(1)}
+                >
+                <span className="text-sm text-zinc-400">Followers</span>
+              </button>
+              <button
+                className={`flex flex-col items-center w-full ${tab === 2 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                onClick={() => setTab(2)}
+                >
+                <span className="text-sm text-zinc-400">Following</span>
+              </button>
+              <button
+                className={`flex flex-col items-center w-full ${tab === 3 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                onClick={() => {
+                  setTab(3);
+                  getRequestedProfiles();
+                }}
+                >
+                <span className="text-sm text-zinc-400">Requested</span>
+              </button>
+              <button
+                className={`flex flex-col items-center w-full ${tab === 4 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                onClick={() => {
+                  setTab(4);
+                }}
+                >
+                <span className="text-sm text-zinc-400">Saved</span>
+              </button>
+            </div>
           </div>
 
           {/* Tab 0 */}
           {tab === 0 && (
-            <div className="flex justify-center w-full py-2 md:py-4">
+            <div className="w-full">
               <PostsSkeleton />
             </div>
           )}
@@ -202,28 +199,6 @@ const ProfilePage = () => {
               )
             ))}
 
-          {tab === 4 &&
-            (notificationsLoading ? (
-              <div className="flex justify-center w-full py-4">
-                <UserBarSkeleton />
-              </div>
-            ) : notifications && notifications.length > 0 ? (
-              <div className="flex flex-col justify-center items-center w-full py-4">
-                {notifications.map((notification) => (
-                  <NotificationBar
-                    key={notification._id}
-                    user={notification.fromUserId}
-                    message={notification.message}
-                    onClick={(id, e) => handleViewUser(id, e)}
-                    time={notification.createdAt}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex justify-center w-full py-4">
-                <p>No notifications yet.</p>
-              </div>
-            ))}
         </div>
       </div>
     </div>

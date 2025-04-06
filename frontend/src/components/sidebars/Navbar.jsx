@@ -41,6 +41,14 @@ const Navbar = () => {
             </Link>
 
             <Link
+              to={"/notifications"}
+              className={`btn btn-sm gap-2 transition-colors hidden md:flex`}
+            >
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Notifications</span>
+            </Link>
+
+            <Link
               to={"/settings"}
               className={`btn btn-sm gap-2 transition-colors hidden md:flex items-center`}
             >
