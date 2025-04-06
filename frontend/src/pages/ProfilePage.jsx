@@ -12,7 +12,6 @@ const ProfilePage = () => {
 
   let [reqdProfiles, setReqProfiles] = useState([]);
 
-console.log("reqdProfiles : ",reqdProfiles)
   const { authUser } = useAuthStore();
   const {
     getRequestedProfiles,

@@ -37,12 +37,9 @@ export const useSearchStore = create((set) => ({
     sendConnectionRequest: async (toUserId, status) => {
         set({ connectionStatusLoading : true });
         try{
-            console.log("sending connection request");
             const res = await axiosInstance.post(`/connection/sendConnectionRequest/${toUserId}?status=${status}`);
-            console.log("res : ",res);
             toast.success(res.data.message);
             set({ searchSelectedUser : res.data });
-            console.log("res.data.userData : ",res.data.userData)
             return res.data.userData;
         }catch(error){
             toast.error(error.response.data.message);
