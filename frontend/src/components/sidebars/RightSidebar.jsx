@@ -56,7 +56,7 @@ const RightSidebar = () => {
       }`}
     >
       <div className="border-b border-base-300 w-full py-5">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
         <button
             className={`
               w-full p-2 flex gap-3 items-center
@@ -73,7 +73,7 @@ const RightSidebar = () => {
             <div>
               <div className="flex flex-col">
                 <p className="font-medium truncate">Midhun K Paniker</p>
-                <p className="font-medium truncate">midhun_kalarikkal__</p>
+                <p className="font-light truncate">midhun_kalarikkal__</p>
               </div>
             </div>
           </button>
@@ -123,7 +123,7 @@ const RightSidebar = () => {
               )}
             </div>
 
-            <div>
+            <div className="w-full">
               <div className="flex justify-between">
                 <p className="font-medium truncate">{user.fullName}</p>
                 {getLastMessage(user._id) && (

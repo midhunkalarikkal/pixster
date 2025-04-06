@@ -14,6 +14,18 @@ const NoChatSelected = () => {
             <div className="chat chat-start">
               <div className="chat-bubble skeleton w-40 h-8 md:w-60 md:h-20 rounded-md"></div>
             </div>
+            <div className="chat chat-start">
+              <div className="chat-bubble skeleton w-40 h-8 md:w-56 md:h-12 rounded-md"></div>
+            </div>
+            <div className="chat chat-end">
+              <div className="chat-bubble skeleton w-32 h-6 md:w-56 md:h-16 rounded-md"></div>
+            </div>
+            <div className="chat chat-end">
+              <div className="chat-bubble skeleton w-24 h-6 md:w-32 md:h-8 rounded-md"></div>
+            </div>
+            <div className="chat chat-start">
+              <div className="chat-bubble skeleton w-40 h-8 md:w-60 md:h-20 rounded-md"></div>
+            </div>
             <div className="chat chat-end">
               <div className="chat-bubble skeleton w-32 h-6 md:w-56 md:h-16 rounded-md"></div>
             </div>
