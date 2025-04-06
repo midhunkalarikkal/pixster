@@ -1,10 +1,10 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
-import { FileText, PlusSquare, UserPlus, Users } from "lucide-react";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
 import NotificationBar from "../components/NotificationBar.jsx";
+import { FileText, UserPlus, Users } from "lucide-react";
 import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
 import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
 
@@ -24,8 +24,6 @@ const ProfilePage = () => {
   } = useProfileStore();
 
   const { cancelConnectionRequest } = useSearchStore();
-
-  console.log("notifications : ", notifications);
 
   useEffect(() => {
     setReqProfiles(requestedProfiles);
@@ -51,55 +49,55 @@ const ProfilePage = () => {
   const handleViewUser = () => {};
 
   return (
-    <div className="min-h-screen pt-16 md:pt-20">
-      <div className="max-w-3xl mx-auto p-2 md:p-4 md:py-4">
-        <div className="rounded-xl p-6 space-y-8 border border-base-300">
-          <div className="">
-            <p className="text-lg md:text-2xl">{authUser?.userName}</p>
-            <PlusSquare />
-          </div>
+    <div className="min-h-screen w-[84%] px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
+      <div className="max-w-5xl mx-auto p-2 md:p-4">
+        <div className="space-y-8 border border-base-300">
 
-          <div className="flex flex-col lg:flex-row justify-around">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative">
-                <img
-                  src={authUser.profilePic || "/user_avatar.jpg"}
-                  alt="Profile"
-                  className="size-32 rounded-full object-cover border-4 "
-                />
-              </div>
+          <div className="flex items-center py-4 space-y-4">
+
+            <div className="relative w-4/12 flex justify-center">
+              <img
+                src={authUser.profilePic || "/user_avatar.jpg"}
+                alt="Profile"
+                className="size-32 rounded-full object-cover border-4 "
+              />
             </div>
 
-            <div className="flex justify-center items-center gap-8 p-6">
-              <div className="flex flex-col items-center">
-                <FileText className="w-6 h-6 text-zinc-400" />
-                <p className="text-lg font-semibold">{authUser?.postsCount}</p>
-                <p className="text-sm text-zinc-400">Posts</p>
+            <div className="flex flex-col w-8/12 justify-center">
+
+              <div className="flex space-x-12">
+                <div className="flex flex-col items-center">
+                  <FileText className="w-6 h-6 text-zinc-400" />
+                  <p className="text-lg font-semibold">
+                    {authUser?.postsCount}
+                  </p>
+                  <p className="text-sm text-zinc-400">Posts</p>
+                </div>
+
+                <div className="flex flex-col items-center">
+                  <Users className="w-6 h-6 text-zinc-400" />
+                  <p className="text-lg font-semibold">
+                    {authUser?.followersCount}
+                  </p>
+                  <p className="text-sm text-zinc-400">Followers</p>
+                </div>
+
+                <div className="flex flex-col items-center">
+                  <UserPlus className="w-6 h-6 text-zinc-400" />
+                  <p className="text-lg font-semibold">
+                    {authUser?.followingCount}
+                  </p>
+                  <p className="text-sm text-zinc-400">Following</p>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center">
-                <Users className="w-6 h-6 text-zinc-400" />
-                <p className="text-lg font-semibold">
-                  {authUser?.followersCount}
-                </p>
-                <p className="text-sm text-zinc-400">Followers</p>
+              <div className="flex flex-col">
+                <h2 className="text-lg font-semibold">{authUser?.fullName}</h2>
+                <p className="text-zinc-400 text-sm mt-1 line-clamp-2 w-8/12">{authUser?.about}</p>
               </div>
-
-              <div className="flex flex-col items-center">
-                <UserPlus className="w-6 h-6 text-zinc-400" />
-                <p className="text-lg font-semibold">
-                  {authUser?.followingCount}
-                </p>
-                <p className="text-sm text-zinc-400">Following</p>
-              </div>
+              
             </div>
-          </div>
 
-          <div className="flex items-center gap-6 px-6">
-            <div>
-              <h2 className="text-2xl font-semibold">{authUser?.fullName}</h2>
-              <p className="text-zinc-400 text-sm mt-1">{authUser?.about}</p>
-            </div>
           </div>
 
           <div className="flex justify-around p-2 md:p-4 text-center border border-base-300">

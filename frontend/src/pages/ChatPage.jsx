@@ -1,6 +1,7 @@
 import { useChatStore } from '../store/useChatStore';
 import ChatContainer from '../components/ChatContainer';
 import NoChatSelected from '../components/NoChatSelected';
+import RightSidebar from '../components/sidebars/RightSidebar';
 
 const ChatPage = () => {
     const { selectedUser } = useChatStore();
@@ -11,6 +12,7 @@ const ChatPage = () => {
           <div className="bg-base-200 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-4rem)]">
             <div className="flex h-full rounded-lg overflow-hidden">
               {!selectedUser ? <NoChatSelected /> : <ChatContainer /> }
+              <RightSidebar />
             </div>
           </div>
         </div>
