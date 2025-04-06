@@ -9,6 +9,9 @@ export const useProfileStore = create((set) => ({
     followingProfiles: null,
     followingProfilesLoading: false,
 
+    notifications: null,
+    notificationsLoading: false,
+
     getRequestedProfiles: async () => {
         set({ requestedProfilesLoading: true });
         try{
@@ -30,6 +33,19 @@ export const useProfileStore = create((set) => ({
             toast.error(error.res.data.message)
         }finally{
             set({ followingProfilesLoading: false });
+        }
+    },
+
+    getNotifications: async () => {
+        set({ notificationsLoading: true });
+        try{
+            console.log("Api calling")
+            const res = await axiosInstance.get('/user/fetchNotifications');
+            set({ notifications: res.data.notifications });
+        }catch (error) {
+            toast.error(error.res.data.message)
+        }finally{
+            set({ notificationsLoading: false });
         }
     },
 }))

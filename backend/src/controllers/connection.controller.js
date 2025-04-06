@@ -48,8 +48,8 @@ export const requestConnection = async (req, res) => {
 
       const newNotification = new Notification({
         message: "Want to follow you.",
-        fromUserId,
-        toUserId,
+        toUserId: toUserId,
+        fromUserId: fromUserId,
         isHaveButton: true,
         buttonText: "Accept",
         notificationType: "followRequest",
