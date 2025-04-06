@@ -1,11 +1,13 @@
 import { LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+
   const { logout, authUser } = useAuthStore();
+  
   return (
-    <aside className="bg-base-100 border-r border-base-300 fixed w-[16%] top-0 z-40 backdrop-blur-lg bg-base-100/80 h-full p-4 hidden md:block">
+    <aside className="bg-base-100 border-r border-base-300 w-[16%] z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
       <div className="flex justify-center h-[10%]">
         <Link
           to="/"

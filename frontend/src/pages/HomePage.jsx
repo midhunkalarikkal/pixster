@@ -1,7 +1,7 @@
 
 const HomePage = () => {
   return (
-    <div>HomePage</div>
+    <div className="w-[57%]">HomePage</div>
   )
 }
 

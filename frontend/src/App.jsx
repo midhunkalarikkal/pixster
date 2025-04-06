@@ -29,7 +29,7 @@ const Hello = () => {
     );
 
   return (
-    <div data-theme={theme}>
+    <div className="" data-theme={theme}>
       <Routes>
       <Route
           path="/"

@@ -1,11 +1,11 @@
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useChatStore } from "../store/useChatStore";
-import { useAuthStore } from "../store/useAuthStore";
-import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import Dock from "./Dock";
+import { useChatStore } from "../../store/useChatStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import SidebarSkeleton from "../skeletons/SidebarSkeleton";
+import Dock from "../Dock";
 
-const Sidebar = () => {
+const RightSidebar = () => {
   const {
     getUsers,
     users,
@@ -51,10 +51,35 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full w-full lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200 px-2 ${
+      className={`h-full w-[27%] bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
         selectedUser ? "hidden lg:block" : "block"
       }`}
     >
+      <div className="border-b border-base-300 w-full py-5">
+        <div className="flex items-center gap-2">
+        <button
+            className={`
+              w-full p-2 flex gap-3 items-center
+              hover:bg-base-300 transition-colors
+            `}
+          >
+            <div className="relative">
+              <img
+                src={"/user_avatar.jpg"}
+                alt={"Profile Image"}
+                className="size-10 object-cover rounded-full"
+              />
+            </div>
+            <div>
+              <div className="flex flex-col">
+                <p className="font-medium truncate">Midhun K Paniker</p>
+                <p className="font-medium truncate">midhun_kalarikkal__</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <div className="border-b border-base-300 w-full p-3 md:p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
@@ -80,11 +105,11 @@ const Sidebar = () => {
             onClick={() => setSelectedUser(user)}
             className={`
               w-full p-2 flex gap-3 items-center
-              hover:bg-base-300 transition-colors border-b border-base-300
+              hover:bg-base-300 transition-colors
               ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
-            <div className="relative w-2/12">
+            <div className="relative">
               <img
                 src={user.profilePic || "/user_avatar.jpg"}
                 alt={user.name}
@@ -98,7 +123,7 @@ const Sidebar = () => {
               )}
             </div>
 
-            <div className="w-10/12">
+            <div>
               <div className="flex justify-between">
                 <p className="font-medium truncate">{user.fullName}</p>
                 {getLastMessage(user._id) && (
@@ -130,4 +155,4 @@ const Sidebar = () => {
     </aside>
   );
 };
-export default Sidebar;
+export default RightSidebar;

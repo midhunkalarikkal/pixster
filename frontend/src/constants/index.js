@@ -1,7 +1,7 @@
 export const THEMES = [
-    "bumblebee",
     "black",
     "nord",
+    "lofi",
   ];
 
   export const pairedMessages = [
@@ -56,3 +56,8 @@ export const THEMES = [
       },
   }
 ];
+
+ export const PREVIEW_MESSAGES = [
+    { id: 1, content: "Hey How are you?", isSent: false },
+    { id: 2, content: "Hi iam doing great", isSent: true },
+  ];

@@ -1,19 +1,15 @@
 import { Send } from "lucide-react";
-import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
+import { PREVIEW_MESSAGES, THEMES } from "../constants";
 import ProfileSettings from "../components/ProfileSettings";
 
 const SettingsPage = () => {
-  const PREVIEW_MESSAGES = [
-    { id: 1, content: "Hey How are you?", isSent: false },
-    { id: 2, content: "Hi iam doing great", isSent: true },
-  ];
+
   const { theme, setTheme } = useThemeStore();
 
   
-
   return (
-    <div className="min-h-screen container mx-auto px-4 pt-20 mx-w-5xl">
+    <div className="w-[57%] h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbar bg-base-100">
       <div className="space-y-6">
 
         <ProfileSettings />
@@ -119,6 +115,7 @@ const SettingsPage = () => {
                     </button>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
