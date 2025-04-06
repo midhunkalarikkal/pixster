@@ -13,7 +13,7 @@ export const useSearchStore = create((set) => ({
     getSearchSelectedUser: async (userId,) => {
         set({ searchSelectedUserLoading: true });
         try{
-            const res = await axiosInstance.get(`/user/fetchUserProfile/${userId}`);
+            const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
             set({ searchSelectedUser : res.data });
         }catch(error){
             toast.error(error.response.data.message);
@@ -40,6 +40,7 @@ export const useSearchStore = create((set) => ({
             const res = await axiosInstance.post(`/connection/sendConnectionRequest/${toUserId}?status=${status}`);
             toast.success(res.data.message);
             set({ searchSelectedUser : res.data });
+            console.log("connection request api call searchSlectedUser : ",res.data);
             return res.data.userData;
         }catch(error){
             toast.error(error.response.data.message);

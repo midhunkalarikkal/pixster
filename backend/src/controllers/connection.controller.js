@@ -1,15 +1,12 @@
 import User from "../models/user.model.js";
 import Connection from "../models/connection.model.js";
+import Notification from "../models/notification.model.js";
 
 export const requestConnection = async (req, res) => {
   try {
+    const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
-    const fromUserId = req.user.id;
-
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (fromUserId === toUserId) {
       return res.status(400).json({ message: "Invalid request." });
@@ -26,10 +23,8 @@ export const requestConnection = async (req, res) => {
     }
 
     let connection = await Connection.findOne({
-      $or: [
-        { fromUserId, toUserId },
-        { fromUserId: toUserId, toUserId: fromUserId },
-      ],
+      fromUserId,
+      toUserId,
     });
 
     if (connection) {
@@ -50,18 +45,24 @@ export const requestConnection = async (req, res) => {
         status,
       });
       await connection.save();
+
+      const newNotification = new Notification({
+        message: "Want to follow you.",
+        fromUserId,
+        toUserId,
+        isHaveButton: true,
+        buttonText: "Accept",
+        notificationType: "followRequest",
+      });
+      await newNotification.save();
     }
 
     const userData = await User.findById(toUserId).select(
       "-password -createdAt -email"
     );
+
     const connectionData = await Connection.findOne(
-      {
-        $or: [
-          { fromUserId, toUserId },
-          { fromUserId: toUserId, toUserId: fromUserId },
-        ],
-      },
+      { fromUserId, toUserId},
       { _id: 0, status: 1 }
     );
 
@@ -74,6 +75,6 @@ export const requestConnection = async (req, res) => {
 
     return res.status(200).json({ message, userData, connectionData });
   } catch (error) {
-    res.send("Something went wrong " + err.message);
+    res.send("Something went wrong " + error.message);
   }
 };

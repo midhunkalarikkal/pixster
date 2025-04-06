@@ -5,6 +5,9 @@ import { axiosInstance } from "../lib/axios";
 export const useProfileStore = create((set) => ({
     requestedProfiles: null,
     requestedProfilesLoading: false,
+    
+    followingProfiles: null,
+    followingProfilesLoading: false,
 
     getRequestedProfiles: async () => {
         set({ requestedProfilesLoading: true });
@@ -16,5 +19,17 @@ export const useProfileStore = create((set) => ({
         }finally{
             set({ requestedProfilesLoading: false });
         }
-    }
+    },
+
+    getFollowingsProfiles: async () => {
+        set({ followingProfilesLoading: true });
+        try{
+            const res = await axiosInstance.get('/user/fetchFollowingProfiles');
+            set({ followingProfiles: res.data.users });
+        }catch (error) {
+            toast.error(error.res.data.message)
+        }finally{
+            set({ followingProfilesLoading: false });
+        }
+    },
 }))

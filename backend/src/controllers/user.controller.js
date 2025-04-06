@@ -18,7 +18,7 @@ export const searchUser = async (req, res) => {
     }
 }
 
-export const fetchUserProfile = async (req, res) => {
+export const fetchSearchedUserProfile = async (req, res) => {
     try{
         const { userId } = req.params;
         const userData = await User.findById(userId).select("_id fullName userName profilePic about postsCount followersCount followingCount");
@@ -39,12 +39,31 @@ export const fetchRequestedAccounts = async (req, res) => {
 
         const requestedToUserIds = await Connection.find({
             fromUserId,
-            status: "requested"
+            status: "requested" 
           }).distinct("toUserId");
 
         const users = await User.find({ _id: { $in: requestedToUserIds } });
         res.json({ message: "Users fetched successfully", users });
     }catch(error){
+        return status(500).json({ message : "Internal server error." });
+    }
+}
+
+export const fetchFollowingAccounts = async (req, res) => {
+    try{
+        const fromUserId = req.user?._id;
+        if(!fromUserId){
+            return res.status(400).json({ message: "User not found." });
+        }
+
+        const requestedToUserIds = await Connection.find({
+            fromUserId,
+            status: "accepted"
+          }).distinct("toUserId");
+
+        const users = await User.find({ _id: { $in: requestedToUserIds } });
+        res.json({ message: "Users fetched successfully", users });
+    }catch(error) {
         return status(500).json({ message : "Internal server error." });
     }
 }

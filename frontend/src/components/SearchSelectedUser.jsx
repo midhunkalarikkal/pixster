@@ -16,8 +16,11 @@ const SearchSelectedUser = () => {
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
 
+  console.log("connectionData : ",connectionData);
+
   useEffect(() => {
     if (!searchSelectedUser) return;
+    console.log("searchSelectedUser : ",searchSelectedUser);
     setUserData(searchSelectedUser.userData);
     setConnectionData(searchSelectedUser.connectionData);
     setUserPosts(searchSelectedUser.userPosts);
@@ -137,7 +140,7 @@ const SearchSelectedUser = () => {
             </div>
 
             <div className="w-full flex justify-center">
-              {connectionData === null ||
+              {!connectionData || connectionData === null ||
               connectionData.status === "rejected" ||
               connectionData.status === "cancelled" ||
               connectionData.status === "unfollowed" ? (
