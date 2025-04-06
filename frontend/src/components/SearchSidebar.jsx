@@ -1,6 +1,6 @@
+import Dock from "./Dock";
 import { useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
-import Dock from "./Dock";
 
 const SearchSidebar = () => {
   const skeletonContacts = Array(8).fill(null);
@@ -51,28 +51,28 @@ const SearchSidebar = () => {
         ) : searchedUsers && searchedUsers.length > 0 ? (
           searchedUsers.map((user) => (
             <button
-            key={user._id}
-            onClick={() => getSearchSelectedUser(user._id)}
-            className={` w-full p-2 flex gap-3 items-center
-              hover:bg-base-300 transition-colors border-b border-base-300`}
-          >
-            <div className="relative w-2/12">
-              <img
-                src={user.profilePic || "/user_avatar.jpg"}
-                alt={user.name}
-                className="size-10 object-cover rounded-full"
-              />
-            </div>
-
-            <div className="w-10/12">
-              <div className="flex justify-between">
-                <p className="font-medium truncate">{user.fullName}</p>
-              </div>
-              <div className="text-sm flex">
-                  <p className="font-normal truncate text-stone-500">{user.userName}</p>
-              </div>
-            </div>
-          </button>
+               key={user._id}
+               onClick={() => getSearchSelectedUser(user._id)}
+               className={` w-full p-2 flex gap-3 items-center
+               hover:bg-base-300 transition-colors border-b border-base-300`}
+             >
+               <div className="relative w-2/12">
+                 <img
+                   src={user.profilePic || "/user_avatar.jpg"}
+                   alt={user.name}
+                   className="size-10 object-cover rounded-full"
+                 />
+               </div>
+         
+               <div className="w-10/12">
+                 <div className="flex justify-between">
+                   <p className="font-medium truncate">{user.fullName}</p>
+                 </div>
+                 <div className="text-sm flex">
+                   <p className="font-normal truncate text-stone-500">{user.userName}</p>
+                 </div>
+               </div>
+             </button>
           ))
         ) : (
           <div className="text-center text-zinc-500 py-4">

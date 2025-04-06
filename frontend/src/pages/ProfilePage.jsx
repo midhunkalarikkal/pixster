@@ -1,10 +1,48 @@
-import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
-import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { FileText, UserPlus, Users } from "lucide-react";
+import { useProfileStore } from "../store/useProfileStore.js";
+import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
+import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
+import { useSearchStore } from '../store/useSearchStore.js';
+import { toast } from "react-toastify";
+
 
 const ProfilePage = () => {
+
+  let [reqdProfiles, setReqProfiles] = useState([]);
+
+console.log("reqdProfiles : ",reqdProfiles)
   const { authUser } = useAuthStore();
+  const {
+    getRequestedProfiles,
+    requestedProfilesLoading,
+    getSearchSelectedUser,
+    requestedProfiles,
+  } = useProfileStore();
+
+  const { sendConnectionRequest } = useSearchStore();
+
+  useEffect(() => {
+    setReqProfiles(requestedProfiles);
+  },[requestedProfiles])
+
+  const handleCancelRequest = (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    sendConnectionRequest(id, "cancelled")
+    .then((data) => {
+      if (data) {
+        const updatedProfiles = requestedProfiles.filter((user) => user._id !== data._id);
+        setReqProfiles(updatedProfiles);
+      }
+    })
+    .catch(() => {
+      toast.error("Request cancellation failed.")
+    });
+  }
+
+  const [tab, setTab] = useState(0);
 
   return (
     <div className="min-h-screen pt-20">
@@ -59,28 +97,90 @@ const ProfilePage = () => {
           </div>
 
           <div className="flex justify-around p-2 md:p-4 text-center border border-base-300">
-            <button className="flex flex-col items-center">
+            <button
+              className="flex flex-col items-center"
+              onClick={() => setTab(0)}
+            >
               <span className="text-sm text-zinc-400">Posts</span>
             </button>
-            <button className="flex flex-col items-center">
+            <button
+              className="flex flex-col items-center"
+              onClick={() => setTab(1)}
+            >
               <span className="text-sm text-zinc-400">Followers</span>
             </button>
-            <button className="flex flex-col items-center">
+            <button
+              className="flex flex-col items-center"
+              onClick={() => setTab(2)}
+            >
               <span className="text-sm text-zinc-400">Following</span>
             </button>
-            <button className="flex flex-col items-center">
+            <button
+              className="flex flex-col items-center"
+              onClick={() => {
+                setTab(3);
+                getRequestedProfiles();
+              }}
+            >
               <span className="text-sm text-zinc-400">Requested</span>
             </button>
           </div>
 
-          <div className="flex justify-center w-full py-2 md:py-4">
-            <PostsSkeleton />
-          </div>
+          {tab === 0 && (
+            <div className="flex justify-center w-full py-2 md:py-4">
+              <PostsSkeleton />
+            </div>
+          )}
 
-          <div className="flex justify-center w-full py-4">
-            <UserBarSkeleton />
-          </div>
-          
+          {requestedProfilesLoading ? (
+            <div className="flex justify-center w-full py-4">
+              <UserBarSkeleton />
+            </div>
+          ) : reqdProfiles && reqdProfiles.length > 0 ? (
+            <div className="flex flex-col justify-center items-center w-full py-4">
+              {reqdProfiles.map((user) => (
+                <button
+                  key={user._id}
+                  onClick={() => getSearchSelectedUser(user._id)}
+                  className={`w-full md:w-8/12 p-2 flex gap-3 items-center
+                    hover:bg-base-300 transition-colors border-b border-base-300`}
+                >
+                  <div className="relative w-2/12">
+                    <img
+                      src={user.profilePic || "/user_avatar.jpg"}
+                      alt={user.name}
+                      className="size-10 object-cover rounded-full"
+                    />
+                  </div>
+
+                  <div className="w-10/12 flex justify-between">
+                    <div>
+                      <div className="flex justify-between">
+                        <p className="font-medium truncate">{user.fullName}</p>
+                      </div>
+                      <div className="text-sm flex">
+                        <p className="font-normal truncate text-stone-500">
+                          {user.userName}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <a
+                        className="px-2 py-1 border border-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        onClick={(e) => handleCancelRequest(user._id, e)}
+                      >
+                        Requested
+                      </a>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center w-full py-4">
+              {"You haven't sent any connection requests yet."}
+            </div>
+          )}
         </div>
       </div>
     </div>

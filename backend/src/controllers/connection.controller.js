@@ -9,12 +9,13 @@ export const requestConnection = async (req, res) => {
 
       console.log("fromUserId : ",fromUserId);
       console.log("toUserId : ",toUserId);
+      console.log("status : ",status)
   
         if (fromUserId === toUserId) {
           return res.status(400).json({ message:"Invalid request." });
         }
   
-        const allowedStatus = ["requested", "accepted", "rejected"];
+        const allowedStatus = ["requested", "accepted", "rejected", "cancelled"];
         if (!allowedStatus.includes(status)) {
           return res.status(400).json({ message:"Invalid request." });
         }
@@ -24,26 +25,50 @@ export const requestConnection = async (req, res) => {
           return res.status(400).json({ message:"User not found." });
         }
   
-        const existingConnection = await Connection.findOne({fromUserId, toUserId, status});
-        if (existingConnection) {
-          return res.status(400).json({ message:"Connection request pending." });
-        }
-  
-        const connection = new Connection({
-          fromUserId,
-          toUserId,
-          status,
+        let connection = await Connection.findOne({
+          $or: [
+            { fromUserId, toUserId },
+            { fromUserId: toUserId, toUserId: fromUserId }
+          ]
         });
-  
-        const data = await connection.save();
-        if(!data) return res.status(400).json({ message : "Please try again." });
 
-        const userData = await User.findById(toUserId);
-        const connectionData = await Connection.findOne({ fromUserId: fromUserId, toUserId: toUserId }, { _id : 0, status : 1 });
-
-        if(status === "requested"){
-          return res.status(200).json({ message: "Your request has been sent.", userData, connectionData });
+        if (connection) {
+          if (connection.status === status) {
+            return res.status(400).json({ message: `Connection already ${status}.` });
+          }
+    
+          // Update status
+          connection.status = status;
+          await connection.save();
+        } else {
+          // Create new connection
+          connection = new Connection({
+            fromUserId,
+            toUserId,
+            status,
+          });
+          await connection.save();
         }
+
+        const userData = await User.findById(toUserId).select("-password -createdAt -email");
+        const connectionData = await Connection.findOne({ $or: [
+          { fromUserId, toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId }
+        ]
+      },
+      { _id: 0, status: 1 });
+
+        console.log("userData : ",userData);
+        console.log("connectionData : ",connectionData);
+        
+        let message = "Connection updated.";
+        if (status === "requested") message = "Your request has been sent.";
+        else if (status === "cancelled") message = "Your request has been cancelled.";
+        else if (status === "accepted") message = "Request accepted.";
+        else if (status === "rejected") message = "Request rejected.";
+    
+        return res.status(200).json({ message, userData, connectionData });
+
       } catch (error) {
         console.log("error : ",error);
         res.send("Something went wrong " + err.message);

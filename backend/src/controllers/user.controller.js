@@ -39,8 +39,14 @@ export const fetchRequestedAccounts = async (req, res) => {
             return res.status(400).json({ message: "User not found." });
         }
 
-        const requestedAccounts = await Connection.find({fromUserId : fromUserId, status : "requested"},{ _id : 0, toUserId : 1 });
-        console.log("requested accounts : ",requestedAccounts);
+        const requestedToUserIds = await Connection.find({
+            fromUserId,
+            status: "requested"
+          }).distinct("toUserId");
+
+        const users = await User.find({ _id: { $in: requestedToUserIds } });
+        console.log("requested accounts : ",users);
+        res.json({ message: "Users fetched successfully", users });
     }catch(error){
         return status(500).json({ message : "Internal server error." });
     }

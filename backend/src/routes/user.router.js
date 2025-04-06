@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get('/searchUser', protectRoute, searchUser);
 router.get('/fetchUserProfile/:userId', protectRoute, fetchUserProfile);
-router.get('/fetchRequestedAccounts', protectRoute, fetchRequestedAccounts);
+router.get('/fetchRequestedProfiles', protectRoute, fetchRequestedAccounts);
 
 export default router;

@@ -11,6 +11,7 @@ const SearchSelectedUser = () => {
     sendConnectionRequest,
     connectionStatusLoading,
   } = useSearchStore();
+  
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
