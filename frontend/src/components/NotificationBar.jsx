@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
+import { formatDistanceToNow } from "date-fns";
 
-const NotificationBar = ({ user, onAcceptRequest, onClick, isHaveButton, buttonText, message }) => {
-
+const NotificationBar = ({ user, onClick, message, time }) => {
   return (
     <button
       key={user._id}
@@ -16,27 +16,18 @@ const NotificationBar = ({ user, onAcceptRequest, onClick, isHaveButton, buttonT
         />
       </div>
 
-      <div className="w-10/12 flex justify-between">
-        <div>
-          <div className="flex justify-between">
-            <p className="font-medium truncate">{user.userName +" "+message}</p>
-          </div>
-          <div className="text-sm flex">
-            <p className="font-normal truncate text-stone-500">
-              {user.userName}
-            </p>
-          </div>
+      <div className="w-10/12 flex flex-col">
+        <div className="flex">
+          <p className="font-medium truncate">
+            {user.fullName + " " + message}
+          </p>
         </div>
-        {isHaveButton && buttonText && (
-          <div className="flex items-center">
-          <a
-            className="px-2 py-1 border border-blue-500 text-white rounded-lg hover:bg-blue-600"
-            onClick={(e) => onAcceptRequest(user._id, e)}
-            >
-            {buttonText}
-          </a>
+        <div className="text-sm flex items-center justify-between">
+          <p className="text-xs truncate text-stone-500">{user.userName}</p>
+          <p className="text-xs">
+            {formatDistanceToNow(new Date(time), { addSuffix: true })}
+          </p>
         </div>
-          )}
       </div>
     </button>
   );
@@ -47,12 +38,11 @@ NotificationBar.propTypes = {
     _id: PropTypes.string.isRequired,
     profilePic: PropTypes.string,
     userName: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
   }),
-  onAcceptRequest: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
-  buttonText: PropTypes.string,
-  isHaveButton: PropTypes.bool,
   message: PropTypes.string,
+  time: PropTypes.string,
 };
 
 export default NotificationBar;

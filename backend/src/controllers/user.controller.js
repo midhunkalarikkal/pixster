@@ -90,7 +90,7 @@ export const fetchNotifications = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    const notifications = await Notification.find({ toUserId: currentUser }, { createdAt: 0, updatedAt: 0, __v: 0}).populate({path: "fromUserId", select: "userName profilePic _id"});
+    const notifications = await Notification.find({ toUserId: currentUser }, { updatedAt: 0, __v: 0}).populate({path: "fromUserId", select: "userName fullName profilePic _id"});
     console.log("Notifications:", notifications);
     
     res.json({ message: "Users fetched successfully", notifications });

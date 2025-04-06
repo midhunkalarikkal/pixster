@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
-import { FileText, UserPlus, Users } from "lucide-react";
+import { FileText, PlusSquare, UserPlus, Users } from "lucide-react";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
 import NotificationBar from "../components/NotificationBar.jsx";
@@ -23,7 +23,7 @@ const ProfilePage = () => {
     notificationsLoading,
   } = useProfileStore();
 
-  const { sendConnectionRequest } = useSearchStore();
+  const { cancelConnectionRequest } = useSearchStore();
 
   console.log("notifications : ", notifications);
 
@@ -34,7 +34,7 @@ const ProfilePage = () => {
   const handleCancelRequest = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
-    sendConnectionRequest(id, "cancelled")
+    cancelConnectionRequest(id, "cancelled")
       .then((data) => {
         if (data) {
           const updatedProfiles = requestedProfiles.filter(
@@ -50,15 +50,13 @@ const ProfilePage = () => {
 
   const handleViewUser = () => {};
 
-  const handleAcceptRequest = () => {};
-
   return (
-    <div className="min-h-screen pt-20">
-      <div className="max-w-3xl mx-auto p-4 py-4">
+    <div className="min-h-screen pt-16 md:pt-20">
+      <div className="max-w-3xl mx-auto p-2 md:p-4 md:py-4">
         <div className="rounded-xl p-6 space-y-8 border border-base-300">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold ">Your Talkzy Profile</h1>
-            <p className="mt-2">{authUser?.userName}</p>
+          <div className="">
+            <p className="text-lg md:text-2xl">{authUser?.userName}</p>
+            <PlusSquare />
           </div>
 
           <div className="flex flex-col lg:flex-row justify-around">
@@ -219,9 +217,7 @@ const ProfilePage = () => {
                     user={notification.fromUserId}
                     message={notification.message}
                     onClick={(id, e) => handleViewUser(id, e)}
-                    onAcceptRequest={(id, e) => handleAcceptRequest(id, e)}
-                    isHaveButton={notification.isHaveButton}
-                    buttonText={notification.buttonText}
+                    time={notification.createdAt}
                   />
                 ))}
               </div>

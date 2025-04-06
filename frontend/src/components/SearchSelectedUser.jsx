@@ -153,17 +153,13 @@ const SearchSelectedUser = () => {
               ) : connectionData.status === "requested" ? (
                 <CustomButton
                   text={connectionStatusLoading ? "Cancelling" : "Requested"}
-                  onClick={() =>
-                    sendConnectionRequest(userData?._id, "cancelled")
-                  }
+                  // onClick={}
                 />
               ) : (
                 connectionData.status === "accepted" && (
                   <CustomButton
                     text={connectionStatusLoading ? "Unfollowing" : "Following"}
-                    onClick={() =>
-                      sendConnectionRequest(userData?._id, "unfollowed")
-                    }
+                    // onClick={}
                   />
                 )
               )}
