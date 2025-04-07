@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { validateEmail, validateFullName, validatePassword, validateUsername } from "../utils/validator";
 import AuthImagePattern from "../components/AuthImagePattern";
+import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState();
@@ -211,6 +212,16 @@ const SignUpPage = () => {
               )}
             </button>
           </form>
+
+          <div className="text-center py-6">
+            <p className="text-base-content/60">
+              Already have an account?{" "}
+              <Link to="/login" className="link link-primary">
+                login
+              </Link>
+            </p>
+          </div>
+          
         </div>
       </div>
 
