@@ -29,20 +29,31 @@ export const searchUser = async (req, res) => {
 
 export const fetchSearchedUserProfile = async (req, res) => {
   try {
+
+    const currentUser = req.user?._id;
     const { userId } = req.params;
+
     const userData = await User.findById(userId).select(
       "_id fullName userName profilePic about postsCount followersCount followingCount"
     );
+
     const connectionData = await Connection.findOne(
-      { fromUserId: req.user?._id, toUserId: userId },
+      { fromUserId: currentUser, toUserId: userId },
       { _id: 0, status: 1 }
     );
+
+    const revConnection = await Connection.findOne(
+      { fromUserId: userId, toUserId: currentUser },
+      { _id: 0, status: 1 }
+    )
+
     const userPosts = await Post.find({ userId: userId });
     res.json({
       message: "User profile fetched successfully",
       userData,
       connectionData,
       userPosts,
+      revConnection,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
@@ -98,7 +109,7 @@ export const fetchNotifications = async (req, res) => {
     const notifications = await Notification.find(
       { toUserId: currentUser },
       { updatedAt: 0, __v: 0 }
-    ).populate({
+    ).sort({ createdAt : -1 }).populate({
       path: "fromUserId",
       select: "userName fullName profilePic _id",
     });

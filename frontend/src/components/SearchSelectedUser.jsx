@@ -9,22 +9,37 @@ const SearchSelectedUser = () => {
     searchSelectedUser,
     searchSelectedUserLoading,
     connectionStatusLoading,
-    sendConnectionRequest
+    sendConnectionRequest,
+    acceptConnectionRequest,
   } = useSearchStore();
 
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [revConnectionData, setRevConnectionData] = useState(null);
 
   console.log("searchSelectedUser : ",searchSelectedUser);
   console.log("connectionData : ",connectionData);
+  console.log("revConnection : ",revConnectionData);
 
   useEffect(() => {
     if (!searchSelectedUser) return;
     setUserData(searchSelectedUser.userData);
     setConnectionData(searchSelectedUser.connectionData);
     setUserPosts(searchSelectedUser.userPosts);
+    setRevConnectionData(searchSelectedUser.revConnection);
   }, [searchSelectedUser]);
+
+  const handleRequestAccept = (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    acceptConnectionRequest(id, "accepted");
+  }
+
+  const handleRequestRejct = (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
   if(searchSelectedUserLoading) {
     return (
@@ -41,6 +56,15 @@ const SearchSelectedUser = () => {
       ) : (
         <div className="w-full mx-auto p-4 py-4">
           <div className="rounded-xl p-6 space-y-8 border border-base-300 bg-base-100">
+              {revConnectionData && revConnectionData.status === "requested" && (
+                <div className="p-2 border border-base-300 shadow-lg rounded-lg">
+                    <p className="text-center">{`Do you want to accept ${userData?.userName}'s request ?`}</p>
+                    <div className="py-4 flex justify-center space-x-2">
+                      <button className="px-4 py-1 border border-blue-500 rounded-lg" onClick={(e) => handleRequestAccept(userData._id, e) }>Accept</button>
+                      <button className="px-4 py-1 border border-red-500 rounded-lg" onClick={(e) => handleRequestRejct(userData._id, e) }>Reject</button>
+                    </div>
+                </div>
+              )}
             <div className="flex items-center">
               <div className="relative w-4/12 flex justify-center">
                 <img
