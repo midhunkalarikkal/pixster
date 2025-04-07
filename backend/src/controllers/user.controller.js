@@ -13,7 +13,12 @@ export const searchUser = async (req, res) => {
     }
 
     const users = await User.find(
-      { userName: { $regex: query, $options: "i" } },
+      {
+        $or: [
+          { fullName: { $regex: query, $options: "i" } },
+          { userName: { $regex: query, $options: "i" } },
+        ]
+      },
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
     );
     res.json({ message: "Users fetched successfully", users });

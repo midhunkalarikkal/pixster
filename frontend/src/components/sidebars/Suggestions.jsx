@@ -1,13 +1,13 @@
 import UserTab from "../UserTab";
+import { useEffect } from "react";
 import { Users } from "lucide-react";
 import AuthUserTab from "../AuthUserTab";
-import { useConnectionStore } from '../../store/useConnectionStore';
+import { useSearchStore } from "../../store/useSearchStore";
 import { useSuggestionStore } from '../../store/useSuggestionStore';
-import { useEffect } from "react";
 
 const Suggestions = () => {
 
-  const { sendConnectionRequest } = useConnectionStore();
+  const { sendConnectionRequest } = useSearchStore();
   const { suggestions, suggestionsLoading, fetchSuggestions } = useSuggestionStore();
 
   useEffect(() => {

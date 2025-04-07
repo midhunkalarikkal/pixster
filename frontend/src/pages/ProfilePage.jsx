@@ -99,25 +99,25 @@ const ProfilePage = () => {
           <div className="border-t-[1px] border-base-300 flex justify-center">
             <div className="flex justify-around w-8/12">
               <button
-                className={`flex flex-col items-center w-full ${tab === 0 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                className={`flex flex-col items-center w-full ${tab === 0 ? "border-t-2 border-white dark:border-black text-white dark:text-black" : "text-zinc-400"}`}
                 onClick={() => setTab(0)}
                 >
                 <span className="text-sm">Posts</span>
               </button>
               <button
-                className={`flex flex-col items-center w-full ${tab === 1 ? "border-t-2 border-whitetext-white" : "text-zinc-400"}`}
+                className={`flex flex-col items-center w-full ${tab === 1 ? "border-t-2 border-white dark:border-black text-white dark:text-black" : "text-zinc-400"}`}
                 onClick={() => setTab(1)}
                 >
                 <span className="text-sm text-zinc-400">Followers</span>
               </button>
               <button
-                className={`flex flex-col items-center w-full ${tab === 2 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                className={`flex flex-col items-center w-full ${tab === 2 ? "border-t-2 border-white dark:border-black text-white dark:text-black" : "text-zinc-400"}`}
                 onClick={() => setTab(2)}
                 >
                 <span className="text-sm text-zinc-400">Following</span>
               </button>
               <button
-                className={`flex flex-col items-center w-full ${tab === 3 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                className={`flex flex-col items-center w-full ${tab === 3 ? "border-t-2 border-white dark:border-black text-white dark:text-black" : "text-zinc-400"}`}
                 onClick={() => {
                   setTab(3);
                   getRequestedProfiles();
@@ -126,7 +126,7 @@ const ProfilePage = () => {
                 <span className="text-sm text-zinc-400">Requested</span>
               </button>
               <button
-                className={`flex flex-col items-center w-full ${tab === 4 ? "border-t-2 border-white text-white" : "text-zinc-400"}`}
+                className={`flex flex-col items-center w-full ${tab === 4 ? "border-t-2 border-white dark:border-black text-white dark:text-black" : "text-zinc-400"}`}
                 onClick={() => {
                   setTab(4);
                 }}
