@@ -1,7 +1,8 @@
 import CustomButton from "./CustomButton";
 import { useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
-import { FileText, Loader, UserPlus, Users } from "lucide-react";
+import { FileText, UserPlus, Users } from "lucide-react";
+import NotUserSelected from "./skeletons/NotUserSelected";
 
 const SearchSelectedUser = () => {
   const {
@@ -28,7 +29,7 @@ const SearchSelectedUser = () => {
   if(searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
-        <Loader className="w-10 h-10 animate-spin"/>
+        <span className="loading loading-bars loading-lg"></span>
       </div>
     )
   }
@@ -36,7 +37,7 @@ const SearchSelectedUser = () => {
   return (
     <div className="w-[70%] mx-auto p-4 py-4 overflow-y-scroll no-scrollbar">
       {!searchSelectedUser ? (
-        <p>Animation</p>
+        <NotUserSelected />
       ) : (
         <div className="w-full mx-auto p-4 py-4">
           <div className="rounded-xl p-6 space-y-8 border border-base-300 bg-base-100">

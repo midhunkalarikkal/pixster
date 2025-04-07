@@ -3,7 +3,6 @@ import { useSearchStore } from "../store/useSearchStore";
 import NotificationBar from "../components/NotificationBar";
 import Suggestions from "../components/sidebars/Suggestions";
 import SearchSelectedUser from "../components/SearchSelectedUser";
-import UserBarSkeleton from "../components/skeletons/UserBarSkeleton";
 import { useNotificationStore } from "../store/useNotificationStores";
 
 const NotificationsPage = () => {
@@ -30,8 +29,8 @@ const NotificationsPage = () => {
       ) : (
         <div className={`w-[70%]`}>
           {notificationsLoading ? (
-            <div className="flex justify-center w-full px-4 py-8">
-              <UserBarSkeleton />
+            <div className="flex justify-center items-center w-full px-4 py-8 h-screen">
+              <span className="loading loading-bars loading-lg"></span>
             </div>
           ) : notifications && notifications.length > 0 ? (
             <div className="flex flex-col justify-center items-center w-full px-4 py-8">
