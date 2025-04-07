@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useAuthStore } from "../store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { validateEmail, validateFullName, validatePassword, validateUsername } from "../utils/validator";
+import AuthImagePattern from "../components/AuthImagePattern";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState();
@@ -212,6 +213,11 @@ const SignUpPage = () => {
           </form>
         </div>
       </div>
+
+      <AuthImagePattern
+              title={"Welcome to Talzy"}
+              subtitle={"Sign in to continue your conversations and catch up with your messages."}
+            />
 
     </div>
   );
