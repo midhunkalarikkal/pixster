@@ -1,8 +1,8 @@
-import UserTab from "./UserTab";
+import UserTab from "../UserTab";
 import { Users } from "lucide-react";
-import AuthUserTab from "./AuthUserTab";
-import { useConnectionStore } from '../store/useConnectionStore';
-import { useSuggestionStore } from '../store/useSuggestionStore';
+import AuthUserTab from "../AuthUserTab";
+import { useConnectionStore } from '../../store/useConnectionStore';
+import { useSuggestionStore } from '../../store/useSuggestionStore';
 import { useEffect } from "react";
 
 const Suggestions = () => {
@@ -10,13 +10,12 @@ const Suggestions = () => {
   const { sendConnectionRequest } = useConnectionStore();
   const { suggestions, suggestionsLoading, fetchSuggestions } = useSuggestionStore();
 
-  console.log("suggestions : ",suggestions);
   useEffect(() => {
     fetchSuggestions();
   },[])
 
   return (
-    <div className="w-[40%] pr-10">
+    <div className="w-[30%] pr-10 pl-4">
       <AuthUserTab />
       <div className="w-full p-3 md:p-5">
         <div className="flex items-center gap-2">

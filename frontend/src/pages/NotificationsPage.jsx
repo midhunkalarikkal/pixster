@@ -1,4 +1,4 @@
-import Suggestions from "../components/Suggestions"
+import Suggestions from "../components/sidebars/Suggestions"
 
 const NotificationsPage = () => {
   return (

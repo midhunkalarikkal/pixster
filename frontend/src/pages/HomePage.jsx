@@ -1,15 +1,19 @@
-import Suggestions from "../components/Suggestions"
+import Suggestions from "../components/sidebars/Suggestions";
+import FeedSkeleton from "../components/skeletons/FeedSkeleton";
+import StorySkeleton from "../components/skeletons/StorySkeleton";
 
 const HomePage = () => {
   return (
-    <div className="w-full flex">
-      <div className="w-full">
-        <div>Horizontal scroll story</div>
-        <div>Unlimited veritical scroller</div>
+    <div className="w-[84%] flex">
+      <div className="w-[70%] flex flex-col items-center overflow-y-auto no-scrollbar">
+        <StorySkeleton />
+        <FeedSkeleton />
+        <FeedSkeleton />
+        <FeedSkeleton />
       </div>
       <Suggestions />
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;
