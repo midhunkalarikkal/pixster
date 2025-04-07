@@ -8,6 +8,7 @@ import MessageSkeleton from "./skeletons/MessageSkeleton";
 
 
 const ChatContainer = () => {
+  
   const {
     messages,
     getMessages,
@@ -16,6 +17,7 @@ const ChatContainer = () => {
     subscribeToMessages,
     unsubscribeFromMessages,
   } = useChatStore();
+
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 

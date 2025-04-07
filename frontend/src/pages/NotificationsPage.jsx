@@ -22,6 +22,15 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
+  const { subscribeToNotification, unsubscribeFromNotification } = useNotificationStore();
+
+  useEffect(() => {
+    console.log("App useffect");
+    subscribeToNotification();
+    
+    return () => unsubscribeFromNotification();
+  }, [subscribeToNotification, unsubscribeFromNotification]);
+
   return (
     <div className="w-[84%] flex">
       {searchSelectedUser ? (

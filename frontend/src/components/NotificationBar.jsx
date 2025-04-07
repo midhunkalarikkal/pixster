@@ -2,6 +2,11 @@ import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 
 const NotificationBar = ({ user, onClick, message, time }) => {
+  console.log("User:", user);
+  console.log("onClick:", onClick);
+  console.log("Message:", message);
+  console.log("Time:", time);
+
   return (
     <button
       key={user._id}

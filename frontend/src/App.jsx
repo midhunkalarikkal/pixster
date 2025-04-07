@@ -21,6 +21,7 @@ const Hello = () => {
     checkAuth();
   }, [checkAuth]);
 
+
   if (isCheckingAuth && !authUser)
     return (
       <div className="flex items-center justify-center h-screen" data-theme={theme}>

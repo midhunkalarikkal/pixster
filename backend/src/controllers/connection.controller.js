@@ -5,15 +5,15 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const requestConnection = async (req, res) => {
   try {
-    console.log("Send connection request start")
+    console.log("Send connection request start");
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ",toUserId);
-    console.log("status : ",status);
+    console.log("toUserId : ", toUserId);
+    console.log("status : ", status);
 
-    if(!fromUserId || !toUserId || !status){
+    if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
 
@@ -36,15 +36,19 @@ export const requestConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ",connection);
-
+    console.log("connection : ", connection);
+    let newNotification;
     if (connection) {
-      console.log("if")
+      console.log("if");
       if (connection.status === status) {
         return res
           .status(400)
           .json({ message: `Connection already ${status}.` });
-      } else if (connection.status === "cancelled" || connection.status === "rejected" || connection.status === "unfollowed") {
+      } else if (
+        connection.status === "cancelled" ||
+        connection.status === "rejected" ||
+        connection.status === "unfollowed"
+      ) {
         connection.status = status;
         await connection.save();
 
@@ -54,25 +58,25 @@ export const requestConnection = async (req, res) => {
           fromUserId: fromUserId,
           notificationType: "followRequest",
         });
-        await newNotification.save();
+        newNotification = await newNotification.save();
       }
     } else {
-      console.log("else")
+      console.log("else");
       connection = new Connection({
         fromUserId,
         toUserId,
         status,
       });
       const newConnection = await connection.save();
-      console.log("new Connection : ",newConnection);
+      console.log("new Connection : ", newConnection);
 
-      const newNotification = new Notification({
+      const notification = new Notification({
         message: "Wants to follow you.",
         toUserId: toUserId,
         fromUserId: fromUserId,
         notificationType: "followRequest",
       });
-      await newNotification.save();
+      newNotification = await notification.save();
     }
 
     const userData = await User.findById(toUserId).select(
@@ -84,14 +88,30 @@ export const requestConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    console.log("Send connection request end")
-    return res
-      .status(200)
-      .json({
-        message: `Follow request sent to ${userData.fullName}.`,
-        userData,
-        connectionData,
-      });
+    console.log("Send connection request end");
+
+    await newNotification.populate({
+      path: "fromUserId",
+      select: "userName fullName profilePic"
+    });
+
+    console.log("new notification : ",newNotification);
+
+    const socketNotification = { 
+      message : "You have a new follow request.",
+      notification: newNotification
+    };
+    
+    const receiverSocketId = getReceiverSocketId(toUserId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newFollowRequest", socketNotification);
+    }
+
+    return res.status(200).json({
+      message: `Follow request sent to ${userData.fullName}.`,
+      userData,
+      connectionData,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -103,10 +123,10 @@ export const acceptConnection = async (req, res) => {
     const { toUserId } = req.params;
     const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ",toUserId);
-    console.log("status : ",status);
+    console.log("toUserId : ", toUserId);
+    console.log("status : ", status);
 
-    if(!fromUserId || !toUserId || !status){
+    if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
 
@@ -129,9 +149,9 @@ export const acceptConnection = async (req, res) => {
       toUserId: fromUserId,
     });
 
-    console.log("connection : ",connection);
+    console.log("connection : ", connection);
 
-    if(connection.status === "accepted"){
+    if (connection.status === "accepted") {
       return res.status(400).json({ message: "Connection already exist." });
     }
 
@@ -142,45 +162,50 @@ export const acceptConnection = async (req, res) => {
       message: "accepted your request",
       toUserId: toUserId,
       fromUserId: fromUserId,
-      notificationType: "requestAccept"
+      notificationType: "requestAccept",
     });
     await newNotification.save();
 
-    const updateFromUser = await User.findByIdAndUpdate( fromUserId, { $inc : { followersCount : 1 }}, { new : true });
-    const userData = await User.findByIdAndUpdate( toUserId, { $inc : { followingCount : 1 }}, { new : true }).select(" -password -createdAt -email -updatedAt");
+    const updateFromUser = await User.findByIdAndUpdate(
+      fromUserId,
+      { $inc: { followersCount: 1 } },
+      { new: true }
+    );
+    const userData = await User.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followingCount: 1 } },
+      { new: true }
+    ).select(" -password -createdAt -email -updatedAt");
 
     const connectionData = await Connection.findOne(
       { fromUserId: toUserId, toUserId: fromUserId },
       { _id: 0, status: 1 }
     );
 
-    console.log("userData : ",userData);
-    console.log("connectionData : ",connectionData);
+    console.log("userData : ", userData);
+    console.log("connectionData : ", connectionData);
 
-    return res
-      .status(200)
-      .json({
-        message: `You have accepted ${userData.fullName}'s request`,
-        userData,
-        connectionData,
-      });
-
+    return res.status(200).json({
+      message: `You have accepted ${userData.fullName}'s request`,
+      userData,
+      connectionData,
+    });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const rejectConnection = async (req, res) => {
-  try{
+  try {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ",toUserId);
-    console.log("status : ",status);
+    console.log("toUserId : ", toUserId);
+    console.log("status : ", status);
 
-    if(!fromUserId || !toUserId || !status){
+    if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
 
@@ -203,9 +228,9 @@ export const rejectConnection = async (req, res) => {
       toUserId: fromUserId,
     });
 
-    console.log("connection : ",connection);
+    console.log("connection : ", connection);
 
-    if(connection.status === "rejected"){
+    if (connection.status === "rejected") {
       return res.status(400).json({ message: "Connection already rejected." });
     }
 
@@ -221,30 +246,27 @@ export const rejectConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: `You have rejected ${userData.fullName}'s follow request`,
-        userData,
-        connectionData,
-      });
-    
-  }catch (error) {
-    console.log("error : ",error);
+    return res.status(200).json({
+      message: `You have rejected ${userData.fullName}'s follow request`,
+      userData,
+      connectionData,
+    });
+  } catch (error) {
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 export const cancelConnection = async (req, res) => {
-  try{
+  try {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ",toUserId);
-    console.log("status : ",status);
+    console.log("toUserId : ", toUserId);
+    console.log("status : ", status);
 
-    if(!fromUserId || !toUserId || !status){
+    if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
 
@@ -267,9 +289,9 @@ export const cancelConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ",connection);
+    console.log("connection : ", connection);
 
-    if(connection.status === "cancelled"){
+    if (connection.status === "cancelled") {
       return res.status(400).json({ message: "Connection already cancelled." });
     }
 
@@ -285,31 +307,27 @@ export const cancelConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: `You  have cancelled your follow request to ${userData.fullName}`,
-        userData,
-        connectionData,
-      });
-      
-  }catch (error) {
-    console.log("error : ",error);
+    return res.status(200).json({
+      message: `You  have cancelled your follow request to ${userData.fullName}`,
+      userData,
+      connectionData,
+    });
+  } catch (error) {
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
-
+};
 
 export const unfollowConnection = async (req, res) => {
-  try{
+  try {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ",toUserId);
-    console.log("status : ",status);
+    console.log("toUserId : ", toUserId);
+    console.log("status : ", status);
 
-    if(!fromUserId || !toUserId || !status){
+    if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
 
@@ -332,33 +350,40 @@ export const unfollowConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ",connection);
+    console.log("connection : ", connection);
 
-    if(connection.status === "unfollowed"){
-      return res.status(400).json({ message: "Connection already unfollowing." });
+    if (connection.status === "unfollowed") {
+      return res
+        .status(400)
+        .json({ message: "Connection already unfollowing." });
     }
 
     connection.status = status;
     await connection.save();
 
-    const updateFromUser = await User.findByIdAndUpdate( fromUserId, { $inc : { followersCount : -1 }}, { new : true });
-    const userData = await User.findByIdAndUpdate( toUserId, { $inc : { followingCount : -1 }}, { new : true }).select(" -password -createdAt -email -updatedAt");
+    const updateFromUser = await User.findByIdAndUpdate(
+      fromUserId,
+      { $inc: { followersCount: -1 } },
+      { new: true }
+    );
+    const userData = await User.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followingCount: -1 } },
+      { new: true }
+    ).select(" -password -createdAt -email -updatedAt");
 
     const connectionData = await Connection.findOne(
       { fromUserId, toUserId },
       { _id: 0, status: 1 }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: `You have unfollowed ${userData.fullName}`,
-        userData,
-        connectionData,
-      });
-      
-  }catch (error) {
-    console.log("error : ",error);
+    return res.status(200).json({
+      message: `You have unfollowed ${userData.fullName}`,
+      userData,
+      connectionData,
+    });
+  } catch (error) {
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
