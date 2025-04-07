@@ -3,7 +3,7 @@ import SearchSelectedUser from "../components/SearchSelectedUser";
 
 const SearchPage = () => {
   return (
-    <div className="flex h-screen w-full bg-base-100">
+    <div className="flex h-screen bg-base-100 w-[84%]">
       <SearchSelectedUser />
       <SearchSidebar />
     </div>

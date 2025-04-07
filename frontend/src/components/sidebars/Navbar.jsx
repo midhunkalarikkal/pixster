@@ -1,10 +1,12 @@
-import { BellIcon, Home, LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
-import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/useAuthStore";
+import { useSearchStore } from "../../store/useSearchStore";
+import { BellIcon, Home, LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
 
 const Navbar = () => {
 
   const { logout, authUser } = useAuthStore();
+  const { setSearchSelectedUser } = useSearchStore();
   
   return (
     <aside className="bg-base-100 border-r border-base-300 w-[16%] z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
@@ -47,6 +49,7 @@ const Navbar = () => {
 
             <Link
               to={"/notifications"}
+              onClick={() => setSearchSelectedUser()}
               className={`btn btn-sm gap-2 transition-colors hidden md:flex`}
             >
               <BellIcon className="w-4 h-4" />

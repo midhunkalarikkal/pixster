@@ -5,8 +5,8 @@ const NotificationBar = ({ user, onClick, message, time }) => {
   return (
     <button
       key={user._id}
-      onClick={() => onClick(user._id)}
-      className={`w-full md:w-8/12 p-2 flex gap-3 items-center hover:bg-base-300 transition-colors border-b border-base-300`}
+      onClick={(e) => onClick(user._id, e)}
+      className={`w-full md:w-8/12 p-2 flex gap-3 items-center hover:bg-base-300 transition-colors`}
     >
       <div className="relative w-2/12">
         <img

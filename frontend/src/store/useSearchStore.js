@@ -35,6 +35,23 @@ export const useSearchStore = create((set) => ({
         }
     },
 
+    getFriendProfile: async (userId) => {
+        set({ searchSelectedUserLoading: true });
+        try{
+            const res = await axiosInstance.get(`/user/friendProfile/${userId}`);
+            set({ searchSelectedUser: res.data });
+        }catch (error) {
+            toast.error(error.response.data.message);
+        }finally {
+            set({ searchSelectedUserLoading: false });
+        }
+    },
+
+    setSearchSelectedUser: () => {
+        set({ searchSelectedUser: null});
+    },
+
+    // **** Connection Requests **** //
     sendConnectionRequest: async (toUserId, status ) => {
         set({ connectionStatusLoading : true });
         try{

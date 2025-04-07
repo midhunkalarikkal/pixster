@@ -1,46 +1,61 @@
-import Suggestions from "../components/sidebars/Suggestions"
+import { useEffect } from "react";
+import { useSearchStore } from "../store/useSearchStore";
+import NotificationBar from "../components/NotificationBar";
+import Suggestions from "../components/sidebars/Suggestions";
+import SearchSelectedUser from "../components/SearchSelectedUser";
+import UserBarSkeleton from "../components/skeletons/UserBarSkeleton";
+import { useNotificationStore } from "../store/useNotificationStores";
 
 const NotificationsPage = () => {
+  const { notifications, notificationsLoading, getNotifications } =
+    useNotificationStore();
+
+
+  const { getSearchSelectedUser, searchSelectedUser } = useSearchStore();
+
+  const handleViewUser = (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    getSearchSelectedUser(id);
+  };
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
+
   return (
-    <div className="w-full flex">
-      <div className="w-full">NotificationsPage</div>
+    <div className="w-[84%] flex">
+      {searchSelectedUser ? (
+        <SearchSelectedUser />
+      ) : (
+        <div className={`w-[70%]`}>
+          {notificationsLoading ? (
+            <div className="flex justify-center w-full px-4 py-8">
+              <UserBarSkeleton />
+            </div>
+          ) : notifications && notifications.length > 0 ? (
+            <div className="flex flex-col justify-center items-center w-full px-4 py-8">
+              {notifications.map((notification) => (
+                <NotificationBar
+                  key={notification._id}
+                  user={notification.fromUserId}
+                  message={notification.message}
+                  onClick={(id, e) => handleViewUser(id, e)}
+                  time={notification.createdAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center w-full py-4">
+              <p>No notifications yet.</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <Suggestions />
     </div>
-  )
-}
+  );
+};
 
-export default NotificationsPage
-
-
-{/* <button
-              className="flex flex-col items-center"
-              onClick={() => {
-                setTab(4);
-                getNotifications();
-              }}
-              >
-              <span className="text-sm text-zinc-400">Notifications</span>
-            </button> */}
-
-            // {tab === 4 &&
-            //     (notificationsLoading ? (
-            //       <div className="flex justify-center w-full py-4">
-            //         <UserBarSkeleton />
-            //       </div>
-            //     ) : notifications && notifications.length > 0 ? (
-            //       <div className="flex flex-col justify-center items-center w-full py-4">
-            //         {notifications.map((notification) => (
-            //           <NotificationBar
-            //             key={notification._id}
-            //             user={notification.fromUserId}
-            //             message={notification.message}
-            //             onClick={(id, e) => handleViewUser(id, e)}
-            //             time={notification.createdAt}
-            //           />
-            //         ))}
-            //       </div>
-            //     ) : (
-            //       <div className="flex justify-center w-full py-4">
-            //         <p>No notifications yet.</p>
-            //       </div>
-            //     ))}
+export default NotificationsPage;

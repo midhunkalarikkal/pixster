@@ -19,7 +19,7 @@ const SearchSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-[27%] border-l border-base-300 flex flex-col transition-all duration-200 px-2 bg-base-100 ${
+      className={`h-full w-[30%] flex flex-col transition-all duration-200 px-2 ${
         searchSelectedUser ? "hidden lg:block" : "block"
       }`}
     >
@@ -29,7 +29,7 @@ const SearchSidebar = () => {
         <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Search by username"
+            placeholder="Search users"
             className="input w-full h-10 md:h-12"
             value={searchQuery || ""}
             onInput={(e) => setSearchQuery(e.target.value)}

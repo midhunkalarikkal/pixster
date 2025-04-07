@@ -136,3 +136,26 @@ export const fetchSuggestions = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const fetchFriendProfile = async (req, res) => {
+  try{
+    const userId = req.params.userId;
+    const currentUser = req.user?._id;
+    if (!currentUser || !userId) {
+      return res.status(400).json({ message: "User not found." });
+    }
+
+    const connection = await Connection.find(
+      {fromUserId: currentUser, toUserId: userId}, {_id: 0, status: 1}
+    );
+
+    const user = await User.findById(userId).select("-password -updatedAt -createdAt");
+
+    console.log("connection : ",connection);
+    
+    console.log("user : ",user);
+
+  }catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

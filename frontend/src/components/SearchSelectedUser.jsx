@@ -27,14 +27,14 @@ const SearchSelectedUser = () => {
 
   if(searchSelectedUserLoading) {
     return (
-      <div className="w-8/12 mx-auto flex justify-center items-center">
+      <div className="w-[70%] mx-auto flex justify-center items-center">
         <Loader className="w-10 h-10 animate-spin"/>
       </div>
     )
   }
 
   return (
-    <div className="w-8/12 mx-auto p-4 py-4 overflow-y-scroll no-scrollbar">
+    <div className="w-[70%] mx-auto p-4 py-4 overflow-y-scroll no-scrollbar">
       {!searchSelectedUser ? (
         <p>Animation</p>
       ) : (
