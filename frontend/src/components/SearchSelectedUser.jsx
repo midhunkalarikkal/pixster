@@ -12,6 +12,8 @@ const SearchSelectedUser = () => {
     sendConnectionRequest,
     acceptConnectionRequest,
     rejectConnectionRequest,
+    cancelConnectionRequest,
+    unFollowConnectionRequest,
   } = useSearchStore();
 
   const [userData, setUserData] = useState(null);
@@ -114,8 +116,8 @@ const SearchSelectedUser = () => {
               {!connectionData ||
               connectionData === null ||
               connectionData.status === "rejected" ||
-              connectionData.status === "cancelled" ||
-              connectionData.status === "unfollowed" ? (
+              connectionData.status === "unfollowed" ||
+              connectionData.status === "cancelled" ? (
                 <CustomButton
                   text={connectionStatusLoading ? "Requesting" : "Follow"}
                   onClick={() =>
@@ -124,14 +126,18 @@ const SearchSelectedUser = () => {
                 />
               ) : connectionData.status === "requested" ? (
                 <CustomButton
-                  text={connectionStatusLoading ? "Cancelling" : "Requested"}
-                  // onClick={}
+                  text={connectionStatusLoading ? "Cancelling" : "Cancel Request"}
+                  onClick={() => 
+                    cancelConnectionRequest(userData?._id, "cancelled")
+                  }
                 />
               ) : (
                 connectionData.status === "accepted" && (
                   <CustomButton
                     text={connectionStatusLoading ? "Unfollowing" : "Following"}
-                    // onClick={}
+                    onClick={() => 
+                      unFollowConnectionRequest(userData?._id, "unfollowed")
+                    }
                   />
                 )
               )}

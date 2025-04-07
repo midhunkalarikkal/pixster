@@ -100,4 +100,34 @@ export const useSearchStore = create((set) => ({
     }
   },
 
+  cancelConnectionRequest: async (toUserId, status) => {
+    set({ connectionStatusLoading: true });
+    try {
+        const res = await axiosInstance.post(`/connection/cancelConnectionRequest/${toUserId}?status=${status}`);
+        toast.success(res.data.message);
+        set({ searchSelectedUser: res.data });
+        return res.data.userData;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ connectionStatusLoading: false });
+    }
+  },
+
+  unFollowConnectionRequest: async (toUserId, status) => {
+    set({ connectionStatusLoading: true });
+    try {
+        const res = await axiosInstance.post(`/connection/unFollowConnectionRequest/${toUserId}?status=${status}`);
+        toast.success(res.data.message);
+        set({ searchSelectedUser: res.data });
+        return res.data.userData;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ connectionStatusLoading: false });
+    }
+  },
+
+
+
 }));
