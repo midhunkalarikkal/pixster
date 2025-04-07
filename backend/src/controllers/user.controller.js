@@ -90,10 +90,43 @@ export const fetchNotifications = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    const notifications = await Notification.find({ toUserId: currentUser }, { updatedAt: 0, __v: 0}).populate({path: "fromUserId", select: "userName fullName profilePic _id"});
+    const notifications = await Notification.find(
+      { toUserId: currentUser },
+      { updatedAt: 0, __v: 0 }
+    ).populate({
+      path: "fromUserId",
+      select: "userName fullName profilePic _id",
+    });
     console.log("Notifications:", notifications);
-    
+
     res.json({ message: "Users fetched successfully", notifications });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const fetchSuggestions = async (req, res) => {
+  try {
+    console.log("Suggestion controller");
+    const currentUser = req.user?._id;
+    if (!currentUser) {
+      return res.status(400).json({ message: "User not found." });
+    }
+
+    const suggestions = await Connection.find({
+      $and: [
+        {
+          $or: [{ fromUserId: currentUser }, { toUserId: currentUser }],
+        },
+        {
+          status: "accepted"
+        },
+      ],
+    });
+
+    console.log("suggestions : ",suggestions);
+
+    res.json({ message: "Suggestions fetched successfully", suggestions });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

@@ -2,14 +2,18 @@ import CustomButton from "./CustomButton";
 import { useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
 import { FileText, Loader, UserPlus, Users } from "lucide-react";
+import { useConnectionStore } from "../store/useConnectionStore";
 
 const SearchSelectedUser = () => {
   const {
     searchSelectedUser,
     searchSelectedUserLoading,
-    sendConnectionRequest,
     connectionStatusLoading,
   } = useSearchStore();
+
+  const  {
+    sendConnectionRequest,
+  } = useConnectionStore();
 
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);

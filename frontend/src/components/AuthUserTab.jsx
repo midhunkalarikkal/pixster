@@ -11,7 +11,7 @@ const AuthUserTab = () => {
   }
 
   return (
-    <div className="border-b border-base-300 w-full py-5">
+    <div className="w-full py-5">
       <div className="flex items-center">
         <button
           onClick={handleGotoProfile}
