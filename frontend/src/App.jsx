@@ -1,18 +1,17 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import SignUpPage from "./pages/SignUpPage";
-import LoginPage from "./pages/LoginPage";
-import SettingsPage from "./pages/SettingsPage";
-import ProfilePage from "./pages/ProfilePage";
-import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
-import { Loader } from "lucide-react";
-import { useThemeStore } from "./store/useThemeStore";
-import { ToastContainer } from "react-toastify";
-import SearchPage from "./pages/SearchPage";
-import ChatPage from "./pages/ChatPage";
 import Layout from "./pages/Layout";
+import ChatPage from "./pages/ChatPage";
 import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SearchPage from "./pages/SearchPage";
+import SignUpPage from "./pages/SignUpPage";
+import ProfilePage from "./pages/ProfilePage";
+import { ToastContainer } from "react-toastify";
+import SettingsPage from "./pages/SettingsPage";
+import { useAuthStore } from "./store/useAuthStore";
+import { useThemeStore } from "./store/useThemeStore";
 import NotificationsPage from "./pages/NotificationsPage";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 const Hello = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -25,7 +24,7 @@ const Hello = () => {
   if (isCheckingAuth && !authUser)
     return (
       <div className="flex items-center justify-center h-screen" data-theme={theme}>
-        <Loader className="size-12 animate-spin" />
+        <span className="loading loading-bars loading-lg"></span>
       </div>
     );
 

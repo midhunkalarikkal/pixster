@@ -2,7 +2,12 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
-import { validateEmail, validateFullName, validatePassword, validateUsername } from "../utils/validator";
+import {
+  validateEmail,
+  validateFullName,
+  validatePassword,
+  validateUsername,
+} from "../utils/validator";
 import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router-dom";
 
@@ -23,11 +28,12 @@ const SignUpPage = () => {
   const { signup, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
-    if(formData.fullName === "" ||
+    if (
+      formData.fullName === "" ||
       formData.userName === "" ||
       formData.email === "" ||
       formData.password === ""
-    ){
+    ) {
       toast.error("Fill all fields.");
       return false;
     }
@@ -41,16 +47,12 @@ const SignUpPage = () => {
     setEmailError(emailError);
     setPasswordError(passwordError);
 
-    if (fullNameError || 
-      userNameError || 
-      emailError || 
-      passwordError) {
+    if (fullNameError || userNameError || emailError || passwordError) {
       toast.error("Please fix the form error.");
       return false;
     }
     return true;
-    
-};
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -61,26 +63,26 @@ const SignUpPage = () => {
   const checkInput = (e, field) => {
     let error = null;
     switch (field) {
-        case "fullName":
-            error = validateFullName(e.target.value);
-            setFullNameError(error);
-            break;
-        case "userName":
-            error = validateUsername(e.target.value);
-            setUserNameError(error);
-            break;
-        case "email":
-            error = validateEmail(e.target.value);
-            setEmailError(error);
-            break;
-        case "password":
-            error = validatePassword(e.target.value);
-            setPasswordError(error);
-            break;
-        default:
-            break;
+      case "fullName":
+        error = validateFullName(e.target.value);
+        setFullNameError(error);
+        break;
+      case "userName":
+        error = validateUsername(e.target.value);
+        setUserNameError(error);
+        break;
+      case "email":
+        error = validateEmail(e.target.value);
+        setEmailError(error);
+        break;
+      case "password":
+        error = validatePassword(e.target.value);
+        setPasswordError(error);
+        break;
+      default:
+        break;
     }
-};
+  };
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -116,7 +118,9 @@ const SignUpPage = () => {
                     setFormData({ ...formData, fullName: e.target.value })
                   }
                 />
-                {fullNameError && <p className="text-red-500 text-sm mt-1">{fullNameError}</p>}
+                {fullNameError && (
+                  <p className="text-red-500 text-sm mt-1">{fullNameError}</p>
+                )}
               </div>
             </div>
 
@@ -138,7 +142,9 @@ const SignUpPage = () => {
                     setFormData({ ...formData, userName: e.target.value })
                   }
                 />
-                {userNameError && <p className="text-red-500 text-sm mt-1">{userNameError}</p>}
+                {userNameError && (
+                  <p className="text-red-500 text-sm mt-1">{userNameError}</p>
+                )}
               </div>
             </div>
 
@@ -160,7 +166,9 @@ const SignUpPage = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                 />
-                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+                {emailError && (
+                  <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                )}
               </div>
             </div>
 
@@ -182,7 +190,9 @@ const SignUpPage = () => {
                     setFormData({ ...formData, password: e.target.value })
                   }
                 />
-                {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                )}
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
@@ -221,15 +231,15 @@ const SignUpPage = () => {
               </Link>
             </p>
           </div>
-          
         </div>
       </div>
 
       <AuthImagePattern
-              title={"Welcome to Talzy"}
-              subtitle={"Sign in to continue your conversations and catch up with your messages."}
-            />
-
+        title={"Welcome to Talzy"}
+        subtitle={
+          "Sign in to continue your conversations and catch up with your messages."
+        }
+      />
     </div>
   );
 };
