@@ -75,9 +75,8 @@ export const useSearchStore = create((set) => ({
   acceptConnectionRequest: async (toUserId, status) => {
     set({ connectionStatusLoading: true });
     try {
-        console.log("toUserId : ",toUserId);
-        console.log("status : ",status);
         const res = await axiosInstance.post(`/connection/acceptConnectionRequest/${toUserId}?status=${status}`);
+        toast.success(res.data.message);
         set({ searchSelectedUser: res.data });
         return res.data.userData;
     } catch (error) {
@@ -91,6 +90,7 @@ export const useSearchStore = create((set) => ({
     set({ connectionStatusLoading: true });
     try {
         const res = await axiosInstance.post(`/connection/rejectConnectionRequest/${toUserId}?status=${status}`);
+        toast.success(res.data.message);
         set({ searchSelectedUser: res.data });
         return res.data.userData;
     } catch (error) {

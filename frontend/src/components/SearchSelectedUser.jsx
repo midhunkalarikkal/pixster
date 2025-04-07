@@ -11,6 +11,7 @@ const SearchSelectedUser = () => {
     connectionStatusLoading,
     sendConnectionRequest,
     acceptConnectionRequest,
+    rejectConnectionRequest,
   } = useSearchStore();
 
   const [userData, setUserData] = useState(null);
@@ -39,6 +40,7 @@ const SearchSelectedUser = () => {
   const handleRequestRejct = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
+    rejectConnectionRequest(id, "rejected");
   }
 
   if(searchSelectedUserLoading) {

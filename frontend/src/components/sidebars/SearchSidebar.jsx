@@ -25,12 +25,12 @@ const SearchSidebar = () => {
     >
       <AuthUserTab />
 
-      <div className="border-b border-base-300 w-full p-2 md:px-5 py-3">
-        <div className="flex items-center gap-2">
+      <div className="border-b border-t border-base-300 w-full py-3">
+        <div className="flex items-center">
           <input
             type="text"
             placeholder="Search users"
-            className="input w-full h-10 md:h-12"
+            className="input w-full h-10 md:h-12 border-2 border-base-300 focus:outline-none focus:border-base-300"
             value={searchQuery || ""}
             onInput={(e) => setSearchQuery(e.target.value)}
           />
