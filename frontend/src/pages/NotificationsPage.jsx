@@ -1,7 +1,11 @@
+import Suggestions from "../components/Suggestions"
 
 const NotificationsPage = () => {
   return (
-    <div>NotificationsPage</div>
+    <div className="w-full flex">
+      <div className="w-full">NotificationsPage</div>
+      <Suggestions />
+    </div>
   )
 }
 

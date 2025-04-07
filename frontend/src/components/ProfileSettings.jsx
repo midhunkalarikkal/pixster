@@ -115,6 +115,7 @@ const ProfileSettings = () => {
                   type="text"
                   className="px-4 py-2.5 bg-base-200 rounded-lg border w-full"
                   value={authUser?.about}
+                  readOnly
                 />
               </div>
             </div>

@@ -12,6 +12,7 @@ import SearchPage from "./pages/SearchPage";
 import ChatPage from "./pages/ChatPage";
 import Layout from "./pages/Layout";
 import HomePage from "./pages/HomePage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 const Hello = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -40,6 +41,7 @@ const Hello = () => {
           <Route path="search" element={<SearchPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path='notifications' element={<NotificationsPage />} />
         </Route>
         <Route
           path="/signup"

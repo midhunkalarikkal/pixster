@@ -6,10 +6,9 @@ import ProfileSettings from "../components/ProfileSettings";
 const SettingsPage = () => {
 
   const { theme, setTheme } = useThemeStore();
-
   
   return (
-    <div className="w-[57%] h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbar bg-base-100">
+    <div className="w-full h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbar">
       <div className="space-y-6">
 
         <ProfileSettings />

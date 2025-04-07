@@ -4,8 +4,9 @@ import { useChatStore } from "../../store/useChatStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import SidebarSkeleton from "../skeletons/SidebarSkeleton";
 import Dock from "../Dock";
+import AuthUserTab from "../AuthUserTab";
 
-const RightSidebar = () => {
+const ChatSidebar = () => {
   const {
     getUsers,
     users,
@@ -55,30 +56,7 @@ const RightSidebar = () => {
         selectedUser ? "hidden lg:block" : "block"
       }`}
     >
-      <div className="border-b border-base-300 w-full py-5">
-        <div className="flex items-center">
-        <button
-            className={`
-              w-full p-2 flex gap-3 items-center
-              hover:bg-base-300 transition-colors
-            `}
-          >
-            <div className="relative">
-              <img
-                src={"/user_avatar.jpg"}
-                alt={"Profile Image"}
-                className="size-10 object-cover rounded-full"
-              />
-            </div>
-            <div>
-              <div className="flex flex-col">
-                <p className="font-medium truncate">Midhun K Paniker</p>
-                <p className="font-light truncate">midhun_kalarikkal__</p>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+      <AuthUserTab />
 
       <div className="border-b border-base-300 w-full p-3 md:p-5">
         <div className="flex items-center gap-2">
@@ -155,4 +133,4 @@ const RightSidebar = () => {
     </aside>
   );
 };
-export default RightSidebar;
+export default ChatSidebar;

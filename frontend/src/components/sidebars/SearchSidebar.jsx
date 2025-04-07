@@ -1,6 +1,7 @@
-import Dock from "./Dock";
+import Dock from "../Dock";
 import { useEffect, useState } from "react";
-import { useSearchStore } from "../store/useSearchStore";
+import AuthUserTab from "../AuthUserTab";
+import { useSearchStore } from "../../store/useSearchStore";
 
 const SearchSidebar = () => {
   const skeletonContacts = Array(8).fill(null);
@@ -18,11 +19,13 @@ const SearchSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-full lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200 px-2 ${
+      className={`h-full w-[27%] border-l border-base-300 flex flex-col transition-all duration-200 px-2 bg-base-100 ${
         searchSelectedUser ? "hidden lg:block" : "block"
       }`}
     >
-      <div className="border-b border-base-300 w-full p-2 md:p-5">
+      <AuthUserTab />
+
+      <div className="border-b border-base-300 w-full p-2 md:px-5 py-3">
         <div className="flex items-center gap-2">
           <input
             type="text"

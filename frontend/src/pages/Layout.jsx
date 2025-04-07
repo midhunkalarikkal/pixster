@@ -3,7 +3,7 @@ import Navbar from "../components/sidebars/Navbar";
 
 const Layout = () => {
   return (
-    <div className="h-screen bg-base-200 flex justify-between">
+    <div className="h-screen bg-base-100 flex justify-between">
       <Navbar />
       <Outlet />
     </div>

@@ -43,7 +43,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen w-[84%] px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
+    <div className="min-h-screen w-full px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
       <div className="max-w-5xl mx-auto p-2 md:p-4">
         <div className="space-y-8">
 

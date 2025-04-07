@@ -1,4 +1,4 @@
-import { LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
+import { BellIcon, Home, LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
 
@@ -22,6 +22,11 @@ const Navbar = () => {
 
           <div className=" flex flex-col space-y-4">
 
+            <Link to={"/"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
+              <Home className="size-5" />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+
             <Link to={"/profile"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
               <User className="size-5" />
               <span className="hidden sm:inline">Profile</span>
@@ -44,7 +49,7 @@ const Navbar = () => {
               to={"/notifications"}
               className={`btn btn-sm gap-2 transition-colors hidden md:flex`}
             >
-              <Search className="w-4 h-4" />
+              <BellIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Notifications</span>
             </Link>
 
