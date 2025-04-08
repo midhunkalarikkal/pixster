@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useSearchStore } from "../../store/useSearchStore";
 import { BellIcon, Home, LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
 
 const Navbar = () => {
 
+  const navigate = useNavigate();
   const { logout, authUser } = useAuthStore();
-  const { setSearchSelectedUser } = useSearchStore();
+  const { setSearchSelectedUser, getSearchSelectedUser } = useSearchStore();
   
   return (
     <aside className="bg-base-100 border-r border-base-300 w-[16%] z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
@@ -29,10 +30,12 @@ const Navbar = () => {
               <span className="hidden sm:inline">Home</span>
             </Link>
 
-            <Link to={"/profile"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
+            <button className={`btn btn-sm gap-2 transition-colors hidden md:flex`}
+               onClick={() => getSearchSelectedUser(authUser._id, navigate)} 
+            >
               <User className="size-5" />
               <span className="hidden sm:inline">Profile</span>
-            </Link>
+            </button>
 
             <Link to={"/chat"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
               <MessageCircle className="w-4 h-4" />

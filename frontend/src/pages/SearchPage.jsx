@@ -1,10 +1,10 @@
 import SearchSidebar from "../components/sidebars/SearchSidebar";
-import SearchSelectedUser from "../components/SearchSelectedUser";
+import NotUserSelected from "../components/skeletons/NotUserSelected";
 
 const SearchPage = () => {
   return (
     <div className="flex h-screen bg-base-100 w-[84%]">
-      <SearchSelectedUser />
+      <NotUserSelected />
       <SearchSidebar />
     </div>
   );

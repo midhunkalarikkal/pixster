@@ -1,13 +1,12 @@
-import UserTab from "../UserTab";
 import { useEffect } from "react";
 import { Users } from "lucide-react";
 import AuthUserTab from "../AuthUserTab";
-import { useSearchStore } from "../../store/useSearchStore";
+// import { useSearchStore } from "../../store/useSearchStore";
 import { useSuggestionStore } from '../../store/useSuggestionStore';
 
 const Suggestions = () => {
 
-  const { sendConnectionRequest } = useSearchStore();
+  // const { sendConnectionRequest } = useSearchStore();
   const { suggestions, suggestionsLoading, fetchSuggestions } = useSuggestionStore();
 
   useEffect(() => {
@@ -29,10 +28,8 @@ const Suggestions = () => {
         suggestionsLoading ? (
           <p>Loading</p>
         ) : suggestions ? (
-          suggestions.map((suggestion) => {
-            <UserTab
-            key={suggestion._id} 
-            sendConnection={() => sendConnectionRequest(suggestion._id, "requested" )} />
+          suggestions.map((suggestion, index) => {
+            <p key={index}>{`user ${index}`}</p>
           })
         ) : (
           <p className="text-center">No suggestions</p>

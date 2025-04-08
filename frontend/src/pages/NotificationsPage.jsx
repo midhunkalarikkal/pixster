@@ -2,15 +2,13 @@ import { useEffect } from "react";
 import { useSearchStore } from "../store/useSearchStore";
 import NotificationBar from "../components/NotificationBar";
 import Suggestions from "../components/sidebars/Suggestions";
-import SearchSelectedUser from "../components/SearchSelectedUser";
 import { useNotificationStore } from "../store/useNotificationStores";
 
 const NotificationsPage = () => {
-  const { notifications, notificationsLoading, getNotifications } =
-    useNotificationStore();
-
-
-  const { getSearchSelectedUser, searchSelectedUser } = useSearchStore();
+  
+  const { getSearchSelectedUser } = useSearchStore();
+  const { subscribeToNotification, unsubscribeFromNotification } = useNotificationStore();
+  const { notifications, notificationsLoading, getNotifications } = useNotificationStore();
 
   const handleViewUser = (id, e) => {
     e.preventDefault();
@@ -22,10 +20,8 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
-  const { subscribeToNotification, unsubscribeFromNotification } = useNotificationStore();
 
   useEffect(() => {
-    console.log("App useffect");
     subscribeToNotification();
     
     return () => unsubscribeFromNotification();
@@ -33,9 +29,6 @@ const NotificationsPage = () => {
 
   return (
     <div className="w-[84%] flex">
-      {searchSelectedUser ? (
-        <SearchSelectedUser />
-      ) : (
         <div className={`w-[70%]`}>
           {notificationsLoading ? (
             <div className="flex justify-center items-center w-full px-4 py-8 h-screen">
@@ -54,13 +47,11 @@ const NotificationsPage = () => {
               ))}
             </div>
           ) : (
-            <div className="flex justify-center w-full py-4">
+            <div className="flex justify-center w-full py-4 h-full items-center">
               <p>No notifications yet.</p>
             </div>
           )}
         </div>
-      )}
-
       <Suggestions />
     </div>
   );

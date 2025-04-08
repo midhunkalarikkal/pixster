@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
-import { useAuthStore } from "./useAuthStore";
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-export const useSearchStore = create((set) => ({
+export const useSearchStore = create(persist((set) => ({
+  selectedUserId: null,
   searchSelectedUser: null,
   searchSelectedUserLoading: false,
 
@@ -13,25 +14,7 @@ export const useSearchStore = create((set) => ({
   searchLoading: false,
   searchedUsers: null,
 
-  getSearchSelectedUser: async (userId, navigate) => {
-    const authUser = useAuthStore.getState().authUser;
-    if(authUser._id === userId){
-      return navigate("/profile");
-    }
-    set({ searchSelectedUserLoading: true });
-    try {
-      const res = await axiosInstance.get(
-        `/user/fetchSearchedUserProfile/${userId}`
-      );
-      set({ searchSelectedUser: res.data });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ searchSelectedUserLoading: false });
-    }
-  },
-
-  getSearchUser: async (searchQuery) => {
+  getSearchUsers: async (searchQuery) => {
     set({ searchLoading: true });
     try {
       const res = await axiosInstance.get(`/user/searchUser`, {
@@ -42,6 +25,23 @@ export const useSearchStore = create((set) => ({
       toast.error(error.response.data.message);
     } finally {
       set({ searchLoading: false });
+    }
+  },
+
+  getSearchSelectedUser: async (userId, navigate) => {
+    set({ selectedUserId: userId });
+    set({ searchSelectedUserLoading: true });
+    try {
+      console.log("calling api")
+      const res = await axiosInstance.get(
+        `/user/fetchSearchedUserProfile/${userId}`
+      );
+      set({ searchSelectedUser: res.data });
+      if(navigate) navigate("/profile");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ searchSelectedUserLoading: false });
     }
   },
 
@@ -134,6 +134,11 @@ export const useSearchStore = create((set) => ({
     }
   },
 
+}),
 
-
-}));
+{
+  name: 'search-store',
+  partialize: (state) => ({ selectedUserId: state.selectedUserId }),
+  storage: createJSONStorage(() => localStorage),
+}
+));

@@ -9,16 +9,16 @@ const SearchSidebar = () => {
   const navigate = useNavigate();
   const skeletonContacts = Array(8).fill(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { getSearchUser, searchLoading, searchedUsers, getSearchSelectedUser, searchSelectedUser } = useSearchStore();
+  const { getSearchUsers, searchLoading, searchedUsers, getSearchSelectedUser, searchSelectedUser } = useSearchStore();
 
   useEffect(() => {
     if (searchQuery === "") return;
     const timer = setTimeout(() => {
-      getSearchUser(searchQuery);
+      getSearchUsers(searchQuery);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, getSearchUser]);
+  }, [searchQuery, getSearchUsers]);
 
   return (
     <aside

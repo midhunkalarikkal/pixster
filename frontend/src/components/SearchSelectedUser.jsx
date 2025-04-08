@@ -25,11 +25,11 @@ const SearchSelectedUser = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [revConnectionData, setRevConnectionData] = useState(null);
 
-  console.log("searchSelectedUser : ", searchSelectedUser);
-  console.log("connectionData : ", connectionData);
-  console.log("userData : ", userData);
-  console.log("authUser : ", authUser);
-  console.log("revConnection : ", revConnectionData);
+  // console.log("searchSelectedUser : ", searchSelectedUser);
+  // console.log("connectionData : ", connectionData);
+  // console.log("userData : ", userData);
+  // console.log("authUser : ", authUser);
+  // console.log("revConnection : ", revConnectionData);
 
   useEffect(() => {
     if (!searchSelectedUser) return;
@@ -64,7 +64,9 @@ const SearchSelectedUser = () => {
       {!searchSelectedUser ? (
         <NotUserSelected />
       ) : (
-        <div className="w-full mx-auto p-4 py-4">
+        <>
+        <NotUserSelected />
+        <div className="w-full mx-auto p-4 py-4 hidden">
           <div className="rounded-xl p-6 space-y-8 border border-base-300 bg-base-100">
             {revConnectionData && revConnectionData.status === "requested" && (
               <div className="p-2 border border-base-300 shadow-lg rounded-lg">
@@ -208,6 +210,7 @@ const SearchSelectedUser = () => {
             )}
           </div>
         </div>
+      </>
       )}
     </div>
   );

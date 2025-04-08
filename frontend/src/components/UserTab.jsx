@@ -1,39 +1,62 @@
 import PropTypes from "prop-types";
 
-const UserTab = ({ sendConnection }) => {
+const UserTab = ({ user, buttonText, onButtonClick, onClickUser }) => {
+  const { userName, fullName, profilePic, _id } = user;
+
   return (
-    <button className={` w-full p-2 flex gap-3 items-center hover:bg-base-300 transition-colors `} >
-      <div className="relative">
+    <div
+      key={_id}
+      onClick={() => onClickUser(_id)}
+      className={`w-full md:w-6/12 p-2 flex gap-3 items-center
+                  hover:bg-base-300 transition-colors border-b border-base-300`}
+    >
+      <div className="relative w-2/12">
         <img
-          src={"/user_avatar.jpg"}
-          alt={"Profile"}
+          src={profilePic || "/user_avatar.jpg"}
+          alt={userName}
           className="size-10 object-cover rounded-full"
         />
       </div>
+
       <div className="w-10/12 flex justify-between">
-        <div className="flex flex-col items-start">
-          <p className="font-medium truncate">FullName</p>
-          <p className="font-normal truncate text-stone-500">UserName</p>
+        <div>
+          <div className="flex justify-between">
+            <p className="font-medium truncate">{fullName}</p>
+          </div>
+          <div className="text-sm flex">
+            <p className="font-normal truncate text-stone-500">{userName}</p>
+          </div>
         </div>
-        <div className="flex flex-col justify-center">
-          <button
-            className="text-blue-400"
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              sendConnection();
-            }}
-          >
-            Follow
-          </button>
+        <div className="flex items-center">
+          {buttonText && onButtonClick && (
+            <div className="flex items-center">
+              <button
+                className="px-2 py-1 border border-blue-500 text-white rounded-lg hover:bg-blue-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onButtonClick(user, e);
+                }}
+              >
+                {buttonText}
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 
 UserTab.propTypes = {
-  sendConnection: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    userName: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
+    profilePic: PropTypes.string, // Optional
+  }).isRequired,
+  buttonText: PropTypes.string, // Optional
+  onButtonClick: PropTypes.func, // Optional
+  onClickUser: PropTypes.func
 };
 
 export default UserTab;
