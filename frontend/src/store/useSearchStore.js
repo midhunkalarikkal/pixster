@@ -3,13 +3,14 @@ import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-export const useSearchStore = create(persist((set) => ({
+export const useSearchStore = create(persist((set, get) => ({
   selectedUserId: null,
   searchSelectedUser: null,
   searchSelectedUserLoading: false,
 
   connectionStatusLoading: false,
   acceptRejectLoading: false,
+  revConnectionData: null,
 
   searchLoading: false,
   searchedUsers: null,
@@ -33,10 +34,9 @@ export const useSearchStore = create(persist((set) => ({
     set({ searchSelectedUserLoading: true });
     try {
       console.log("calling api")
-      const res = await axiosInstance.get(
-        `/user/fetchSearchedUserProfile/${userId}`
-      );
+      const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       set({ searchSelectedUser: res.data });
+      set({ revConnectionData: res.data.revConnectionData });
       if(navigate) navigate("/profile");
     } catch (error) {
       toast.error(error.response.data.message);
@@ -45,16 +45,14 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  getFriendProfile: async (userId) => {
-    set({ searchSelectedUserLoading: true });
-    try {
-      const res = await axiosInstance.get(`/user/friendProfile/${userId}`);
-      set({ searchSelectedUser: res.data });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ searchSelectedUserLoading: false });
-    }
+  getRevConnectionData: () => {
+    console.log("getting revConnectionData");
+    return get().revConnectionData;
+  },
+
+  setRevConnectionData: (newRevConnectionData) => {
+    console.log("setting rev connection data : ",newRevConnectionData);
+    set({ revConnectionData : newRevConnectionData });
   },
 
   setSearchSelectedUser: () => {
@@ -70,7 +68,6 @@ export const useSearchStore = create(persist((set) => ({
       );
       toast.success(res.data.message);
       set({ searchSelectedUser: res.data });
-      return res.data.userData;
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {

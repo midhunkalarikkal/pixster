@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useProfileStore } from "./useProfileStore";
 import { useNotificationStore } from "./useNotificationStores";
+import { useSearchStore } from "./useSearchStore";
 
 const BASE_URL = "http://localhost:5001";
 
@@ -98,8 +99,11 @@ export const useAuthStore = create((set, get) => ({
 
     socket.on("followRequest", (followRequestData) => {
         const { notifications, setNotifications } = useNotificationStore.getState();
+        const { setRevConnectionData } = useSearchStore.getState();
+        console.log("revConnectionData : ",followRequestData.revConnection);
         const newNotifications = [...notifications, followRequestData.notification ]
         setNotifications(newNotifications);
+        setRevConnectionData(followRequestData.revConnection)
         toast.info(followRequestData.message);
     });
 

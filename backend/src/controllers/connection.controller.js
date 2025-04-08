@@ -89,16 +89,15 @@ export const requestConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    console.log("new notification : ",newNotification);
     await newNotification.populate({
       path: "fromUserId",
       select: "userName fullName profilePic"
     });
 
-
     const followRequestData = { 
       message : "You have a new follow request.",
-      notification: newNotification
+      notification: newNotification,
+      revConnection: connectionData,
     };
     
     const receiverSocketId = getReceiverSocketId(toUserId);
@@ -111,6 +110,7 @@ export const requestConnection = async (req, res) => {
       userData,
       connectionData,
     });
+
   } catch (error) {
     console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });

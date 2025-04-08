@@ -4,8 +4,8 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
-import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
+import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 
 const ProfilePage = () => {
 
@@ -29,6 +29,9 @@ const ProfilePage = () => {
     getSearchSelectedUser,
     searchSelectedUser,
     searchSelectedUserLoading,
+    
+    revConnectionData,
+
     connectionStatusLoading,
     sendConnectionRequest,
     cancelConnectionRequest,
@@ -41,7 +44,7 @@ const ProfilePage = () => {
     setUserData(searchSelectedUser.userData);
     setConnectionData(searchSelectedUser.connectionData);
     setRevConnectionData(searchSelectedUser.revConnection);
-  }, [searchSelectedUser, authUser._id]);
+  }, [searchSelectedUser]);
 
   useEffect(() => {
     if (!userData || !searchSelectedUser) {
@@ -60,6 +63,8 @@ const ProfilePage = () => {
   console.log("authUser : ", authUser);
   console.log("userData : ", userData);
   console.log("connetionData : ", connectionData);
+  console.log("searchSelectedUser : ",searchSelectedUser);
+  console.log("revConnectionData : ",revConnectionData);
 
   return (
     <div className="min-h-screen w-full px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">

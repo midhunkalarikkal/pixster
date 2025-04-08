@@ -9,7 +9,7 @@ const SearchSidebar = () => {
   const navigate = useNavigate();
   const skeletonContacts = Array(8).fill(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { getSearchUsers, searchLoading, searchedUsers, getSearchSelectedUser, searchSelectedUser } = useSearchStore();
+  const { getSearchUsers, searchLoading, searchedUsers, getSearchSelectedUser } = useSearchStore();
 
   useEffect(() => {
     if (searchQuery === "") return;
@@ -22,9 +22,7 @@ const SearchSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-[30%] flex flex-col transition-all duration-200 px-2 ${
-        searchSelectedUser ? "hidden lg:block" : "block"
-      }`}
+      className={`h-full w-[30%] flex flex-col transition-all duration-200 px-2`}
     >
       <AuthUserTab />
 
