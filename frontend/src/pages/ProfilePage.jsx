@@ -105,7 +105,7 @@ const ProfilePage = () => {
 
   console.log("authUser : ", authUser);
   console.log("userData : ", userData);
-  console.log("connetionData : ",connectionData);
+  console.log("connetionData : ", connectionData);
 
   return (
     <div className="min-h-screen w-full px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
@@ -230,94 +230,101 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {connectionData ? connectionData === "accepted" : authUser?._id === userData?._id && (
-            <div className="border-t-[1px] border-base-300 flex justify-center">
-              <div className="flex justify-around w-8/12 mt-4">
-                <button
-                  className={`flex flex-col items-center w-full ${
-                    tab !== 0 && "text-zinc-400"
-                  }`}
-                  onClick={() => setTab(0)}
-                >
-                  <span className="text-sm">POSTS</span>
-                </button>
-                <button
-                  className={`flex flex-col items-center w-full ${
-                    tab !== 1 && "text-zinc-400"
-                  }`}
-                  onClick={() => setTab(1)}
-                >
-                  <span className="text-sm">FOLLOWERS</span>
-                </button>
-                <button
-                  className={`flex flex-col items-center w-full ${
-                    tab !== 2 && "text-zinc-400"
-                  }`}
-                  onClick={() => {
-                    setTab(2);
-                    getFollowingsProfiles();
-                  }}
-                >
-                  <span className="text-sm">FOLLOWINGS</span>
-                </button>
+          {connectionData
+            ? connectionData === "accepted"
+            : authUser?._id === userData?._id && (
+                <div className="border-t-[1px] border-base-300 flex justify-center">
+                  <div className="flex justify-around w-8/12 mt-4">
+                    <button
+                      className={`flex flex-col items-center w-full ${
+                        tab !== 0 && "text-zinc-400"
+                      }`}
+                      onClick={() => setTab(0)}
+                    >
+                      <span className="text-sm">POSTS</span>
+                    </button>
+                    <button
+                      className={`flex flex-col items-center w-full ${
+                        tab !== 1 && "text-zinc-400"
+                      }`}
+                      onClick={() => setTab(1)}
+                    >
+                      <span className="text-sm">FOLLOWERS</span>
+                    </button>
+                    <button
+                      className={`flex flex-col items-center w-full ${
+                        tab !== 2 && "text-zinc-400"
+                      }`}
+                      onClick={() => {
+                        setTab(2);
+                        getFollowingsProfiles();
+                      }}
+                    >
+                      <span className="text-sm">FOLLOWINGS</span>
+                    </button>
 
-                {authUser?._id === userData?._id && (
-                  <>
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 3 && "text-zinc-400"
-                      }`}
-                      onClick={() => {
-                        setTab(3);
-                        getRequestedProfiles();
-                      }}
-                    >
-                      <span className="text-sm">REQUESTED</span>
-                    </button>
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 4 && "text-zinc-400"
-                      }`}
-                      onClick={() => {
-                        setTab(4);
-                      }}
-                    >
-                      <span className="text-sm">SAVED</span>
-                    </button>
-                  </>
+                    {authUser?._id === userData?._id && (
+                      <>
+                        <button
+                          className={`flex flex-col items-center w-full ${
+                            tab !== 3 && "text-zinc-400"
+                          }`}
+                          onClick={() => {
+                            setTab(3);
+                            getRequestedProfiles();
+                          }}
+                        >
+                          <span className="text-sm">REQUESTED</span>
+                        </button>
+                        <button
+                          className={`flex flex-col items-center w-full ${
+                            tab !== 4 && "text-zinc-400"
+                          }`}
+                          onClick={() => {
+                            setTab(4);
+                          }}
+                        >
+                          <span className="text-sm">SAVED</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+          {connectionData
+            ? connectionData === "accepted"
+            : authUser?._id === userData?._id && (
+              <div className="flex flex-col justify-center items-center w-full py-4">
+                {tab === 0 ? (
+                  <PostsSkeleton />
+                ) : tab === 1 ? (
+                  <UserBarSkeleton />
+                ) : tab === 2 ? (
+                  <UserBarSkeleton />
+                ) : tab === 3 ? authUser?._id === userData?._id && (
+                  requestedProfilesLoading ? (
+                    <UserBarSkeleton />
+                  ) : reqdProfiles && reqdProfiles.length > 0 ? (
+                    reqdProfiles.map((user) => (
+                      <UserTab
+                        key={user._id}
+                        user={user}
+                        buttonText="Cancel Requested"
+                        onButtonClick={handleCancelRequest}
+                        onClickUser={handleUserTabClick}
+                      />
+                    ))
+                  ) : (
+                    <p>{"You haven't sent any connection requests yet."}</p>
+                  )
+                ) : tab === 4 && authUser?._id === userData?._id && (
+                   <PostsSkeleton />
                 )}
-
               </div>
-            </div>
-          )}
+            )
+          }
 
-          <div className="flex flex-col justify-center items-center w-full py-4">
-            {tab === 0 ? (
-              <PostsSkeleton />
-            ) : tab === 1 ? (
-              <UserBarSkeleton />
-            ) : tab === 2 ? (
-              <UserBarSkeleton />
-            ) : tab === 3 ? (
-              requestedProfilesLoading ? (
-                <UserBarSkeleton />
-              ) : reqdProfiles && reqdProfiles.length > 0 ? (
-                reqdProfiles.map((user) => (
-                  <UserTab
-                    key={user._id}
-                    user={user}
-                    buttonText="Cancel Requested"
-                    onButtonClick={handleCancelRequest}
-                    onClickUser={handleUserTabClick}
-                  />
-                ))
-              ) : (
-                <p>{"You haven't sent any connection requests yet."}</p>
-              )
-            ) : (
-              tab === 4 && <PostsSkeleton />
-            )}
-          </div>
         </div>
       </div>
     </div>
