@@ -7,6 +7,7 @@ export const useSearchStore = create((set) => ({
   searchSelectedUserLoading: false,
 
   connectionStatusLoading: false,
+  acceptRejectLoading: false,
 
   searchLoading: false,
   searchedUsers: null,
@@ -73,7 +74,7 @@ export const useSearchStore = create((set) => ({
   },
 
   acceptConnectionRequest: async (toUserId, status) => {
-    set({ connectionStatusLoading: true });
+    set({ acceptRejectLoading: true });
     try {
         const res = await axiosInstance.post(`/connection/acceptConnectionRequest/${toUserId}?status=${status}`);
         toast.success(res.data.message);
@@ -82,12 +83,12 @@ export const useSearchStore = create((set) => ({
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ connectionStatusLoading: false });
+      set({ acceptRejectLoading: false });
     }
   },
 
   rejectConnectionRequest: async (toUserId, status) => {
-    set({ connectionStatusLoading: true });
+    set({ acceptRejectLoading: true });
     try {
         const res = await axiosInstance.post(`/connection/rejectConnectionRequest/${toUserId}?status=${status}`);
         toast.success(res.data.message);
@@ -96,7 +97,7 @@ export const useSearchStore = create((set) => ({
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ connectionStatusLoading: false });
+      set({ acceptRejectLoading: false });
     }
   },
 

@@ -177,18 +177,18 @@ export const acceptConnection = async (req, res) => {
       { new: true }
     ).select(" -password -createdAt -email -updatedAt");
 
-    const connectionData = await Connection.findOne(
-      { fromUserId: toUserId, toUserId: fromUserId },
-      { _id: 0, status: 1 }
-    );
+    // const connectionData = await Connection.findOne(
+    //   { fromUserId: toUserId, toUserId: fromUserId },
+    //   { _id: 0, status: 1 }
+    // );
 
     console.log("userData : ", userData);
-    console.log("connectionData : ", connectionData);
+    // console.log("connectionData : ", connectionData);
 
     return res.status(200).json({
-      message: `You have accepted ${userData.fullName}'s request`,
+      message: `You have accepted ${userData.fullName}'s follow request`,
       userData,
-      connectionData,
+      // connectionData,
     });
   } catch (error) {
     console.log("error : ", error);
@@ -241,15 +241,15 @@ export const rejectConnection = async (req, res) => {
       "-password -createdAt -email"
     );
 
-    const connectionData = await Connection.findOne(
-      { fromUserId, toUserId },
-      { _id: 0, status: 1 }
-    );
+    // const connectionData = await Connection.findOne(
+    //   { fromUserId, toUserId },
+    //   { _id: 0, status: 1 }
+    // );
 
     return res.status(200).json({
       message: `You have rejected ${userData.fullName}'s follow request`,
       userData,
-      connectionData,
+      // connectionData,
     });
   } catch (error) {
     console.log("error : ", error);

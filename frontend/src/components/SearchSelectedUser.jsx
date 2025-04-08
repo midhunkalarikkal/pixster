@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
 import { FileText, UserPlus, Users } from "lucide-react";
 import NotUserSelected from "./skeletons/NotUserSelected";
+import { useAuthStore } from "../store/useAuthStore";
 
 const SearchSelectedUser = () => {
   const {
     searchSelectedUser,
     searchSelectedUserLoading,
+    acceptRejectLoading,
     connectionStatusLoading,
     sendConnectionRequest,
     acceptConnectionRequest,
@@ -16,14 +18,18 @@ const SearchSelectedUser = () => {
     unFollowConnectionRequest,
   } = useSearchStore();
 
+  const { authUser } = useAuthStore();
+
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [revConnectionData, setRevConnectionData] = useState(null);
 
-  console.log("searchSelectedUser : ",searchSelectedUser);
-  console.log("connectionData : ",connectionData);
-  console.log("revConnection : ",revConnectionData);
+  console.log("searchSelectedUser : ", searchSelectedUser);
+  console.log("connectionData : ", connectionData);
+  console.log("userData : ", userData);
+  console.log("authUser : ", authUser);
+  console.log("revConnection : ", revConnectionData);
 
   useEffect(() => {
     if (!searchSelectedUser) return;
@@ -31,26 +37,26 @@ const SearchSelectedUser = () => {
     setConnectionData(searchSelectedUser.connectionData);
     setUserPosts(searchSelectedUser.userPosts);
     setRevConnectionData(searchSelectedUser.revConnection);
-  }, [searchSelectedUser]);
+  }, [searchSelectedUser, authUser._id]);
 
   const handleRequestAccept = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
     acceptConnectionRequest(id, "accepted");
-  }
+  };
 
   const handleRequestRejct = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
     rejectConnectionRequest(id, "rejected");
-  }
+  };
 
-  if(searchSelectedUserLoading) {
+  if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
         <span className="loading loading-bars loading-lg"></span>
       </div>
-    )
+    );
   }
 
   return (
@@ -60,15 +66,31 @@ const SearchSelectedUser = () => {
       ) : (
         <div className="w-full mx-auto p-4 py-4">
           <div className="rounded-xl p-6 space-y-8 border border-base-300 bg-base-100">
-              {revConnectionData && revConnectionData.status === "requested" && (
-                <div className="p-2 border border-base-300 shadow-lg rounded-lg">
-                    <p className="text-center">{`Do you want to accept ${userData?.userName}'s request ?`}</p>
-                    <div className="py-4 flex justify-center space-x-2">
-                      <button className="px-4 py-1 border border-blue-500 rounded-lg" onClick={(e) => handleRequestAccept(userData._id, e) }>Accept</button>
-                      <button className="px-4 py-1 border border-red-500 rounded-lg" onClick={(e) => handleRequestRejct(userData._id, e) }>Reject</button>
-                    </div>
+            {revConnectionData && revConnectionData.status === "requested" && (
+              <div className="p-2 border border-base-300 shadow-lg rounded-lg">
+                <p className="text-center">{`Do you want to accept ${userData?.userName}'s request ?`}</p>
+                <div className="py-4 flex justify-center space-x-2">
+                  {acceptRejectLoading ? (
+                    <span className="loading loading-bars loading-sm"></span>
+                  ) : (
+                    <>
+                      <button
+                        className="px-4 py-1 border border-blue-500 rounded-lg"
+                        onClick={(e) => handleRequestAccept(userData?._id, e)}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        className="px-4 py-1 border border-red-500 rounded-lg"
+                        onClick={(e) => handleRequestRejct(userData?._id, e)}
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
             <div className="flex items-center">
               <div className="relative w-4/12 flex justify-center">
                 <img
@@ -80,31 +102,41 @@ const SearchSelectedUser = () => {
 
               <div className="flex flex-col w-8/12 justify-center">
                 <div className="flex flex-col my-4">
-                  <h2 className="text-lg font-semibold">{userData?.userName}</h2>
+                  <h2 className="text-lg font-semibold">
+                    {userData?.userName}
+                  </h2>
                 </div>
 
                 <div className="flex space-x-12">
                   <div className="flex flex-col items-center">
                     <FileText className="w-6 h-6 text-zinc-400" />
-                    <p className="text-lg font-semibold">{userData?.postsCount}</p>
+                    <p className="text-lg font-semibold">
+                      {userData?.postsCount}
+                    </p>
                     <p className="text-sm text-zinc-400">Posts</p>
                   </div>
 
                   <div className="flex flex-col items-center">
                     <Users className="w-6 h-6 text-zinc-400" />
-                    <p className="text-lg font-semibold">{userData?.followersCount}</p>
+                    <p className="text-lg font-semibold">
+                      {userData?.followersCount}
+                    </p>
                     <p className="text-sm text-zinc-400">Followers</p>
                   </div>
 
                   <div className="flex flex-col items-center">
                     <UserPlus className="w-6 h-6 text-zinc-400" />
-                    <p className="text-lg font-semibold">{userData?.followingCount}</p>
+                    <p className="text-lg font-semibold">
+                      {userData?.followingCount}
+                    </p>
                     <p className="text-sm text-zinc-400">Following</p>
                   </div>
                 </div>
 
                 <div className="flex flex-col mt-4">
-                  <h2 className="text-lg font-semibold">{userData?.fullName}</h2>
+                  <h2 className="text-lg font-semibold">
+                    {userData?.fullName}
+                  </h2>
                   <p className="text-zinc-400 text-sm mt-1 line-clamp-2 w-8/12">
                     {userData?.about}
                   </p>
@@ -126,8 +158,10 @@ const SearchSelectedUser = () => {
                 />
               ) : connectionData.status === "requested" ? (
                 <CustomButton
-                  text={connectionStatusLoading ? "Cancelling" : "Cancel Request"}
-                  onClick={() => 
+                  text={
+                    connectionStatusLoading ? "Cancelling" : "Cancel Request"
+                  }
+                  onClick={() =>
                     cancelConnectionRequest(userData?._id, "cancelled")
                   }
                 />
@@ -135,7 +169,7 @@ const SearchSelectedUser = () => {
                 connectionData.status === "accepted" && (
                   <CustomButton
                     text={connectionStatusLoading ? "Unfollowing" : "Following"}
-                    onClick={() => 
+                    onClick={() =>
                       unFollowConnectionRequest(userData?._id, "unfollowed")
                     }
                   />
