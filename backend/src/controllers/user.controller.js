@@ -75,7 +75,8 @@ export const fetchRequestedAccounts = async (req, res) => {
     }).distinct("toUserId");
 
     const users = await User.find({ _id: { $in: requestedToUserIds } });
-    res.json({ message: "Users fetched successfully", users });
+
+    return res.json({ message: "Users fetched successfully", users });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

@@ -9,6 +9,8 @@ export const useProfileStore = create((set) => ({
   followingProfiles: null,
   followingProfilesLoading: false,
 
+  setRequestedProfiles: (profiles) => set({ requestedProfiles: profiles }),
+
   getRequestedProfiles: async () => {
     set({ requestedProfilesLoading: true });
     try {

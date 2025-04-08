@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
 import { axiosInstance } from '../lib/axios';
+import { useProfileStore } from './useProfileStore';
 
 const BASE_URL = "http://localhost:5001";
 
@@ -92,7 +93,21 @@ export const useAuthStore = create((set, get) => ({
         
         socket.on("getOnlineUsers", (userIds) => {
             set({ onlineUsers: userIds })
-        })
+        });
+
+        socket.on("requestAccept", (acceptedUserId) => {
+            const { requestedProfiles } = useProfileStore.getState();
+            const { setRequestedProfiles } = useProfileStore.getState();
+
+            if (requestedProfiles) {
+                const updatedRequestedProfiles = requestedProfiles.filter(
+                    (profile) => profile._id !== acceptedUserId
+                );
+                setRequestedProfiles(updatedRequestedProfiles);
+            }
+        });
+
+
       },
       
       disconnectSocket: () => {

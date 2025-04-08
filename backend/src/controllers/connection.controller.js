@@ -176,18 +176,16 @@ export const acceptConnection = async (req, res) => {
       { new: true }
     ).select(" -password -createdAt -email -updatedAt");
 
-    // const connectionData = await Connection.findOne(
-    //   { fromUserId: toUserId, toUserId: fromUserId },
-    //   { _id: 0, status: 1 }
-    // );
-
-    // console.log("connectionData : ", connectionData);
+    const receiverSocketId = getReceiverSocketId(toUserId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("requestAccept", fromUserId);
+    }
 
     return res.status(200).json({
       message: `You have accepted ${userData.fullName}'s follow request`,
       userData,
-      // connectionData,
     });
+    
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });

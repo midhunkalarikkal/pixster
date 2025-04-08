@@ -8,6 +8,7 @@ import { useSearchStore } from "../../store/useSearchStore";
 import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
+    
   let [reqdProfiles, setReqProfiles] = useState([]);
 
   const { 
