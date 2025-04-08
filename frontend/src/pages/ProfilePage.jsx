@@ -6,8 +6,8 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
-import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
 import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
+import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
 
 const ProfilePage = () => {
   let [reqdProfiles, setReqProfiles] = useState([]);

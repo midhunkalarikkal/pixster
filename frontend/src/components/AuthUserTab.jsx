@@ -1,20 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import { useSearchStore } from "../store/useSearchStore";
 
 const AuthUserTab = () => {
     
-  const { authUser } = useAuthStore();
   const navigate = useNavigate();
-
-  const handleGotoProfile = () => {
-    navigate('/profile');
-  }
+  const { authUser } = useAuthStore();
+  const { getSearchSelectedUser } = useSearchStore();
 
   return (
     <div className="w-full py-5">
       <div className="flex items-center">
         <button
-          onClick={handleGotoProfile}
+          onClick={() => getSearchSelectedUser(authUser?._id, navigate)}
           className={`
               w-full p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors
