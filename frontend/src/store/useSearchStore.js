@@ -3,14 +3,13 @@ import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-export const useSearchStore = create(persist((set, get) => ({
+export const useSearchStore = create(persist((set) => ({
   selectedUserId: null,
   searchSelectedUser: null,
   searchSelectedUserLoading: false,
 
   connectionStatusLoading: false,
   acceptRejectLoading: false,
-  revConnectionData: null,
 
   searchLoading: false,
   searchedUsers: null,
@@ -43,16 +42,6 @@ export const useSearchStore = create(persist((set, get) => ({
     } finally {
       set({ searchSelectedUserLoading: false });
     }
-  },
-
-  getRevConnectionData: () => {
-    console.log("getting revConnectionData");
-    return get().revConnectionData;
-  },
-
-  setRevConnectionData: (newRevConnectionData) => {
-    console.log("setting rev connection data : ",newRevConnectionData);
-    set({ revConnectionData : newRevConnectionData });
   },
 
   setSearchSelectedUser: () => {

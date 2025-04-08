@@ -29,9 +29,6 @@ const ProfilePage = () => {
     getSearchSelectedUser,
     searchSelectedUser,
     searchSelectedUserLoading,
-    
-    revConnectionData,
-
     connectionStatusLoading,
     sendConnectionRequest,
     cancelConnectionRequest,

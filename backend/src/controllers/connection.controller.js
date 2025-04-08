@@ -97,7 +97,6 @@ export const requestConnection = async (req, res) => {
     const followRequestData = { 
       message : "You have a new follow request.",
       notification: newNotification,
-      revConnection: connectionData,
     };
     
     const receiverSocketId = getReceiverSocketId(toUserId);
