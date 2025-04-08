@@ -2,8 +2,11 @@ import Dock from "../Dock";
 import { useEffect, useState } from "react";
 import AuthUserTab from "../AuthUserTab";
 import { useSearchStore } from "../../store/useSearchStore";
+import { useNavigate } from "react-router-dom";
 
 const SearchSidebar = () => {
+
+  const navigate = useNavigate();
   const skeletonContacts = Array(8).fill(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { getSearchUser, searchLoading, searchedUsers, getSearchSelectedUser, searchSelectedUser } = useSearchStore();
@@ -55,7 +58,7 @@ const SearchSidebar = () => {
           searchedUsers.map((user) => (
             <button
                key={user._id}
-               onClick={() => getSearchSelectedUser(user._id)}
+               onClick={() => getSearchSelectedUser(user._id, navigate)}
                className={` w-full p-2 flex gap-3 items-center
                hover:bg-base-300 transition-colors border-b border-base-300`}
              >

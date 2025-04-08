@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const useSearchStore = create((set) => ({
   searchSelectedUser: null,
@@ -12,7 +13,11 @@ export const useSearchStore = create((set) => ({
   searchLoading: false,
   searchedUsers: null,
 
-  getSearchSelectedUser: async (userId) => {
+  getSearchSelectedUser: async (userId, navigate) => {
+    const authUser = useAuthStore.getState().authUser;
+    if(authUser._id === userId){
+      return navigate("/profile");
+    }
     set({ searchSelectedUserLoading: true });
     try {
       const res = await axiosInstance.get(

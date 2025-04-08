@@ -5,6 +5,8 @@ import Notification from "../models/notification.model.js";
 
 export const searchUser = async (req, res) => {
   try {
+    console.log("req.user : ",req.user);
+    const currentUser = req.user?._id;
     const { searchQuery } = req.query;
     const query = searchQuery?.trim().toLowerCase();
 
@@ -13,12 +15,12 @@ export const searchUser = async (req, res) => {
     }
 
     const users = await User.find(
-      {
-        $or: [
-          { fullName: { $regex: query, $options: "i" } },
-          { userName: { $regex: query, $options: "i" } },
-        ]
-      },
+        {
+          $or: [
+            { fullName: { $regex: query, $options: "i" } },
+            { userName: { $regex: query, $options: "i" } },
+          ]
+        },
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
     );
     res.json({ message: "Users fetched successfully", users });
