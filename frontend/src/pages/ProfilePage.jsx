@@ -1,16 +1,13 @@
-import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import UserTab from "../components/UserTab.jsx";
 import { Image, UserPlus, Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
-import PostsSkeleton from "../components/skeletons/PostsSkeleton.jsx";
-import UserBarSkeleton from "../components/skeletons/UserBarSkeleton.jsx";
+import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
+import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 
 const ProfilePage = () => {
-  let [reqdProfiles, setReqProfiles] = useState([]);
 
   const [tab, setTab] = useState(0);
 
@@ -22,9 +19,6 @@ const ProfilePage = () => {
 
   const {
     getRequestedProfiles,
-    requestedProfilesLoading,
-    requestedProfiles,
-
     getFollowingsProfiles,
     // followingProfilesLoading,
     // followingProfiles
@@ -35,18 +29,12 @@ const ProfilePage = () => {
     getSearchSelectedUser,
     searchSelectedUser,
     searchSelectedUserLoading,
-    acceptRejectLoading,
     connectionStatusLoading,
     sendConnectionRequest,
-    acceptConnectionRequest,
-    rejectConnectionRequest,
     cancelConnectionRequest,
     unFollowConnectionRequest,
   } = useSearchStore();
 
-  useEffect(() => {
-    setReqProfiles(requestedProfiles);
-  }, [requestedProfiles]);
 
   useEffect(() => {
     if (!searchSelectedUser) return;
@@ -60,40 +48,6 @@ const ProfilePage = () => {
       getSearchSelectedUser(selectedUserId);
     }
   }, []);
-
-  const handleCancelRequest = (user, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    cancelConnectionRequest(user._id, "cancelled")
-      .then((data) => {
-        if (data) {
-          const updatedProfiles = requestedProfiles.filter(
-            (user) => user._id !== data._id
-          );
-          setReqProfiles(updatedProfiles);
-        }
-      })
-      .catch(() => {
-        toast.error("Request cancellation failed.");
-      });
-  };
-
-  const handleRequestAccept = (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    acceptConnectionRequest(id, "accepted");
-  };
-
-  const handleRequestRejct = (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    rejectConnectionRequest(id, "rejected");
-  };
-
-  const handleUserTabClick = (userId) => {
-    getSearchSelectedUser(userId);
-    setTab(0);
-  };
 
   if (searchSelectedUserLoading) {
     return (
@@ -109,35 +63,14 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
-      <div className="max-w-5xl mx-auto p-2 md:p-4">
+      <div className="max-w-4xl mx-auto p-2 md:p-4">
         {/* Profile top follow request accept or reject bar */}
-        <div className="w-full flex justify-center">
-          {revConnectionData && revConnectionData.status === "requested" && (
-            <div className="p-2 border border-base-300 shadow-lg rounded-lg md:w-6/12">
-              <p className="text-center">{`Do you want to accept ${userData?.userName}'s request ?`}</p>
-              <div className="py-4 flex justify-center space-x-2">
-                {acceptRejectLoading ? (
-                  <span className="loading loading-bars loading-sm"></span>
-                ) : (
-                  <>
-                    <button
-                      className="px-4 py-1 border border-blue-500 rounded-lg hover:bg-blue-500"
-                      onClick={(e) => handleRequestAccept(userData?._id, e)}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="px-4 py-1 border border-red-500 rounded-lg hover:bg-red-500"
-                      onClick={(e) => handleRequestRejct(userData?._id, e)}
-                    >
-                      Reject
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        {revConnectionData && revConnectionData.status === "requested" && (
+          <ProfileAcceptReject
+            userId={userData?._id}
+            userName={userData?.userName}
+          />
+        )}
 
         {/* Content */}
         <div className="space-y-8">
@@ -230,100 +163,102 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {connectionData
-            ? connectionData === "accepted"
-            : authUser?._id === userData?._id && (
-                <div className="border-t-[1px] border-base-300 flex justify-center">
-                  <div className="flex justify-around w-8/12 mt-4">
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 0 && "text-zinc-400"
-                      }`}
-                      onClick={() => setTab(0)}
-                    >
-                      <span className="text-sm">POSTS</span>
-                    </button>
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 1 && "text-zinc-400"
-                      }`}
-                      onClick={() => setTab(1)}
-                    >
-                      <span className="text-sm">FOLLOWERS</span>
-                    </button>
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 2 && "text-zinc-400"
-                      }`}
-                      onClick={() => {
-                        setTab(2);
-                        getFollowingsProfiles();
-                      }}
-                    >
-                      <span className="text-sm">FOLLOWINGS</span>
-                    </button>
-
-                    {authUser?._id === userData?._id && (
-                      <>
-                        <button
-                          className={`flex flex-col items-center w-full ${
-                            tab !== 3 && "text-zinc-400"
-                          }`}
-                          onClick={() => {
-                            setTab(3);
-                            getRequestedProfiles();
-                          }}
-                        >
-                          <span className="text-sm">REQUESTED</span>
-                        </button>
-                        <button
-                          className={`flex flex-col items-center w-full ${
-                            tab !== 4 && "text-zinc-400"
-                          }`}
-                          onClick={() => {
-                            setTab(4);
-                          }}
-                        >
-                          <span className="text-sm">SAVED</span>
-                        </button>
-                      </>
-                    )}
-                  </div>
+          {authUser?._id !== userData?._id ? (
+            connectionData && connectionData.status === "accepted" ? (
+              <div className="border-t-[1px] border-base-300 flex justify-center">
+                <div className="flex justify-around w-8/12 mt-4">
+                  <button
+                    className={`flex flex-col items-center w-full ${
+                      tab !== 0 && "text-zinc-400"
+                    }`}
+                    onClick={() => setTab(0)}
+                  >
+                    <span className="text-sm">POSTS</span>
+                  </button>
+                  <button
+                    className={`flex flex-col items-center w-full ${
+                      tab !== 1 && "text-zinc-400"
+                    }`}
+                    onClick={() => setTab(1)}
+                  >
+                    <span className="text-sm">FOLLOWERS</span>
+                  </button>
+                  <button
+                    className={`flex flex-col items-center w-full ${
+                      tab !== 2 && "text-zinc-400"
+                    }`}
+                    onClick={() => {
+                      setTab(2);
+                      getFollowingsProfiles();
+                    }}
+                  >
+                    <span className="text-sm">FOLLOWINGS</span>
+                  </button>
                 </div>
-              )}
-
-          {connectionData
-            ? connectionData === "accepted"
-            : authUser?._id === userData?._id && (
-              <div className="flex flex-col justify-center items-center w-full py-4">
-                {tab === 0 ? (
-                  <PostsSkeleton />
-                ) : tab === 1 ? (
-                  <UserBarSkeleton />
-                ) : tab === 2 ? (
-                  <UserBarSkeleton />
-                ) : tab === 3 ? authUser?._id === userData?._id && (
-                  requestedProfilesLoading ? (
-                    <UserBarSkeleton />
-                  ) : reqdProfiles && reqdProfiles.length > 0 ? (
-                    reqdProfiles.map((user) => (
-                      <UserTab
-                        key={user._id}
-                        user={user}
-                        buttonText="Cancel Requested"
-                        onButtonClick={handleCancelRequest}
-                        onClickUser={handleUserTabClick}
-                      />
-                    ))
-                  ) : (
-                    <p>{"You haven't sent any connection requests yet."}</p>
-                  )
-                ) : tab === 4 && authUser?._id === userData?._id && (
-                   <PostsSkeleton />
-                )}
               </div>
-            )
-          }
+            ) : null
+          ) : (
+            <div className="border-t-[1px] border-base-300 flex justify-center">
+              <div className="flex justify-around w-8/12 mt-4">
+                <button
+                  className={`flex flex-col items-center w-full ${
+                    tab !== 0 && "text-zinc-400"
+                  }`}
+                  onClick={() => setTab(0)}
+                >
+                  <span className="text-sm">POSTS</span>
+                </button>
+                <button
+                  className={`flex flex-col items-center w-full ${
+                    tab !== 1 && "text-zinc-400"
+                  }`}
+                  onClick={() => setTab(1)}
+                >
+                  <span className="text-sm">FOLLOWERS</span>
+                </button>
+                <button
+                  className={`flex flex-col items-center w-full ${
+                    tab !== 2 && "text-zinc-400"
+                  }`}
+                  onClick={() => {
+                    setTab(2);
+                    getFollowingsProfiles();
+                  }}
+                >
+                  <span className="text-sm">FOLLOWINGS</span>
+                </button>
+                <button
+                  className={`flex flex-col items-center w-full ${
+                    tab !== 3 && "text-zinc-400"
+                  }`}
+                  onClick={() => {
+                    setTab(3);
+                    getRequestedProfiles();
+                  }}
+                >
+                  <span className="text-sm">REQUESTED</span>
+                </button>
+                <button
+                  className={`flex flex-col items-center w-full ${
+                    tab !== 4 && "text-zinc-400"
+                  }`}
+                  onClick={() => {
+                    setTab(4);
+                  }}
+                >
+                  <span className="text-sm">SAVED</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <ProfileSecondData 
+            authUserId={authUser?._id}
+            userDataId={userData?._id}
+            tab={tab}
+            setTab={setTab}
+            status={connectionData && connectionData.status}
+          />
 
         </div>
       </div>

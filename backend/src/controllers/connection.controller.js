@@ -36,7 +36,6 @@ export const requestConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ", connection);
     let newNotification;
     if (connection) {
       console.log("if");
@@ -52,23 +51,24 @@ export const requestConnection = async (req, res) => {
         connection.status = status;
         await connection.save();
 
-        const newNotification = new Notification({
+        newNotification = new Notification({
           message: "Wants to follow you.",
           toUserId: toUserId,
           fromUserId: fromUserId,
           notificationType: "followRequest",
         });
+
         newNotification = await newNotification.save();
       }
     } else {
-      console.log("else");
+
       connection = new Connection({
         fromUserId,
         toUserId,
         status,
       });
+
       const newConnection = await connection.save();
-      console.log("new Connection : ", newConnection);
 
       const notification = new Notification({
         message: "Wants to follow you.",
@@ -76,6 +76,7 @@ export const requestConnection = async (req, res) => {
         fromUserId: fromUserId,
         notificationType: "followRequest",
       });
+
       newNotification = await notification.save();
     }
 
@@ -88,14 +89,12 @@ export const requestConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    console.log("Send connection request end");
-
+    console.log("new notification : ",newNotification);
     await newNotification.populate({
       path: "fromUserId",
       select: "userName fullName profilePic"
     });
 
-    console.log("new notification : ",newNotification);
 
     const socketNotification = { 
       message : "You have a new follow request.",
@@ -113,6 +112,7 @@ export const requestConnection = async (req, res) => {
       connectionData,
     });
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -149,7 +149,6 @@ export const acceptConnection = async (req, res) => {
       toUserId: fromUserId,
     });
 
-    console.log("connection : ", connection);
 
     if (connection.status === "accepted") {
       return res.status(400).json({ message: "Connection already exist." });
@@ -182,7 +181,6 @@ export const acceptConnection = async (req, res) => {
     //   { _id: 0, status: 1 }
     // );
 
-    console.log("userData : ", userData);
     // console.log("connectionData : ", connectionData);
 
     return res.status(200).json({
@@ -261,7 +259,7 @@ export const cancelConnection = async (req, res) => {
   try {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
-    const { status } = req.query;
+    const  { status }  = req.query;
     console.log("fromUserId : ", fromUserId);
     console.log("toUserId : ", toUserId);
     console.log("status : ", status);
@@ -289,10 +287,11 @@ export const cancelConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ", connection);
 
     if (connection.status === "cancelled") {
       return res.status(400).json({ message: "Connection already cancelled." });
+    } else if ( connection.status === "accepted") {
+      return res.status(400).json({ message: "Your request has been accpted, you can unfollow from thier account." });
     }
 
     connection.status = status;
@@ -312,6 +311,8 @@ export const cancelConnection = async (req, res) => {
       userData,
       connectionData,
     });
+
+    
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -377,11 +378,7 @@ export const unfollowConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    return res.status(200).json({
-      message: `You have unfollowed ${userData.fullName}`,
-      userData,
-      connectionData,
-    });
+      return res.status(200).json({ message: `You have unfollowed ${userData.fullName}`, userData, connectionData });
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
