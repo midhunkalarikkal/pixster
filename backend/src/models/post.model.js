@@ -17,12 +17,11 @@ const postModel = new mongoose.Schema({
     },
     likes : {
         type : Number,
-        default : null,
+        default : 0,
     },
-    comments : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Comment",
-        default : null,
+    commentsCount: {
+        type : Number,
+        default : 0,
     }
 }, {
     timestamps: true

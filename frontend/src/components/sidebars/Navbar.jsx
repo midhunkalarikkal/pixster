@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useSearchStore } from "../../store/useSearchStore";
-import { BellIcon, Home, LogOut, MessageCircle, Search, Settings, User } from "lucide-react";
+import { BellIcon, Home, LogOut, MessageCircle, PlusSquare, Search, Settings, User } from "lucide-react";
 
 const Navbar = () => {
 
@@ -40,6 +40,11 @@ const Navbar = () => {
             <Link to={"/chat"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
               <MessageCircle className="w-4 h-4" />
               <span className="hidden sm:inline">Chat</span>
+            </Link>
+            
+            <Link to={"/createPost"} className={`btn btn-sm gap-2 transition-colors hidden md:flex`}>
+              <PlusSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Create</span>
             </Link>
 
             <Link

@@ -73,3 +73,20 @@ export const validatePassword = (password) => {
     return null;
 };
 
+export const validateCaption = (caption) => {
+    if (caption === "") {
+        return null;
+      }
+    
+    
+      if (caption.length < 1) {
+        return "Caption must have atleat 1 characters";
+      }
+    
+      if (caption.length > 200) {
+        return "Caption cannot be longer than 200 characters";
+      }
+    
+      return null;
+}
+

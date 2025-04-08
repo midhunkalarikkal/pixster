@@ -12,6 +12,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import NotificationsPage from "./pages/NotificationsPage";
 import { Navigate, Route, Routes } from "react-router-dom";
+import CreatePost from "./pages/CreatePost";
 
 const Hello = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -42,6 +43,7 @@ const Hello = () => {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path='notifications' element={<NotificationsPage />} />
+          <Route path="createPost" element={<CreatePost />} />
         </Route>
         <Route
           path="/signup"
