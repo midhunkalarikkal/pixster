@@ -7,7 +7,6 @@ import { useNotificationStore } from "../store/useNotificationStores";
 const NotificationsPage = () => {
   
   const { getSearchSelectedUser } = useSearchStore();
-  const { subscribeToNotification, unsubscribeFromNotification } = useNotificationStore();
   const { notifications, notificationsLoading, getNotifications } = useNotificationStore();
 
   const handleViewUser = (id, e) => {
@@ -20,12 +19,6 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
-
-  useEffect(() => {
-    subscribeToNotification();
-    
-    return () => unsubscribeFromNotification();
-  }, [subscribeToNotification, unsubscribeFromNotification]);
 
   return (
     <div className="w-[84%] flex">

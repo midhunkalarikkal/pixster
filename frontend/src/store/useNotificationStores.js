@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
-import { useAuthStore } from "./useAuthStore";
 
-export const useNotificationStore = create((set, get) => ({
+export const useNotificationStore = create((set) => ({
   notifications: [],
   notificationsLoading: false,
+
+  setNotifications: (updatedNotifications) => set({ notifications: updatedNotifications }),
 
   getNotifications: async () => {
     set({ notificationsLoading: true });
@@ -16,23 +17,6 @@ export const useNotificationStore = create((set, get) => ({
       toast.error(error.response.data.message);
     } finally {
       set({ notificationsLoading: false });
-    }
-  },
-
-  subscribeToNotification: () => {
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
-    socket.on("newFollowRequest", (socketNotification) => {
-      toast.info(socketNotification.message);
-      const { notifications } = get();
-      set({ notifications: [...notifications, socketNotification.notification] });
-    });
-  },
-
-  unsubscribeFromNotification: () => {
-    const socket = useAuthStore.getState().socket;
-    if(socket){
-      socket.off("newFollowRequest");
     }
   },
 

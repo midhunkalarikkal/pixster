@@ -96,14 +96,14 @@ export const requestConnection = async (req, res) => {
     });
 
 
-    const socketNotification = { 
+    const followRequestData = { 
       message : "You have a new follow request.",
       notification: newNotification
     };
     
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newFollowRequest", socketNotification);
+      io.to(receiverSocketId).emit("followRequest", followRequestData);
     }
 
     return res.status(200).json({
@@ -178,7 +178,7 @@ export const acceptConnection = async (req, res) => {
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("requestAccept", fromUserId);
+      io.to(receiverSocketId).emit("requestAccepted", fromUserId);
     }
 
     return res.status(200).json({
