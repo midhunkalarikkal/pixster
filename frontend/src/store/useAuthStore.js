@@ -98,19 +98,27 @@ export const useAuthStore = create((set, get) => ({
     });
 
     socket.on("followRequest", (followRequestData) => {
-        const { notifications, setNotifications } = useNotificationStore.getState();
-        console.log("revConnectionData : ",followRequestData.revConnection);
-        const newNotifications = [...notifications, followRequestData.notification ]
-        setNotifications(newNotifications);
-        toast.info(followRequestData.message);
+      const { notifications, setNotifications } =
+        useNotificationStore.getState();
+      console.log("revConnectionData : ", followRequestData.revConnection);
+      const newNotifications = [
+        ...notifications,
+        followRequestData.notification,
+      ];
+      setNotifications(newNotifications);
+      toast.info(followRequestData.message);
     });
 
     socket.on("requestAccepted", (data) => {
       const { requestedProfiles } = useProfileStore.getState();
       const { setRequestedProfiles } = useProfileStore.getState();
-      const { searchSelectedUser, setSearchSelectedUserAcceptConnectionData } = useSearchStore.getState();
+      const { searchSelectedUser, setSearchSelectedUserAcceptConnectionData } =
+        useSearchStore.getState();
 
-      setSearchSelectedUserAcceptConnectionData(data.connectionData, data.revConnectionData);
+      setSearchSelectedUserAcceptConnectionData(
+        data.connectionData,
+        data.revConnectionData
+      );
 
       searchSelectedUser.connectionData = data.connectionData;
       if (requestedProfiles) {
@@ -122,10 +130,16 @@ export const useAuthStore = create((set, get) => ({
     });
 
     socket.on("unfollowConnection", () => {
-      const { setSearchSelectedUserUnfollowConnectionData } = useSearchStore.getState();
+      const { setSearchSelectedUserUnfollowConnectionData } =
+        useSearchStore.getState();
       setSearchSelectedUserUnfollowConnectionData();
-  });
+    });
 
+    socket.on("requestReject", (data) => {
+      const { setSearchSelectedUserRejectConnectionData } =
+        useSearchStore.getState();
+        setSearchSelectedUserRejectConnectionData(data.connectionData, data.revConnectionData);
+    });
 
   },
 

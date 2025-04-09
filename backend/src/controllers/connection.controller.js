@@ -242,6 +242,17 @@ export const rejectConnection = async (req, res) => {
 
     const userPosts = await Post.find({ userId : toUserId });
 
+    const requestRejectData = {
+      fromUserId,
+      connectionData,
+      revConnectionData,
+    }
+
+    const receiverSocketId = getReceiverSocketId(toUserId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("requestReject", requestRejectData);
+    }
+
     return res.status(200).json({
       message: `You have rejected ${toUserData.fullName}'s follow request`,
       userData: toUserData,
