@@ -1,6 +1,10 @@
+import multer from 'multer';
 import express from 'express';
 import { protectRoute } from '../middleware/auth.middleware.js';
 import { fetchFollowingAccounts, fetchNotifications, fetchRequestedAccounts, fetchSearchedUserProfile, fetchSuggestions, searchUsers, uploadPost } from '../controllers/user.controller.js';
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 

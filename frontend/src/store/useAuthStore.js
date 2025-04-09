@@ -2,13 +2,14 @@ import { create } from "zustand";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
+import { useSearchStore } from "./useSearchStore";
 import { useProfileStore } from "./useProfileStore";
 import { useNotificationStore } from "./useNotificationStores";
-import { useSearchStore } from "./useSearchStore";
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 const BASE_URL = "http://localhost:5001";
 
-export const useAuthStore = create((set, get) => ({
+export const useAuthStore = create(persist((set, get) => ({
   authUser: null,
   isSigningUp: false,
   isLoggingIng: false,
@@ -19,8 +20,9 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get("/auth/check");
-      set({ authUser: res.data });
+      await axiosInstance.get("/auth/check");
+      // const res = await axiosInstance.get("/auth/check");
+      // set({ authUser: res.data });
       get().connectSocket();
     } catch {
       set({ authUser: null });
@@ -146,4 +148,16 @@ export const useAuthStore = create((set, get) => ({
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },
-}));
+}),
+
+{
+  name: 'auth-store',
+  partialize: (state) => (
+    { 
+      authUser: state.authUser,
+     }
+  ),
+  storage: createJSONStorage(() => localStorage),
+}
+
+));

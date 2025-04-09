@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
-import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
 import {
   validateEmail,
@@ -8,6 +7,11 @@ import {
   validatePassword,
   validateUsername,
 } from "../utils/validator.js";
+
+import { Upload } from "@aws-sdk/lib-storage";
+import dotenv from 'dotenv';
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+dotenv.config();
 
 export const signup = async (req, res) => {
   try {
@@ -66,10 +70,8 @@ export const signup = async (req, res) => {
       email: newUser.email,
       profilePic: newUser.profilePic,
       about: newUser.about,
-      followersCount: newUser.followersCount,
-      followingsCount: newUser.followingsCount,
-      postsCount: newUser.postsCount,
     });
+
   } catch (error) {
     console.error("Signup error:", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -97,6 +99,11 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if(user.profilePic){
+      const signedUrl = await generateSignedUrl(user.profilePic);
+      user.profilePic = signedUrl;
+    }
+
     generateToken(user._id, res);
     res.status(200).json({
       _id: user._id,
@@ -105,9 +112,6 @@ export const login = async (req, res) => {
       email: user.email,
       profilePic: user.profilePic,
       about: user.about,
-      followersCount: user.followersCount,
-      followingsCount: user.followingsCount,
-      postsCount: user.postsCount,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
@@ -126,27 +130,41 @@ export const logout = (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     console.log("updating profile image");
-    console.log("req.body : ",req.body);
-    
-    const { profilePic } = req.body;
+    console.log("req.file : ", req.file);
+
+    const file = req.file;
     const userId = req.user._id;
 
-    if (!profilePic) {
+    if (!file) {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-      folder: "usersProfileImage",
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: `providerProfileImages/${userId}.${file.originalname
+        .split(".")
+        .pop()}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+
+    const upload = new Upload({
+      client: s3Client,
+      params: params,
     });
 
-    console.log("uploadResponse : ", uploadResponse);
-    const updatedUser = await User.findByIdAndUpdate(
+    const s3UploadResponse = await upload.done();
+
+    let updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePic: uploadResponse.secure_url },
+      { profilePic: s3UploadResponse.Location },
       { new: true }
     );
 
-    res.status(200).json(updatedUser);
+    const signedUrl = await generateSignedUrl(updatedUser.profilePic);
+    updatedUser.profilePic = signedUrl;
+
+    return res.status(200).json(updatedUser);
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -155,7 +173,7 @@ export const updateProfile = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
   try {
-    res.status(200).json(req.user);
+    return res.status(200).json(req.user);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

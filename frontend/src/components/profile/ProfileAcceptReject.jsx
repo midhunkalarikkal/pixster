@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useSearchStore } from "../../store/useSearchStore";
+import { memo } from "react";
 
 const ProfileAcceptReject = ({userId, userName}) => {
 
@@ -54,4 +55,5 @@ ProfileAcceptReject.propTypes = {
     userName: PropTypes.string.isRequired,
 }
 
-export default ProfileAcceptReject
+ProfileAcceptReject.displayName = "ProfileAcceptReject";
+export default memo(ProfileAcceptReject);

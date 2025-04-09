@@ -4,21 +4,34 @@ import { Camera, Mail, Text, User } from "lucide-react";
 
 const ProfileSettings = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
+
+  console.log("profile page authUser : ",authUser);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // const handleImageUpload = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   const reader = new FileReader();
+
+  //   reader.readAsDataURL(file);
+
+  //   reader.onload = async () => {
+  //     const base64Image = reader.result;
+  //     setSelectedImage(base64Image);
+  //     await updateProfile({ profilePic: base64Image });
+  //   };
+  // };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImage(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
+  
+    const formData = new FormData();
+    formData.append("profilePic", file);
+  
+    setSelectedImage(URL.createObjectURL(file));
+    await updateProfile(formData);
   };
 
   return (
