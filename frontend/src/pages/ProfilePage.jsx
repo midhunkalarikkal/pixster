@@ -8,7 +8,6 @@ import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 
 const ProfilePage = () => {
-
   const [tab, setTab] = useState(0);
 
   const [userData, setUserData] = useState(null);
@@ -17,37 +16,34 @@ const ProfilePage = () => {
 
   const { authUser } = useAuthStore();
 
-  const {
-    getRequestedProfiles,
-    getFollowingsProfiles,
-    // followingProfilesLoading,
-    // followingProfiles
-  } = useProfileStore();
+  const { getRequestedProfiles, getFollowingsProfiles } = useProfileStore();
 
   const {
     selectedUserId,
-    getSearchSelectedUser,
     searchSelectedUser,
+
+    getSearchSelectedUser,
     searchSelectedUserLoading,
+
     connectionStatusLoading,
     sendConnectionRequest,
     cancelConnectionRequest,
     unFollowConnectionRequest,
   } = useSearchStore();
 
-
   useEffect(() => {
-    if (!searchSelectedUser) return;
-    setUserData(searchSelectedUser.userData);
-    setConnectionData(searchSelectedUser.connectionData);
-    setRevConnectionData(searchSelectedUser.revConnection);
+    if (searchSelectedUser) {
+      setUserData(searchSelectedUser.userData);
+      setConnectionData(searchSelectedUser.connectionData);
+      setRevConnectionData(searchSelectedUser.revConnectionData);
+    }
   }, [searchSelectedUser]);
 
   useEffect(() => {
-    if (!userData || !searchSelectedUser) {
+    if (!searchSelectedUser && selectedUserId) {
       getSearchSelectedUser(selectedUserId);
     }
-  }, []);
+  }, [searchSelectedUser, selectedUserId, getSearchSelectedUser]);
 
   if (searchSelectedUserLoading) {
     return (
@@ -57,11 +53,11 @@ const ProfilePage = () => {
     );
   }
 
-  console.log("authUser : ", authUser);
-  console.log("userData : ", userData);
-  console.log("connetionData : ", connectionData);
-  console.log("searchSelectedUser : ",searchSelectedUser);
-  console.log("revConnectionData : ",revConnectionData);
+  // console.log("authUser : ", authUser);
+  // console.log("userData : ", userData);
+  // console.log("searchSelectedUser : ",searchSelectedUser);
+  console.log("connetionData : ", searchSelectedUser?.connectionData);
+  console.log("revConnectionData : ",searchSelectedUser?.revConnectionData);
 
   return (
     <div className="min-h-screen w-full px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100">
@@ -177,25 +173,6 @@ const ProfilePage = () => {
                   >
                     <span className="text-sm">POSTS</span>
                   </button>
-                  <button
-                    className={`flex flex-col items-center w-full ${
-                      tab !== 1 && "text-zinc-400"
-                    }`}
-                    onClick={() => setTab(1)}
-                  >
-                    <span className="text-sm">FOLLOWERS</span>
-                  </button>
-                  <button
-                    className={`flex flex-col items-center w-full ${
-                      tab !== 2 && "text-zinc-400"
-                    }`}
-                    onClick={() => {
-                      setTab(2);
-                      getFollowingsProfiles();
-                    }}
-                  >
-                    <span className="text-sm">FOLLOWINGS</span>
-                  </button>
                 </div>
               </div>
             ) : null
@@ -254,14 +231,15 @@ const ProfilePage = () => {
             </div>
           )}
 
-          <ProfileSecondData 
-            authUserId={authUser?._id}
-            userDataId={userData?._id}
-            tab={tab}
-            setTab={setTab}
-            status={connectionData && connectionData.status}
-          />
-
+          {userData && (
+            <ProfileSecondData
+              authUserId={authUser?._id}
+              userDataId={userData?._id}
+              tab={tab}
+              setTab={setTab}
+              status={connectionData && connectionData.status}
+            />
+          )}
         </div>
       </div>
     </div>

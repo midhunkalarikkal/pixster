@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
+import Post from "../models/post.model.js";
 
 export const requestConnection = async (req, res) => {
   try {
@@ -26,30 +27,26 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const existingToUser = await User.findById(toUserId);
-    if (!existingToUser) {
+    const toUserData = await User.findById(toUserId).select("-password -createdAt -email -updatedAt");
+    if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connection = await Connection.findOne({
-      fromUserId,
-      toUserId,
-    });
-
+    let connectionData = await Connection.findOne({ fromUserId, toUserId }, { status: 1});
     let newNotification;
-    if (connection) {
-      console.log("if");
-      if (connection.status === status) {
+
+    if (connectionData) {
+      if (connectionData.status === status) {
         return res
           .status(400)
           .json({ message: `Connection already ${status}.` });
       } else if (
-        connection.status === "cancelled" ||
-        connection.status === "rejected" ||
-        connection.status === "unfollowed"
+        connectionData.status === "cancelled" ||
+        connectionData.status === "rejected" ||
+        connectionData.status === "unfollowed"
       ) {
-        connection.status = status;
-        await connection.save();
+        connectionData.status = status;
+        connectionData = await connectionData.save();
 
         newNotification = new Notification({
           message: "Wants to follow you.",
@@ -61,14 +58,12 @@ export const requestConnection = async (req, res) => {
         newNotification = await newNotification.save();
       }
     } else {
-
-      connection = new Connection({
+      connectionData = new Connection({
         fromUserId,
         toUserId,
         status,
       });
-
-      const newConnection = await connection.save();
+      connectionData = await connectionData.save();
 
       const notification = new Notification({
         message: "Wants to follow you.",
@@ -80,38 +75,35 @@ export const requestConnection = async (req, res) => {
       newNotification = await notification.save();
     }
 
-    const userData = await User.findById(toUserId).select(
-      "-password -createdAt -email"
-    );
-
-    const connectionData = await Connection.findOne(
-      { fromUserId, toUserId },
+    const revConnectionData = await Connection.findOne(
+      { fromUserId: toUserId, toUserId: fromUserId },
       { _id: 0, status: 1 }
     );
 
     await newNotification.populate({
       path: "fromUserId",
-      select: "userName fullName profilePic"
+      select: "userName fullName profilePic",
     });
 
-    const followRequestData = { 
-      message : "You have a new follow request.",
+    const followRequestData = {
+      message: "You have a new follow request.",
       notification: newNotification,
     };
-    
+
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("followRequest", followRequestData);
     }
 
     return res.status(200).json({
-      message: `Follow request sent to ${userData.fullName}.`,
-      userData,
+      message: `Follow request sent to ${toUserData.fullName}.`,
+      userData: toUserData,
       connectionData,
+      revConnectionData,
     });
 
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -143,18 +135,17 @@ export const acceptConnection = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connection = await Connection.findOne({
+    let revConnectionData = await Connection.findOne({
       fromUserId: toUserId,
       toUserId: fromUserId,
-    });
+    },{status: 1});
 
-
-    if (connection.status === "accepted") {
+    if (revConnectionData && revConnectionData.status === "accepted") {
       return res.status(400).json({ message: "Connection already exist." });
     }
 
-    connection.status = status;
-    await connection.save();
+    revConnectionData.status = status;
+    revConnectionData = await revConnectionData.save();
 
     const newNotification = new Notification({
       message: "accepted your request",
@@ -164,27 +155,39 @@ export const acceptConnection = async (req, res) => {
     });
     await newNotification.save();
 
-    const updateFromUser = await User.findByIdAndUpdate(
-      fromUserId,
-      { $inc: { followersCount: 1 } },
-      { new: true }
+    await User.findByIdAndUpdate( fromUserId, { $inc: { followingCount: 1 } }, { new: true } );
+
+    const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: 1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
+
+    const connectionData = await Connection.findOne(
+      { fromUserId, toUserId },
+      { _id: 0, status: 1 }
     );
-    const userData = await User.findByIdAndUpdate(
-      toUserId,
-      { $inc: { followingCount: 1 } },
-      { new: true }
-    ).select(" -password -createdAt -email -updatedAt");
+
+    const userPosts = await Post.find({ userId : toUserId });
+
+    const requestAcceptedData = {
+      fromUserId,
+      connectionData: revConnectionData,
+      revConnectionData: connectionData,
+    }
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("requestAccepted", fromUserId);
+      io.to(receiverSocketId).emit("requestAccepted", requestAcceptedData);
     }
+
+    console.log("connectionData : ",connectionData);
+    console.log("revConnectionData : ",revConnectionData);
 
     return res.status(200).json({
       message: `You have accepted ${userData.fullName}'s follow request`,
       userData,
+      connectionData,
+      revConnectionData,
+      userPosts,
     });
-    
+
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -213,39 +216,40 @@ export const rejectConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const existingToUser = await User.findById(toUserId);
-    if (!existingToUser) {
+    const toUserData = await User.findById(toUserId).select("-password -createdAt -email -updatedAt");
+    if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connection = await Connection.findOne({
+    let connectionData = await Connection.findOne({
       fromUserId: toUserId,
       toUserId: fromUserId,
     });
 
-    console.log("connection : ", connection);
+    console.log("connection : ", connectionData);
 
-    if (connection.status === "rejected") {
+    if (connectionData.status === "rejected") {
       return res.status(400).json({ message: "Connection already rejected." });
     }
 
-    connection.status = status;
-    await connection.save();
+    connectionData.status = status;
+    connectionData = await connectionData.save();
 
-    const userData = await User.findById(toUserId).select(
-      "-password -createdAt -email"
+    const revConnectionData = await Connection.findOne(
+      { fromUserId, toUserId },
+      { _id: 0, status: 1 }
     );
 
-    // const connectionData = await Connection.findOne(
-    //   { fromUserId, toUserId },
-    //   { _id: 0, status: 1 }
-    // );
+    const userPosts = await Post.find({ userId : toUserId });
 
     return res.status(200).json({
-      message: `You have rejected ${userData.fullName}'s follow request`,
-      userData,
-      // connectionData,
+      message: `You have rejected ${toUserData.fullName}'s follow request`,
+      userData: toUserData,
+      connectionData,
+      revConnectionData,
+      userPosts,
     });
+
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -256,7 +260,7 @@ export const cancelConnection = async (req, res) => {
   try {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
-    const  { status }  = req.query;
+    const { status } = req.query;
     console.log("fromUserId : ", fromUserId);
     console.log("toUserId : ", toUserId);
     console.log("status : ", status);
@@ -274,42 +278,42 @@ export const cancelConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const existingToUser = await User.findById(toUserId);
-    if (!existingToUser) {
+    const toUserData = await User.findById(toUserId).select("-password -createdAt -email -updatedAt");
+    if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connection = await Connection.findOne({
+    let connectionData = await Connection.findOne({
       fromUserId,
       toUserId,
     });
 
-
-    if (connection.status === "cancelled") {
+    if (connectionData.status === "cancelled") {
       return res.status(400).json({ message: "Connection already cancelled." });
-    } else if ( connection.status === "accepted") {
-      return res.status(400).json({ message: "Your request has been accpted, you can unfollow from thier account." });
+    } else if (connectionData.status === "accepted") {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Your request has been accpted, you can unfollow from thier account.",
+        });
     }
 
-    connection.status = status;
-    await connection.save();
+    connectionData.status = status;
+    connectionData = await connectionData.save();
 
-    const userData = await User.findById(toUserId).select(
-      "-password -createdAt -email"
-    );
-
-    const connectionData = await Connection.findOne(
-      { fromUserId, toUserId },
+    const revConnectionData = await Connection.findOne(
+      { fromUserId: toUserId, toUserId: fromUserId },
       { _id: 0, status: 1 }
     );
 
     return res.status(200).json({
-      message: `You  have cancelled your follow request to ${userData.fullName}`,
-      userData,
+      message: `You  have cancelled your follow request to ${toUserData.fullName}`,
+      userData: toUserData,
       connectionData,
+      revConnectionData,
     });
 
-    
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -343,39 +347,40 @@ export const unfollowConnection = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connection = await Connection.findOne({
+    let connectionData = await Connection.findOne({
       fromUserId,
       toUserId,
     });
 
-    console.log("connection : ", connection);
+    console.log("connection : ", connectionData);
 
-    if (connection.status === "unfollowed") {
+    if (connectionData.status === "unfollowed") {
       return res
         .status(400)
         .json({ message: "Connection already unfollowing." });
     }
 
-    connection.status = status;
-    await connection.save();
+    connectionData.status = status;
+    connectionData = await connectionData.save();
 
-    const updateFromUser = await User.findByIdAndUpdate(
-      fromUserId,
-      { $inc: { followersCount: -1 } },
-      { new: true }
-    );
-    const userData = await User.findByIdAndUpdate(
-      toUserId,
-      { $inc: { followingCount: -1 } },
-      { new: true }
-    ).select(" -password -createdAt -email -updatedAt");
+    await User.findByIdAndUpdate( fromUserId, { $inc: { followingCount: -1 } } );
 
-    const connectionData = await Connection.findOne(
-      { fromUserId, toUserId },
+    const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: -1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
+
+    const revConnectionData = await Connection.findOne(
+      { fromUserId: toUserId, toUserId: fromUserId },
       { _id: 0, status: 1 }
     );
 
-      return res.status(200).json({ message: `You have unfollowed ${userData.fullName}`, userData, connectionData });
+    return res
+      .status(200)
+      .json({
+        message: `You have unfollowed ${userData.fullName}`,
+        userData,
+        connectionData,
+        revConnectionData,
+      });
+
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });

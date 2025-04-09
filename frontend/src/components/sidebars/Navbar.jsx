@@ -7,7 +7,7 @@ const Navbar = () => {
 
   const navigate = useNavigate();
   const { logout, authUser } = useAuthStore();
-  const { setSearchSelectedUser, getSearchSelectedUser } = useSearchStore();
+  const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
   
   return (
     <aside className="bg-base-100 border-r border-base-300 w-[16%] z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
@@ -57,7 +57,7 @@ const Navbar = () => {
 
             <Link
               to={"/notifications"}
-              onClick={() => setSearchSelectedUser()}
+              onClick={() => setSearchSelectedUserNull()}
               className={`btn btn-sm gap-2 transition-colors hidden md:flex`}
             >
               <BellIcon className="w-4 h-4" />

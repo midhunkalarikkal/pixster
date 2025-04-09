@@ -45,20 +45,24 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    const revConnection = await Connection.findOne(
+    const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
     );
 
-    const userPosts = await Post.find({ userId: userId });
+    let userPosts = [];
+    if(connectionData && connectionData.status === "accepted"){ 
+      userPosts = await Post.find({ userId: userId });
+    };
 
     return res.status(200).json({
       message: "User profile fetched successfully",
       userData,
       connectionData,
+      revConnectionData,
       userPosts,
-      revConnection,
     });
+
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

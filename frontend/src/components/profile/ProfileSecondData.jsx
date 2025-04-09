@@ -1,4 +1,5 @@
 import UserTab from "../UserTab";
+import PostGrid from "./PostGrid";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -6,17 +7,21 @@ import PostsSkeleton from "../skeletons/PostsSkeleton";
 import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 import { useSearchStore } from "../../store/useSearchStore";
 import { useProfileStore } from "../../store/useProfileStore";
-import PostGrid from "./PostGrid";
 
 const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
   let [reqdProfiles, setReqProfiles] = useState([]);
   const [userPosts, setUserPosts] = useState([]);
 
-  const { getSearchSelectedUser, cancelConnectionRequest, searchSelectedUser } = useSearchStore();
+  const { 
+    searchSelectedUser, 
+    getSearchSelectedUser, 
+    cancelConnectionRequest, 
+  } = useSearchStore();
 
-  const { requestedProfilesLoading, requestedProfiles } = useProfileStore();
-
-  console.log("searchSelectedUser : ",searchSelectedUser);
+  const { 
+    requestedProfiles, 
+    requestedProfilesLoading, 
+  } = useProfileStore();
 
   useEffect(() => {
     setReqProfiles(requestedProfiles);
@@ -62,8 +67,6 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
               <PostsSkeleton />
             )
           )}
-            {tab === 1 && <UserBarSkeleton />}
-            {tab === 2 && <UserBarSkeleton />}
           </>
         ) : null
       ) : (

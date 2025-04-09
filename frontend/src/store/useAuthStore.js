@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useProfileStore } from "./useProfileStore";
 import { useNotificationStore } from "./useNotificationStores";
+import { useSearchStore } from "./useSearchStore";
 
 const BASE_URL = "http://localhost:5001";
 
@@ -104,13 +105,18 @@ export const useAuthStore = create((set, get) => ({
         toast.info(followRequestData.message);
     });
 
-    socket.on("requestAccepted", (acceptedUserId) => {
+    socket.on("requestAccepted", (data) => {
       const { requestedProfiles } = useProfileStore.getState();
       const { setRequestedProfiles } = useProfileStore.getState();
+      const { searchSelectedUser, setSearchSelectedUserConnectionData } = useSearchStore.getState();
 
+      console.log("socket data : ",data);
+      setSearchSelectedUserConnectionData(data.connectionData, data.revConnectionData);
+
+      searchSelectedUser.connectionData = data.connectionData;
       if (requestedProfiles) {
         const updatedRequestedProfiles = requestedProfiles.filter(
-          (profile) => profile._id !== acceptedUserId
+          (profile) => profile._id !== data.fromUserId
         );
         setRequestedProfiles(updatedRequestedProfiles);
       }

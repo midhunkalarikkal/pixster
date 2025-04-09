@@ -35,7 +35,6 @@ export const useSearchStore = create(persist((set) => ({
       console.log("calling api")
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       set({ searchSelectedUser: res.data });
-      set({ revConnectionData: res.data.revConnectionData });
       if(navigate) navigate("/profile");
     } catch (error) {
       toast.error(error.response.data.message);
@@ -44,8 +43,18 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  setSearchSelectedUser: () => {
+  setSearchSelectedUserNull: () => {
     set({ searchSelectedUser: null });
+  },
+
+  setSearchSelectedUserConnectionData: (newConnectionData, newRevConnectionData) => {
+    set((state) => ({
+      searchSelectedUser: {
+        ...state.searchSelectedUser,
+        connectionData: newConnectionData,
+        revConnectionData: newRevConnectionData,
+      },
+    }));
   },
 
   // **** Connection Requests **** //
@@ -124,7 +133,11 @@ export const useSearchStore = create(persist((set) => ({
 
 {
   name: 'search-store',
-  partialize: (state) => ({ selectedUserId: state.selectedUserId }),
+  partialize: (state) => (
+    { 
+      selectedUserId: state.selectedUserId,
+     }
+  ),
   storage: createJSONStorage(() => localStorage),
 }
 ));
