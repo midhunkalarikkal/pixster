@@ -32,7 +32,7 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connectionData = await Connection.findOne({ fromUserId, toUserId }, { status: 1});
+    let connectionData = await Connection.findOne({ fromUserId, toUserId }, { status: 1 });
     let newNotification;
 
     if (connectionData) {
@@ -322,6 +322,7 @@ export const cancelConnection = async (req, res) => {
 
 export const unfollowConnection = async (req, res) => {
   try {
+    console.log("Unfollow connection");
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
@@ -367,11 +368,9 @@ export const unfollowConnection = async (req, res) => {
 
     const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: -1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
 
-    const revConnectionData = await Connection.findOne(
-      { fromUserId: toUserId, toUserId: fromUserId },
-      { _id: 0, status: 1 }
-    );
+    const revConnectionData = await Connection.findOne( { fromUserId: toUserId, toUserId: fromUserId }, { _id: 0, status: 1 } );
 
+    console.log("userData : ",userData)
     return res
       .status(200)
       .json({

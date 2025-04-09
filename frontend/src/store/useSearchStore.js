@@ -49,11 +49,18 @@ export const useSearchStore = create(persist((set) => ({
 
   setSearchSelectedUserConnectionData: (newConnectionData, newRevConnectionData) => {
     set((state) => ({
-      searchSelectedUser: {
+      searchSelectedUser: state.searchSelectedUser ?
+       {
         ...state.searchSelectedUser,
         connectionData: newConnectionData,
         revConnectionData: newRevConnectionData,
-      },
+        userData: state.searchSelectedUser.userData ?
+        {
+          ...state.searchSelectedUser.userData,
+          followingCount: (state.searchSelectedUser.userData.followingCount ||  0) + 1,
+        }
+        : state.searchSelectedUser.userData
+      } : state.searchSelectedUser ,
     }));
   },
 
