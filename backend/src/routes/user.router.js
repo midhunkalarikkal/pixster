@@ -14,6 +14,6 @@ router.get('/fetchRequestedProfiles', protectRoute, fetchRequestedAccounts);
 router.get('/fetchFollowingProfiles', protectRoute, fetchFollowingAccounts);
 router.get('/fetchNotifications', protectRoute, fetchNotifications);
 router.get('/getSuggestions', protectRoute, fetchSuggestions);
-router.post('/uploadPost', protectRoute, uploadPost);
+router.post('/uploadPost', protectRoute, upload.single('postImage'), uploadPost);
 
 export default router;

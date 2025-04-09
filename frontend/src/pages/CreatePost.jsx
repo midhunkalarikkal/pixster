@@ -23,14 +23,13 @@ const CreatePost = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    if(file.size > 1048576) {
+      toast.info("File size must be less than 1mb.");
+      return;
+    }
 
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setImagePreview(base64Image);
-      setImage(base64Image);
-    };
+    setImagePreview(URL.createObjectURL(file));
+    setImage(file);
   };
 
   const handleSubmit = async (event) => {
@@ -48,14 +47,14 @@ const CreatePost = () => {
     }
 
     setUploading(true);
-    try {
-      console.log("Uploading image:", image);
-      console.log("Caption:", caption);
 
-      const uploadResult = await uploadPost({
-        postImage: image,
-        postCaption: caption,
-      });
+    const formData = new FormData();
+    formData.append("postImage", image);
+    formData.append("caption", caption);
+
+    try {
+
+      const uploadResult = await uploadPost(formData);
 
       if (uploadResult.data.success) {
         setCaption("");

@@ -7,11 +7,11 @@ import {
   validatePassword,
   validateUsername,
 } from "../utils/validator.js";
-
 import { Upload } from "@aws-sdk/lib-storage";
-import dotenv from 'dotenv';
-import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+
+import dotenv from 'dotenv';
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -163,7 +163,7 @@ export const updateProfile = async (req, res) => {
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `providerProfileImages/${userId}.${file.originalname
+      Key: `talkzyUsersProfileImages/${userId}.${file.originalname
         .split(".")
         .pop()}`,
       Body: file.buffer,
@@ -224,8 +224,6 @@ export const removeProfile = async (req, res) => {
         throw new Error("Profile image updating error.");
       }
     }
-
-    
 
     let updatedUser = await User.findByIdAndUpdate(
       userId,

@@ -1,9 +1,12 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
-import cloudinary from "../lib/cloudinary.js";
+import { Upload } from "@aws-sdk/lib-storage";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
-import { generateSignedUrl } from "../utils/aws.config.js";
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const searchUsers = async (req, res) => {
   try {
@@ -45,6 +48,7 @@ export const searchUsers = async (req, res) => {
 
 export const fetchSearchedUserProfile = async (req, res) => {
   try {
+    console.log("get searched user")
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
@@ -62,20 +66,39 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    let userPosts = [];
     if(connectionData && connectionData.status === "accepted"){ 
       userPosts = await Post.find({ userId: userId });
     };
+
+    let userPosts = await Post.find({ userId: userId }).lean();
+
+    if(userData.profilePic){
+      userData.profilePic = await generateSignedUrl(userData.profilePic);
+    }
+
+    let updatedUserPosts = [];
+    if(userPosts && userPosts.length > 0) {
+      updatedUserPosts = await Promise.all(
+        userPosts.map( async (post) => {
+          const signedUrl = await generateSignedUrl(post.media);
+          return {
+            ...post,
+            media: signedUrl,
+          }
+        })
+      )
+    }
 
     return res.status(200).json({
       message: "User profile fetched successfully",
       userData,
       connectionData,
       revConnectionData,
-      userPosts,
+      userPosts : updatedUserPosts,
     });
 
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -173,35 +196,52 @@ export const fetchSuggestions = async (req, res) => {
 export const uploadPost = async (req, res) => {
   try {
     const currentUser = req.user?._id;
-    const { postImage, postCaption } = req.body;
+    console.log("req.body : ",req.body);
+    console.log("req.file : ",req.file);
+    
+    const { caption } = req.body;
+    const file = req.file;
 
     if (!currentUser) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    if (!postImage) {
+    if (!file) {
       return res.status(400).json({ message: "Image not found." });
     }
 
-    if (!postCaption) {
+    if (!caption) {
       return res.status(400).json({ message: "Caption not found." });
     }
 
-    if(postCaption.length < 1 || postCaption.length > 200) {
+    if(caption.length < 1 || caption.length > 200) {
       return res.status(400).json({ message: "Pos captionlength error." });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(postImage, {
-      folder: "usersPostMedias",
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: `talkzyUsersPostsImages/${currentUser}.${file.originalname
+        .split(".")
+        .pop()}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+
+    const upload = new Upload({
+      client: s3Client,
+      params: params,
     });
+
+    const s3UploadResponse = await upload.done();
 
     const newPost = new Post({
       userId: currentUser,
-      media: uploadResponse.secure_url,
-      content: postCaption,
+      media: s3UploadResponse.Location,
+      content: caption,
     });
-    const savedPost = await newPost.save();
-    const updatedUser = await User.findByIdAndUpdate(currentUser, { $inc : { postsCount : 1 }});
+
+    await newPost.save();
+    await User.findByIdAndUpdate(currentUser, { $inc : { postsCount : 1 }});
 
     return res.status(201).json({ success: true, message: "Post uploaded successfully" });
   } catch (error) {
