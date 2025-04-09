@@ -1,38 +1,31 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, Text, User } from "lucide-react";
+import { toast } from "react-toastify";
 
 const ProfileSettings = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfileImage, removeProfileImage } = useAuthStore();
 
-  console.log("profile page authUser : ",authUser);
   const [selectedImage, setSelectedImage] = useState(null);
-
-  // const handleImageUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file) return;
-
-  //   const reader = new FileReader();
-
-  //   reader.readAsDataURL(file);
-
-  //   reader.onload = async () => {
-  //     const base64Image = reader.result;
-  //     setSelectedImage(base64Image);
-  //     await updateProfile({ profilePic: base64Image });
-  //   };
-  // };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     const formData = new FormData();
     formData.append("profilePic", file);
-  
+
     setSelectedImage(URL.createObjectURL(file));
-    await updateProfile(formData);
+    await updateProfileImage(formData);
   };
+
+  const handleRemoveProfileImage = () => {
+    if(!authUser.profilePic){
+      toast.info("Your profile Image is already removed.");
+      return;
+    }
+    removeProfileImage();
+  }
 
   return (
     <>
@@ -137,9 +130,29 @@ const ProfileSettings = () => {
             </div>
 
             <div className="rounded-xl p-4">
+              <h2 className="text-lg font-medium  mb-4">Account Controls</h2>
+              <div className="space-y-3 text-sm">
+                <span className="flex items-center justify-between py-1 border-b border-zinc-700"></span>
+                <div className="flex items-center justify-between py-2">
+                  <span>Remove profile Image</span>
+                  <button className="btn btn-sm rounded-lg" onClick={handleRemoveProfileImage}>Remove</button>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span>Off repeating notification</span>
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="toggle transition duration-300 rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl p-4">
               <h2 className="text-lg font-medium  mb-4">Account Information</h2>
               <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between py-2 border-b border-zinc-700">
+                <span className="flex items-center justify-between py-1 border-b border-zinc-700"></span>
+                <div className="flex items-center justify-between">
                   <span>Member Since</span>
                   <span>{authUser.createdAt?.split("T")[0]}</span>
                 </div>

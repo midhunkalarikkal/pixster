@@ -71,6 +71,7 @@ export const signup = async (req, res) => {
       email: newUser.email,
       profilePic: newUser.profilePic,
       about: newUser.about,
+      createdAt: newUser.createdAt,
     });
 
   } catch (error) {
@@ -113,6 +114,7 @@ export const login = async (req, res) => {
       email: user.email,
       profilePic: user.profilePic,
       about: user.about,
+      createdAt: user.createdAt,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
@@ -186,6 +188,53 @@ export const updateProfile = async (req, res) => {
 
     const signedUrl = await generateSignedUrl(updatedUser.profilePic);
     updatedUser.profilePic = signedUrl;
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const removeProfile = async (req, res) => {
+  try {
+    console.log("removing profile image");
+
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if(!user){
+      return res.status(400).json({ message : "User not found." });
+    }
+
+    if(!user.profilePic) {
+      return res.status(400).json({ message: "You dont have profile image." });
+    }
+
+    if(user.profilePic){
+      const oldKey = user.profilePic.split('/').slice(3).join('/');
+      const deleteParams = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: oldKey,
+      };
+      try{
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+      }catch (error) {
+        
+        throw new Error("Profile image updating error.");
+      }
+    }
+
+    
+
+    let updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: null },
+      { 
+        projection : {createdAt: 0, updatedAt: 0, followersCount: 0, followingsCount: 0, postsCount: 0, password: 0},
+        new: true 
+      },
+    );
 
     return res.status(200).json(updatedUser);
   } catch (error) {

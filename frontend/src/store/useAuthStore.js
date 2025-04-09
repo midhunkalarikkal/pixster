@@ -69,12 +69,25 @@ export const useAuthStore = create(persist((set, get) => ({
     }
   },
 
-  updateProfile: async (data) => {
+  updateProfileImage: async (data) => {
     set({ isUpdatingProfile: true });
     try {
       const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
-      toast.success("Profile updated successfully");
+      toast.success("Profile image updated successfully");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isUpdatingProfile: false });
+    }
+  },
+
+  removeProfileImage: async () => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put("/auth/remove-profile");
+      set({ authUser: res.data });
+      toast.success("Profile image removed successfully");
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
