@@ -196,6 +196,7 @@ export const acceptConnection = async (req, res) => {
 
 export const rejectConnection = async (req, res) => {
   try {
+    console.log("reject connection")
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
@@ -221,37 +222,38 @@ export const rejectConnection = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    let connectionData = await Connection.findOne({
+    let revConnectionData = await Connection.findOne({
       fromUserId: toUserId,
       toUserId: fromUserId,
     });
 
-    console.log("connection : ", connectionData);
-
-    if (connectionData.status === "rejected") {
+    if (revConnectionData.status === "rejected") {
       return res.status(400).json({ message: "Connection already rejected." });
     }
 
-    connectionData.status = status;
-    connectionData = await connectionData.save();
+    revConnectionData.status = status;
+    revConnectionData = await revConnectionData.save();
 
-    const revConnectionData = await Connection.findOne(
+    const connectionData = await Connection.findOne(
       { fromUserId, toUserId },
-      { _id: 0, status: 1 }
+      { status: 1 }
     );
 
     const userPosts = await Post.find({ userId : toUserId });
 
     const requestRejectData = {
       fromUserId,
-      connectionData,
-      revConnectionData,
+      connectionData: revConnectionData,
+      revConnectionData: connectionData,
     }
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("requestReject", requestRejectData);
     }
+
+    console.log("connectionData : ",connectionData);
+    console.log("revConnectionData : ",revConnectionData);
 
     return res.status(200).json({
       message: `You have rejected ${toUserData.fullName}'s follow request`,
