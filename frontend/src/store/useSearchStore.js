@@ -17,7 +17,7 @@ export const useSearchStore = create(persist((set) => ({
   getSearchUsers: async (searchQuery) => {
     set({ searchLoading: true });
     try {
-      const res = await axiosInstance.get(`/user/searchUser`, {
+      const res = await axiosInstance.get(`/user/searchUsers`, {
         params: { searchQuery },
       });
       set({ searchedUsers: res.data.users });

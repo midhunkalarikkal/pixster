@@ -4,7 +4,7 @@ import cloudinary from "../lib/cloudinary.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 
-export const searchUser = async (req, res) => {
+export const searchUsers = async (req, res) => {
   try {
     console.log("req.user : ", req.user);
     const currentUser = req.user?._id;

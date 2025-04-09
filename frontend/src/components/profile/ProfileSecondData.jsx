@@ -6,24 +6,23 @@ import PostsSkeleton from "../skeletons/PostsSkeleton";
 import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 import { useSearchStore } from "../../store/useSearchStore";
 import { useProfileStore } from "../../store/useProfileStore";
+import PostGrid from "./PostGrid";
 
 const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
-    
   let [reqdProfiles, setReqProfiles] = useState([]);
+  const [userPosts, setUserPosts] = useState([]);
 
-  const { 
-    getSearchSelectedUser,
-    cancelConnectionRequest,
- } = useSearchStore();
+  const { getSearchSelectedUser, cancelConnectionRequest, searchSelectedUser } = useSearchStore();
 
-  const {
-    requestedProfilesLoading,
-    requestedProfiles,
-  } = useProfileStore();
+  const { requestedProfilesLoading, requestedProfiles } = useProfileStore();
 
-    useEffect(() => {
-      setReqProfiles(requestedProfiles);
-    }, [requestedProfiles]);
+  console.log("searchSelectedUser : ",searchSelectedUser);
+
+  useEffect(() => {
+    setReqProfiles(requestedProfiles);
+    if (!searchSelectedUser) return;
+    setUserPosts(searchSelectedUser.userPosts);
+  }, [requestedProfiles, searchSelectedUser]);
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
@@ -52,14 +51,34 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
       {authUserId !== userDataId ? (
         status === "accepted" ? (
           <>
-            {tab === 0 && <PostsSkeleton />}
+            {tab === 0 && (
+            searchSelectedUser ? (
+              userPosts && userPosts.length > 0 ? (
+                <PostGrid posts={userPosts} />
+              ) : (
+                <p>{"You haven't uploaded any post yet."}</p>
+              )
+            ) : (
+              <PostsSkeleton />
+            )
+          )}
             {tab === 1 && <UserBarSkeleton />}
             {tab === 2 && <UserBarSkeleton />}
           </>
         ) : null
       ) : (
         <>
-          {tab === 0 && <PostsSkeleton />}
+          {tab === 0 && (
+            searchSelectedUser ? (
+              userPosts && userPosts.length > 0 ? (
+                <PostGrid posts={userPosts} />
+              ) : (
+                <p>{"You haven't uploaded any post yet."}</p>
+              )
+            ) : (
+              <PostsSkeleton />
+            )
+          )}
           {tab === 1 && <UserBarSkeleton />}
           {tab === 2 && <UserBarSkeleton />}
           {tab === 3 &&
