@@ -155,9 +155,9 @@ export const acceptConnection = async (req, res) => {
     });
     await newNotification.save();
 
-    await User.findByIdAndUpdate( fromUserId, { $inc: { followingCount: 1 } }, { new: true } );
+    await User.findByIdAndUpdate( fromUserId, { $inc: { followersCount: 1 } }, { new: true } );
 
-    const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: 1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
+    const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followingsCount: 1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
 
     const connectionData = await Connection.findOne(
       { fromUserId, toUserId },
@@ -364,13 +364,25 @@ export const unfollowConnection = async (req, res) => {
     connectionData.status = status;
     connectionData = await connectionData.save();
 
-    await User.findByIdAndUpdate( fromUserId, { $inc: { followingCount: -1 } } );
+    await User.findByIdAndUpdate( fromUserId, { $inc: { followingsCount: -1 } } );
 
     const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: -1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
 
     const revConnectionData = await Connection.findOne( { fromUserId: toUserId, toUserId: fromUserId }, { _id: 0, status: 1 } );
 
     console.log("userData : ",userData)
+
+    // const unfollowConnectionData = {
+    //   connectionData: revConnectionData,
+    //   revConnectionData: connectionData,
+    // }
+
+    const receiverSocketId = getReceiverSocketId(toUserId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("unfollowConnection");
+    }
+
+
     return res
       .status(200)
       .json({

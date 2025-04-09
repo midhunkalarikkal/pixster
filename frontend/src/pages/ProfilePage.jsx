@@ -109,7 +109,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col items-center">
                   <UserPlus className="w-6 h-6 text-zinc-400" />
                   <p className="text-lg font-semibold">
-                    {userData?.followingCount}
+                    {userData?.followingsCount}
                   </p>
                   <p className="text-sm text-zinc-400">Following</p>
                 </div>

@@ -108,10 +108,9 @@ export const useAuthStore = create((set, get) => ({
     socket.on("requestAccepted", (data) => {
       const { requestedProfiles } = useProfileStore.getState();
       const { setRequestedProfiles } = useProfileStore.getState();
-      const { searchSelectedUser, setSearchSelectedUserConnectionData } = useSearchStore.getState();
+      const { searchSelectedUser, setSearchSelectedUserAcceptConnectionData } = useSearchStore.getState();
 
-      console.log("socket data : ",data);
-      setSearchSelectedUserConnectionData(data.connectionData, data.revConnectionData);
+      setSearchSelectedUserAcceptConnectionData(data.connectionData, data.revConnectionData);
 
       searchSelectedUser.connectionData = data.connectionData;
       if (requestedProfiles) {
@@ -121,6 +120,13 @@ export const useAuthStore = create((set, get) => ({
         setRequestedProfiles(updatedRequestedProfiles);
       }
     });
+
+    socket.on("unfollowConnection", () => {
+      const { setSearchSelectedUserUnfollowConnectionData } = useSearchStore.getState();
+      setSearchSelectedUserUnfollowConnectionData();
+  });
+
+
   },
 
   disconnectSocket: () => {

@@ -37,7 +37,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const { userId } = req.params;
 
     const userData = await User.findById(userId).select(
-      "_id fullName userName profilePic about postsCount followersCount followingCount"
+      "_id fullName userName profilePic about postsCount followersCount followingsCount"
     );
 
     const connectionData = await Connection.findOne(

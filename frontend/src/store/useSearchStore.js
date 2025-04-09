@@ -33,6 +33,7 @@ export const useSearchStore = create(persist((set) => ({
     set({ searchSelectedUserLoading: true });
     try {
       console.log("calling api")
+      console.log("userId : ", userId);
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       set({ searchSelectedUser: res.data });
       if(navigate) navigate("/profile");
@@ -47,7 +48,7 @@ export const useSearchStore = create(persist((set) => ({
     set({ searchSelectedUser: null });
   },
 
-  setSearchSelectedUserConnectionData: (newConnectionData, newRevConnectionData) => {
+  setSearchSelectedUserAcceptConnectionData: (newConnectionData, newRevConnectionData) => {
     set((state) => ({
       searchSelectedUser: state.searchSelectedUser ?
        {
@@ -57,7 +58,22 @@ export const useSearchStore = create(persist((set) => ({
         userData: state.searchSelectedUser.userData ?
         {
           ...state.searchSelectedUser.userData,
-          followingCount: (state.searchSelectedUser.userData.followingCount ||  0) + 1,
+          followersCount: (state.searchSelectedUser.userData.followersCount ||  0) + 1,
+        }
+        : state.searchSelectedUser.userData
+      } : state.searchSelectedUser ,
+    }));
+  },
+
+  setSearchSelectedUserUnfollowConnectionData: () => {
+    set((state) => ({
+      searchSelectedUser: state.searchSelectedUser ?
+       {
+        ...state.searchSelectedUser,
+        userData: state.searchSelectedUser.userData ?
+        {
+          ...state.searchSelectedUser.userData,
+          followingsCount: (state.searchSelectedUser.userData.followingsCount ||  0) - 1,
         }
         : state.searchSelectedUser.userData
       } : state.searchSelectedUser ,

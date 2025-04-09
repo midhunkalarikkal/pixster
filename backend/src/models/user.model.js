@@ -44,7 +44,7 @@ export const userSchema = new mongoose.Schema(
             type : Number,
             default: 0,
         },
-        followingCount : {
+        followingsCount : {
             type : Number,
             default : 0,
         },

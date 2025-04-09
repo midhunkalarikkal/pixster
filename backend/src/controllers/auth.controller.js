@@ -60,14 +60,14 @@ export const signup = async (req, res) => {
     generateToken(newUser._id, res);
 
     return res.status(201).json({
-      id: newUser._id,
+      _id: newUser._id,
       fullName: newUser.fullName,
       userName: newUser.userName,
       email: newUser.email,
       profilePic: newUser.profilePic,
       about: newUser.about,
-      followersCount: newUser.followerCount,
-      followingCount: newUser.followingCount,
+      followersCount: newUser.followersCount,
+      followingsCount: newUser.followingsCount,
       postsCount: newUser.postsCount,
     });
   } catch (error) {
@@ -106,7 +106,7 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
       about: user.about,
       followersCount: user.followersCount,
-      followingCount: user.followingCount,
+      followingsCount: user.followingsCount,
       postsCount: user.postsCount,
     });
   } catch (error) {

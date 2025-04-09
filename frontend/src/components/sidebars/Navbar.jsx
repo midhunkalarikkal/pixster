@@ -7,6 +7,7 @@ const Navbar = () => {
 
   const navigate = useNavigate();
   const { logout, authUser } = useAuthStore();
+  console.log("authUser : ",authUser)
   const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
   
   return (
