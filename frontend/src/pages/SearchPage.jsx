@@ -3,7 +3,7 @@ import NotUserSelected from "../components/skeletons/NotUserSelected";
 
 const SearchPage = () => {
   return (
-    <div className="flex h-screen bg-base-100 w-[84%]">
+    <div className="flex bg-base-100 w-[84%] h-screen">
       <NotUserSelected />
       <SearchSidebar />
     </div>
