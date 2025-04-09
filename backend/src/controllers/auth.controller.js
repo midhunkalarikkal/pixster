@@ -11,6 +11,7 @@ import {
 import { Upload } from "@aws-sdk/lib-storage";
 import dotenv from 'dotenv';
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -139,6 +140,25 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
+    const user = await User.findById(userId);
+    if(!user){
+      return res.status(400).json({ message : "User not found." });
+    }
+
+    if(user.profilePic){
+      const oldKey = user.profilePic.split('/').slice(3).join('/');
+      const deleteParams = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: oldKey,
+      };
+      try{
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+      }catch (error) {
+        console.log("error : ",error);
+        throw new Error("Profile image updating error.");
+      }
+    }
+
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: `providerProfileImages/${userId}.${file.originalname
@@ -158,7 +178,10 @@ export const updateProfile = async (req, res) => {
     let updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: s3UploadResponse.Location },
-      { new: true }
+      { 
+        projection : {createdAt: 0, updatedAt: 0, followersCount: 0, followingsCount: 0, postsCount: 0, password: 0},
+        new: true 
+      },
     );
 
     const signedUrl = await generateSignedUrl(updatedUser.profilePic);
