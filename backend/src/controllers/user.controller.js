@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
+import { generateSignedUrl } from "../utils/aws.config.js";
 
 export const searchUsers = async (req, res) => {
   try {
@@ -23,9 +24,20 @@ export const searchUsers = async (req, res) => {
         ],
       },
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
-    );
+    ).lean();
 
-    return res.status(200).json({ message: "Users fetched successfully", users });
+
+    const updatedUsers = await Promise.all(
+      users.map(async (user) => {
+      const signedUrl = await generateSignedUrl(user.profilePic);
+      return {
+        ...user,
+        profilePic: signedUrl
+      }
+    })
+  );
+
+    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
