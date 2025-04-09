@@ -12,7 +12,7 @@ const postModel = new mongoose.Schema({
     content : {
         type : String,
         required : true,
-        minLength : 10,
+        minLength : 1,
         maxLength : 250,
     },
     likes : {

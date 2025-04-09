@@ -1,11 +1,12 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import cloudinary from "../lib/cloudinary.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 
 export const searchUser = async (req, res) => {
   try {
-    console.log("req.user : ",req.user);
+    console.log("req.user : ", req.user);
     const currentUser = req.user?._id;
     const { searchQuery } = req.query;
     const query = searchQuery?.trim().toLowerCase();
@@ -15,15 +16,16 @@ export const searchUser = async (req, res) => {
     }
 
     const users = await User.find(
-        {
-          $or: [
-            { fullName: { $regex: query, $options: "i" } },
-            { userName: { $regex: query, $options: "i" } },
-          ]
-        },
+      {
+        $or: [
+          { fullName: { $regex: query, $options: "i" } },
+          { userName: { $regex: query, $options: "i" } },
+        ],
+      },
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
     );
-    res.json({ message: "Users fetched successfully", users });
+
+    return res.status(200).json({ message: "Users fetched successfully", users });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -31,7 +33,6 @@ export const searchUser = async (req, res) => {
 
 export const fetchSearchedUserProfile = async (req, res) => {
   try {
-
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
@@ -47,10 +48,11 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const revConnection = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
-    )
+    );
 
     const userPosts = await Post.find({ userId: userId });
-    res.json({
+
+    return res.status(200).json({
       message: "User profile fetched successfully",
       userData,
       connectionData,
@@ -76,7 +78,7 @@ export const fetchRequestedAccounts = async (req, res) => {
 
     const users = await User.find({ _id: { $in: requestedToUserIds } });
 
-    return res.json({ message: "Users fetched successfully", users });
+    return res.status(200).json({ message: "Users fetched successfully", users });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -95,7 +97,8 @@ export const fetchFollowingAccounts = async (req, res) => {
     }).distinct("toUserId");
 
     const users = await User.find({ _id: { $in: requestedToUserIds } });
-    res.json({ message: "Users fetched successfully", users });
+
+    return resstatus(200).json({ message: "Users fetched successfully", users });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -112,13 +115,14 @@ export const fetchNotifications = async (req, res) => {
     const notifications = await Notification.find(
       { toUserId: currentUser },
       { updatedAt: 0, __v: 0 }
-    ).sort({ createdAt : -1 }).populate({
-      path: "fromUserId",
-      select: "userName fullName profilePic _id",
-    });
-    console.log("Notifications:", notifications);
+    )
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "fromUserId",
+        select: "userName fullName profilePic _id",
+      });
 
-    res.json({ message: "Users fetched successfully", notifications });
+    return resstatus(200).json({ message: "Users fetched successfully", notifications });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -138,38 +142,54 @@ export const fetchSuggestions = async (req, res) => {
           $or: [{ fromUserId: currentUser }, { toUserId: currentUser }],
         },
         {
-          status: "accepted"
+          status: "accepted",
         },
       ],
     });
 
-    console.log("suggestions : ",suggestions);
 
-    res.json({ message: "Suggestions fetched successfully", suggestions });
+    return res.status(200).json({ message: "Suggestions fetched successfully", suggestions });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
-export const fetchFriendProfile = async (req, res) => {
-  try{
-    const userId = req.params.userId;
+export const uploadPost = async (req, res) => {
+  try {
     const currentUser = req.user?._id;
-    if (!currentUser || !userId) {
+    const { postImage, postCaption } = req.body;
+
+    if (!currentUser) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    const connection = await Connection.find(
-      {fromUserId: currentUser, toUserId: userId}, {_id: 0, status: 1}
-    );
+    if (!postImage) {
+      return res.status(400).json({ message: "Image not found." });
+    }
 
-    const user = await User.findById(userId).select("-password -updatedAt -createdAt");
+    if (!postCaption) {
+      return res.status(400).json({ message: "Caption not found." });
+    }
 
-    console.log("connection : ",connection);
-    
-    console.log("user : ",user);
+    if(postCaption.length < 1 || postCaption.length > 200) {
+      return res.status(400).json({ message: "Pos captionlength error." });
+    }
 
-  }catch (error) {
+    const uploadResponse = await cloudinary.uploader.upload(postImage, {
+      folder: "usersPostMedias",
+    });
+
+    const newPost = new Post({
+      userId: currentUser,
+      media: uploadResponse.secure_url,
+      content: postCaption,
+    });
+    const savedPost = await newPost.save();
+    const updatedUser = await User.findByIdAndUpdate(currentUser, { $inc : { postsCount : 1 }});
+
+    return res.status(201).json({ success: true, message: "Post uploaded successfully" });
+  } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
