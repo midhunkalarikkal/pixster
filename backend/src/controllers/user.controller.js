@@ -10,7 +10,6 @@ dotenv.config();
 
 export const searchUsers = async (req, res) => {
   try {
-    const currentUser = req.user?._id;
     const { searchQuery } = req.query;
     const query = searchQuery?.trim().toLowerCase();
 
@@ -27,8 +26,6 @@ export const searchUsers = async (req, res) => {
       },
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
     ).lean();
-
-    console.log("users : ",users);
 
     const updatedUsers = await Promise.all(
       users.map(async (user) => {
@@ -50,13 +47,16 @@ export const searchUsers = async (req, res) => {
 
 export const fetchSearchedUserProfile = async (req, res) => {
   try {
-    console.log("get searched user")
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
     const userData = await User.findById(userId).select(
       "_id fullName userName profilePic about postsCount followersCount followingsCount"
     );
+
+    if (!userData) {
+      return res.status(404).json({ message: "User not found." });
+    }
 
     const connectionData = await Connection.findOne(
       { fromUserId: currentUser, toUserId: userId },
@@ -68,27 +68,23 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    if(connectionData && connectionData.status === "accepted"){ 
-      userPosts = await Post.find({ userId: userId });
-    };
-
-    let userPosts = await Post.find({ userId: userId }).lean();
-
-    if(userData.profilePic){
-      userData.profilePic = await generateSignedUrl(userData.profilePic);
-    }
-
     let updatedUserPosts = [];
-    if(userPosts && userPosts.length > 0) {
+    if (connectionData && connectionData?.status === "accepted") {
+      const userPosts = await Post.find({ userId }).lean();
+
       updatedUserPosts = await Promise.all(
-        userPosts.map( async (post) => {
+        userPosts.map(async (post) => {
           const signedUrl = await generateSignedUrl(post.media);
           return {
             ...post,
             media: signedUrl,
-          }
+          };
         })
-      )
+      );
+    }
+
+    if(userData.profilePic){
+      userData.profilePic = await generateSignedUrl(userData.profilePic);
     }
 
     return res.status(200).json({
@@ -132,15 +128,29 @@ export const fetchFollowingAccounts = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    const requestedToUserIds = await Connection.find({
+    const myFollowingUsersIds = await Connection.find({
       fromUserId,
       status: "accepted",
     }).distinct("toUserId");
 
-    const users = await User.find({ _id: { $in: requestedToUserIds } });
+    const users = await User.find({ _id: { $in: myFollowingUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
 
-    return resstatus(200).json({ message: "Users fetched successfully", users });
+    let updatedUsers = await Promise.all(users.map( async (user) => {
+      if(!user.profilePic) return user;
+
+      const signedUrl = await generateSignedUrl(user.profilePic);
+
+      return {
+        ...user,
+        profilePic: signedUrl
+      }
+  }))
+
+  console.log("following accounts : ",updatedUsers);
+
+    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

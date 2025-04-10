@@ -7,7 +7,7 @@ const UserTab = ({ user, buttonText, onButtonClick, onClickUser }) => {
     <div
       key={_id}
       onClick={() => onClickUser(_id)}
-      className={`w-full md:w-6/12 p-2 flex gap-3 items-center
+      className={`w-full md:w-6/12 p-2 flex gap-3 items-center cursor-pointer
                   hover:bg-base-300 transition-colors border-b border-base-300`}
     >
       <div className="relative w-2/12">

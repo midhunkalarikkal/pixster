@@ -29,6 +29,7 @@ export const useProfileStore = create((set) => ({
     set({ followingProfilesLoading: true });
     try {
       const res = await axiosInstance.get("/user/fetchFollowingProfiles");
+      console.log("following profile : ",res);
       set({ followingProfiles: res.data.users });
     } catch (error) {
       toast.error(error.response.data.message);

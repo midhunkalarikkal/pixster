@@ -21,6 +21,9 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
   const { 
     requestedProfiles, 
     requestedProfilesLoading, 
+    
+    followingProfiles,
+    followingProfilesLoading,
   } = useProfileStore();
 
   useEffect(() => {
@@ -45,6 +48,12 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
         toast.error("Request cancellation failed.");
       });
   };
+
+  const handleUnfollowConnection = (user, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast.info("working on it");
+  }
 
   const handleUserTabClick = (userId) => {
     getSearchSelectedUser(userId);
@@ -83,7 +92,24 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
             )
           )}
           {tab === 1 && <UserBarSkeleton />}
-          {tab === 2 && <UserBarSkeleton />}
+          {tab === 2 && 
+          (
+            followingProfilesLoading ? (
+              <UserBarSkeleton />
+            ) : followingProfiles && followingProfiles.length > 0 ? (
+              followingProfiles.map((user) => (
+                <UserTab
+                  key={user._id}
+                  user={user}
+                  buttonText="Unfollow"
+                  onButtonClick={handleUnfollowConnection}
+                  onClickUser={handleUserTabClick}
+                />
+              ))
+            ) : (
+              <p>{"You are not following anyone."}</p>
+            )
+          )}
           {tab === 3 &&
             (requestedProfilesLoading ? (
               <UserBarSkeleton />
