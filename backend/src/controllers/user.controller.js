@@ -50,6 +50,9 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
+    console.log("currentUser : ",currentUser);
+    console.log("userId : ",userId);
+
     const userData = await User.findById(userId).select(
       "_id fullName userName profilePic about postsCount followersCount followingsCount"
     );
@@ -63,13 +66,18 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
+    console.log("connectionData : ",connectionData);
+
     const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
     );
 
+    console.log("revConnectionData : ",revConnectionData);
+
     let updatedUserPosts = [];
-    if (connectionData && connectionData?.status === "accepted") {
+    const isOwnProfile = currentUser?.toString() === userId;
+    if (connectionData && connectionData?.status === "accepted" || isOwnProfile) {
       const userPosts = await Post.find({ userId }).lean();
 
       updatedUserPosts = await Promise.all(
@@ -124,12 +132,18 @@ export const fetchRequestedAccounts = async (req, res) => {
 export const fetchFollowingAccounts = async (req, res) => {
   try {
     const fromUserId = req.user?._id;
+    const { userId } = req.params;
+
     if (!fromUserId) {
-      return res.status(400).json({ message: "User not found." });
+      return res.status(404).json({ message: "Please login and try again." });
+    }
+
+    if(!userId) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     const myFollowingUsersIds = await Connection.find({
-      fromUserId,
+      userId,
       status: "accepted",
     }).distinct("toUserId");
 

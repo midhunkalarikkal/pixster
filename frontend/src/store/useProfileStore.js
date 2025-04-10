@@ -11,7 +11,11 @@ export const useProfileStore = create((set) => ({
 
   postUploading: false,
 
+  listPage: false,
+
   setRequestedProfiles: (profiles) => set({ requestedProfiles: profiles }),
+
+  setListPage: (data) => set({ listPage: data }),
 
   getRequestedProfiles: async () => {
     set({ requestedProfilesLoading: true });
@@ -25,10 +29,10 @@ export const useProfileStore = create((set) => ({
     }
   },
 
-  getFollowingsProfiles: async () => {
+  getFollowingsProfiles: async (userId) => {
     set({ followingProfilesLoading: true });
     try {
-      const res = await axiosInstance.get("/user/fetchFollowingProfiles");
+      const res = await axiosInstance.get(`/user/fetchFollowingProfiles/${userId}`);
       console.log("following profile : ",res);
       set({ followingProfiles: res.data.users });
     } catch (error) {

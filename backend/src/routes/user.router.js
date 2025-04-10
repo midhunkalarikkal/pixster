@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/searchUsers', protectRoute, searchUsers);
 router.get('/fetchSearchedUserProfile/:userId', protectRoute, fetchSearchedUserProfile);
 router.get('/fetchRequestedProfiles', protectRoute, fetchRequestedAccounts);
-router.get('/fetchFollowingProfiles', protectRoute, fetchFollowingAccounts);
+router.get('/fetchFollowingProfiles/:userId', protectRoute, fetchFollowingAccounts);
 router.get('/fetchNotifications', protectRoute, fetchNotifications);
 router.get('/getSuggestions', protectRoute, fetchSuggestions);
 router.post('/uploadPost', protectRoute, upload.single('postImage'), uploadPost);
