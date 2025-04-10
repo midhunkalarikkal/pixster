@@ -10,7 +10,6 @@ dotenv.config();
 
 export const searchUsers = async (req, res) => {
   try {
-    console.log("req.user : ", req.user);
     const currentUser = req.user?._id;
     const { searchQuery } = req.query;
     const query = searchQuery?.trim().toLowerCase();
@@ -29,9 +28,11 @@ export const searchUsers = async (req, res) => {
       { _id: 1, fullName: 1, userName: 1, profilePic: 1 }
     ).lean();
 
+    console.log("users : ",users);
 
     const updatedUsers = await Promise.all(
       users.map(async (user) => {
+      if(!user.profilePic) return user;
       const signedUrl = await generateSignedUrl(user.profilePic);
       return {
         ...user,
@@ -42,6 +43,7 @@ export const searchUsers = async (req, res) => {
 
     return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
