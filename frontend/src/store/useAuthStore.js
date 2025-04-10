@@ -130,11 +130,22 @@ export const useAuthStore = create(persist((set, get) => ({
       setIncomingRequestedProfiles(updatedProfilesList);
       toast.info(followRequestData.message);
     });
+    
+
+    socket.on("requestCancel", (data) => {
+      const { incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore();
+
+      const updatedProfileList = incomingrequestedProfiles.filter((profile) => {
+        profile._id !== data.fromUserId;
+      });
+      setIncomingRequestedProfiles(updatedProfileList);
+    });
+
 
     socket.on("requestAccepted", (data) => {
       const { requestedProfiles } = useProfileStore.getState();
       const { setRequestedProfiles } = useProfileStore.getState();
-      const { searchSelectedUser, setSearchSelectedUserAcceptConnectionData } =
+      const { setSearchSelectedUserAcceptConnectionData } =
         useSearchStore.getState();
 
       setSearchSelectedUserAcceptConnectionData(
@@ -142,7 +153,6 @@ export const useAuthStore = create(persist((set, get) => ({
         data.revConnectionData
       );
 
-      searchSelectedUser.connectionData = data.connectionData;
       if (requestedProfiles) {
         const updatedRequestedProfiles = requestedProfiles.filter(
           (profile) => profile._id !== data.fromUserId

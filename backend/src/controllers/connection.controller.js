@@ -341,6 +341,15 @@ export const cancelConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
+    const requestCancelData = {
+      fromUserId,
+    }
+
+    const receiverSocketId = getReceiverSocketId(toUserId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("requestCancel", requestCancelData);
+    }
+
     return res.status(200).json({
       message: `You have cancelled your follow request to ${toUserData.fullName}`,
       userData: fromSelfProfile === true ? userData : toUserData,
