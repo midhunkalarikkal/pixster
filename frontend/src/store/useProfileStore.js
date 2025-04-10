@@ -18,9 +18,11 @@ export const useProfileStore = create((set) => ({
   setListPage: (data) => set({ listPage: data }),
 
   getRequestedProfiles: async () => {
+    console.log("api calling")
     set({ requestedProfilesLoading: true });
     try {
       const res = await axiosInstance.get("/user/fetchRequestedProfiles");
+      console.log("requested user profiles : ",res);
       set({ requestedProfiles: res.data.users });
     } catch (error) {
       toast.error(error.response.data.message);

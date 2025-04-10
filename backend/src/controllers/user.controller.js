@@ -111,6 +111,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
 
 export const fetchRequestedAccounts = async (req, res) => {
   try {
+    console.log("fetching")
     const fromUserId = req.user?._id;
     if (!fromUserId) {
       return res.status(400).json({ message: "User not found." });
@@ -121,10 +122,24 @@ export const fetchRequestedAccounts = async (req, res) => {
       status: "requested",
     }).distinct("toUserId");
 
-    const users = await User.find({ _id: { $in: requestedToUserIds } });
+    const users = await User.find({ _id: { $in: requestedToUserIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
 
-    return res.status(200).json({ message: "Users fetched successfully", users });
+    let updatedUsers = await Promise.all(users.map( async (user) => {
+      if(!user.profilePic) return user;
+
+      const signedUrl = await generateSignedUrl(user.profilePic);
+
+      return {
+        ...user,
+        profilePic: signedUrl
+      }
+  }))
+
+  console.log("requested profile : ", updatedUsers);
+
+    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

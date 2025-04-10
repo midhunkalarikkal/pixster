@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, UserPlus, Users } from "lucide-react";
+import { AlignJustify, Image, UserPlus, Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
@@ -70,6 +70,40 @@ const ProfilePage = () => {
         }`}
       >
         <div className="max-w-4xl mx-auto p-2 md:p-4">
+          <div className={`flex justify-end ${authUser?._id !== userData?._id && 'hidden'}`}>
+            <div className="dropdown">
+              <div tabIndex={0} role="button" className="m-1 rounded-lg">
+                <AlignJustify />
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm z-10 transition-all duration-300 transform opacity-0 scale-95 dropdown-open:opacity-100 dropdown-open:scale-100"
+              >
+                <li>
+                  <button className="w-full text-sm font-medium py-2 px-4 rounded-md"
+                    onClick={() => {
+                      getRequestedProfiles();
+                      setListPage(true);
+                      setTab(4);
+                    }}
+                  >
+                    Requested Profiles
+                  </button>
+                </li>
+                <li>
+                  <button className="w-full text-sm font-medium py-2 px-4 rounded-md"
+                    onClick={() => {
+                      setListPage(true);
+                      setTab(5);
+                    }}
+                  >
+                    Incoming Requests
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
           {/* Profile top follow request accept or reject bar */}
           {revConnectionData && revConnectionData.status === "requested" && (
             <ProfileAcceptReject
@@ -152,7 +186,6 @@ const ProfilePage = () => {
                         count={userData?.followersCount}
                         label="Followers"
                         onClick={() => {
-                          getRequestedProfiles(authUser._id);
                           setListPage(true);
                           setTab(2);
                         }}
@@ -251,9 +284,7 @@ const ProfilePage = () => {
                     className={`flex flex-col items-center w-full ${
                       tab !== 4 && "text-zinc-400"
                     }`}
-                    onClick={() => {
-                      setTab(1);
-                    }}
+                    onClick={() => setTab(1)}
                   >
                     <span className="text-sm">SAVED</span>
                   </button>

@@ -1,6 +1,6 @@
 import UserTab from "./UserTab";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { useSearchStore } from "../store/useSearchStore";
@@ -19,6 +19,11 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
   } = useProfileStore();
 
   const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
+
+  useEffect(() => {
+    if(!requestedProfiles) return;
+    setReqProfiles(requestedProfiles);
+  },[requestedProfiles])
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
@@ -115,7 +120,7 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
                 />
               ))
             ) : (
-              <p className="text-center text-sm mt-10">No requests recieved</p>
+              <p className="text-center text-sm mt-10">{"You haven't requested any profiles at the moment."}</p>
             ))}
 
           {tab === 5 && <UserBarSkeleton />}
