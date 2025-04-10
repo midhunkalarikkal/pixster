@@ -54,13 +54,13 @@ const UserTab = ({
 };
 
 UserTab.propTypes = {
-  showButton: PropTypes.bool.isRequired,
   user: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     userName: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
     profilePic: PropTypes.string,
   }).isRequired,
+  showButton: PropTypes.bool,
   buttonText: PropTypes.string,
   onButtonClick: PropTypes.func,
   onClickUser: PropTypes.func,

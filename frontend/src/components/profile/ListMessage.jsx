@@ -13,8 +13,12 @@ const ListMessage = ({ authUserId, userDataId, tabNum }) => {
   ];
 
   const getMessage = () => {
-    if (tabNum === 3) {
+    if (tabNum === 2) {
       return "You haven't requested any profiles at the moment.";
+    }
+
+    if (tabNum === 3) {
+      return "You haven't received any request at the moment.";
     }
 
     return authUserId === userDataId

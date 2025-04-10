@@ -2,8 +2,8 @@ import UserTab from "./UserTab";
 import { X } from "lucide-react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
 import ListMessage from "./profile/ListMessage";
+import { memo, useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
@@ -16,6 +16,8 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
   const {
     requestedProfiles,
     requestedProfilesLoading,
+    incomingrequestedProfiles,
+    incomingrequestedProfilesLoading,
     followingProfiles,
     followingProfilesLoading,
     followersProfiles,
@@ -134,7 +136,7 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
                   key={user._id}
                   authUserId={authUserId}
                   user={user}
-                  buttonText="Cancel Request"
+                  buttonText="Cancel"
                   showButton={authUserId === userDataId}
                   onButtonClick={handleCancelRequest}
                   onClickUser={handleUserTabClick}
@@ -144,7 +146,20 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
                 <ListMessage tabNum={2} />
             ))}
 
-          {tab === 5 && <UserBarSkeleton />}
+          {tab === 5 && (incomingrequestedProfilesLoading ? (
+              <UserBarSkeleton />
+            ) : incomingrequestedProfiles && incomingrequestedProfiles.length > 0 ? (
+                incomingrequestedProfiles.map((user) => (
+                <UserTab
+                  key={user._id}
+                  authUserId={authUserId}
+                  user={user}
+                  onClickUser={handleUserTabClick}
+                />
+              ))
+            ) : (
+                <ListMessage tabNum={3} />
+            ))}
         </div>
       </div>
     </div>
@@ -158,4 +173,4 @@ UserTabListing.propTypes = {
   setTab: PropTypes.func.isRequired,
 };
 
-export default UserTabListing;
+export default memo(UserTabListing);

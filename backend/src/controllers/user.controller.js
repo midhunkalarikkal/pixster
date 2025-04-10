@@ -144,6 +144,41 @@ export const fetchRequestedAccounts = async (req, res) => {
   }
 };
 
+export const fetchIncomingRequestedAccounts = async (req, res) => {
+  try {
+    console.log("fetching")
+    const fromUserId = req.user?._id;
+    if (!fromUserId) {
+      return res.status(400).json({ message: "User not found." });
+    }
+
+    const incomingRequestedToUserIds = await Connection.find({
+      toUserId: fromUserId,
+      status: "requested",
+    }).distinct("fromUserId");
+
+    const users = await User.find({ _id: { $in: incomingRequestedToUserIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+
+    let updatedUsers = await Promise.all(users.map( async (user) => {
+      if(!user.profilePic) return user;
+
+      const signedUrl = await generateSignedUrl(user.profilePic);
+
+      return {
+        ...user,
+        profilePic: signedUrl
+      }
+  }))
+
+  console.log("incoming requested profile : ", updatedUsers);
+
+    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+  } catch (error) {
+    console.log("error : ",error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 export const fetchFollowingAccounts = async (req, res) => {
   try {
     const fromUserId = req.user?._id;

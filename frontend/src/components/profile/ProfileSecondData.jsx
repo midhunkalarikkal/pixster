@@ -1,6 +1,6 @@
 import PostGrid from "./PostGrid";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { useSearchStore } from "../../store/useSearchStore";
 
@@ -63,4 +63,4 @@ ProfileSecondData.propTypes = {
   status: PropTypes.string,
 };
 
-export default ProfileSecondData;
+export default memo(ProfileSecondData);

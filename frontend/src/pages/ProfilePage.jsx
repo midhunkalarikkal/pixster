@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { AlignJustify, Image, UserPlus, Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
+import UserStat from "../components/profile/UserStat.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
 import UserTabListing from "../components/UserTabListing.jsx";
+import { AlignJustify, Image, UserPlus, Users } from "lucide-react";
 import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
-import UserStat from "../components/profile/UserStat.jsx";
 
 const ProfilePage = () => {
   const [tab, setTab] = useState(0);
@@ -18,8 +18,14 @@ const ProfilePage = () => {
 
   const { authUser } = useAuthStore();
 
-  const { getRequestedProfiles, getFollowingsProfiles, getFollowersProfiles, setListPage, listPage } =
-    useProfileStore();
+  const { 
+    getRequestedProfiles, 
+    getIncomingRequestedProfiles, 
+    getFollowingsProfiles, 
+    getFollowersProfiles, 
+    setListPage, 
+    listPage 
+  } = useProfileStore();
 
   const {
     selectedUserId,
@@ -93,6 +99,7 @@ const ProfilePage = () => {
                 <li>
                   <button className="w-full text-sm font-medium py-2 px-4 rounded-md"
                     onClick={() => {
+                      getIncomingRequestedProfiles();
                       setListPage(true);
                       setTab(5);
                     }}

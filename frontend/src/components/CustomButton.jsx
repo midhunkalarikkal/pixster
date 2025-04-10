@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { memo } from "react";
 
 const CustomButton = ({text, onClick}) => {
   return (
@@ -22,4 +23,4 @@ CustomButton.propTypes = {
   onClick: PropTypes.func
 };
 
-export default CustomButton;
+export default memo(CustomButton);
