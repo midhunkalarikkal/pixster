@@ -157,12 +157,52 @@ export const fetchFollowingAccounts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const myFollowingUsersIds = await Connection.find({
-      userId,
+    const followingUsersIds = await Connection.find({
+      fromUserId : userId,
       status: "accepted",
     }).distinct("toUserId");
 
-    const users = await User.find({ _id: { $in: myFollowingUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find({ _id: { $in: followingUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+
+    let updatedUsers = await Promise.all(users.map( async (user) => {
+      if(!user.profilePic) return user;
+
+      const signedUrl = await generateSignedUrl(user.profilePic);
+
+      return {
+        ...user,
+        profilePic: signedUrl
+      }
+  }))
+
+  console.log("following accounts : ",updatedUsers);
+
+    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+  } catch (error) {
+    console.log("error : ",error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const fetchFollowersAccounts = async (req, res) => {
+  try {
+    const fromUserId = req.user?._id;
+    const { userId } = req.params;
+
+    if (!fromUserId) {
+      return res.status(404).json({ message: "Please login and try again." });
+    }
+
+    if(!userId) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followersUsersIds = await Connection.find({
+      toUserId : userId,
+      status: "accepted",
+    }).distinct("fromUserId");
+
+    const users = await User.find({ _id: { $in: followersUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
 
     let updatedUsers = await Promise.all(users.map( async (user) => {
       if(!user.profilePic) return user;

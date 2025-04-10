@@ -18,7 +18,7 @@ const ProfilePage = () => {
 
   const { authUser } = useAuthStore();
 
-  const { getRequestedProfiles, getFollowingsProfiles, setListPage, listPage } =
+  const { getRequestedProfiles, getFollowingsProfiles, getFollowersProfiles, setListPage, listPage } =
     useProfileStore();
 
   const {
@@ -150,6 +150,7 @@ const ProfilePage = () => {
                           count={userData?.followersCount}
                           label="Followers"
                           onClick={() => {
+                            getFollowersProfiles(userData._id);
                             setListPage(true);
                             setTab(2);
                           }}
@@ -186,6 +187,7 @@ const ProfilePage = () => {
                         count={userData?.followersCount}
                         label="Followers"
                         onClick={() => {
+                          getFollowersProfiles(authUser._id)
                           setListPage(true);
                           setTab(2);
                         }}

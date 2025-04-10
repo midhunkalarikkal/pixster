@@ -9,6 +9,9 @@ export const useProfileStore = create((set) => ({
   followingProfiles: null,
   followingProfilesLoading: false,
 
+  followersProfiles: null,
+  followersProfilesLoading: false,
+
   postUploading: false,
 
   listPage: false,
@@ -18,11 +21,9 @@ export const useProfileStore = create((set) => ({
   setListPage: (data) => set({ listPage: data }),
 
   getRequestedProfiles: async () => {
-    console.log("api calling")
     set({ requestedProfilesLoading: true });
     try {
       const res = await axiosInstance.get("/user/fetchRequestedProfiles");
-      console.log("requested user profiles : ",res);
       set({ requestedProfiles: res.data.users });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -35,12 +36,23 @@ export const useProfileStore = create((set) => ({
     set({ followingProfilesLoading: true });
     try {
       const res = await axiosInstance.get(`/user/fetchFollowingProfiles/${userId}`);
-      console.log("following profile : ",res);
       set({ followingProfiles: res.data.users });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ followingProfilesLoading: false });
+    }
+  },
+
+  getFollowersProfiles: async (userId) => {
+    set({ followersProfilesLoading: true });
+    try {
+      const res = await axiosInstance.get(`/user/fetchFollowersProfiles/${userId}`);
+      set({ followersProfiles: res.data.users });
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ followersProfilesLoading: false });
     }
   },
 

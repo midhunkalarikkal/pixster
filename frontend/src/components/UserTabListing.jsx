@@ -1,29 +1,32 @@
 import UserTab from "./UserTab";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import ListMessage from "./profile/ListMessage";
 import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
 
 const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
   let [reqdProfiles, setReqProfiles] = useState([]);
-  const { setListPage, listPage } = useProfileStore();
 
+  const { setListPage, listPage } = useProfileStore();
+  const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
   const {
     requestedProfiles,
     requestedProfilesLoading,
     followingProfiles,
     followingProfilesLoading,
+    followersProfiles,
+    followersProfilesLoading,
   } = useProfileStore();
 
-  const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
 
   useEffect(() => {
-    if(!requestedProfiles) return;
+    if (!requestedProfiles) return;
     setReqProfiles(requestedProfiles);
-  },[requestedProfiles])
+  }, [requestedProfiles]);
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
@@ -51,6 +54,7 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
   const handleUserTabClick = (userId) => {
     getSearchSelectedUser(userId);
     setTab(0);
+    setListPage(false);
   };
 
   return (
@@ -83,7 +87,24 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 transition-all duration-500">
-          {tab === 2 && <UserBarSkeleton />}
+          {tab === 2 &&
+            (followersProfilesLoading ? (
+              <UserBarSkeleton />
+            ) : followersProfiles && followersProfiles.length > 0 ? (
+              followersProfiles.map((user) => (
+                <UserTab
+                  key={user._id}
+                  authUserId={authUserId}
+                  user={user}
+                  buttonText="Remove"
+                  showButton={authUserId === userDataId}
+                  onButtonClick={handleUnfollowConnection}
+                  onClickUser={handleUserTabClick}
+                />
+              ))
+            ) : (
+             <ListMessage authUserId={authUserId} userDataId={userDataId} tabNum={0} />
+            ))}
 
           {tab === 3 &&
             (followingProfilesLoading ? (
@@ -92,18 +113,16 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
               followingProfiles.map((user) => (
                 <UserTab
                   key={user._id}
+                  authUserId={authUserId}
                   user={user}
                   buttonText="Unfollow"
+                  showButton={authUserId === userDataId}
                   onButtonClick={handleUnfollowConnection}
                   onClickUser={handleUserTabClick}
                 />
               ))
             ) : (
-              <p className="text-center text-sm mt-10">
-                {authUserId === userDataId
-                  ? "You haven't followed anyone yet."
-                  : "This user has no followings at the moment."}
-              </p>
+                <ListMessage authUserId={authUserId} userDataId={userDataId} tabNum={1} />
             ))}
 
           {tab === 4 &&
@@ -113,14 +132,16 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
               reqdProfiles.map((user) => (
                 <UserTab
                   key={user._id}
+                  authUserId={authUserId}
                   user={user}
                   buttonText="Cancel Request"
+                  showButton={authUserId === userDataId}
                   onButtonClick={handleCancelRequest}
                   onClickUser={handleUserTabClick}
                 />
               ))
             ) : (
-              <p className="text-center text-sm mt-10">{"You haven't requested any profiles at the moment."}</p>
+                <ListMessage tabNum={2} />
             ))}
 
           {tab === 5 && <UserBarSkeleton />}

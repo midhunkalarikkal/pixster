@@ -1,6 +1,12 @@
 import PropTypes from "prop-types";
 
-const UserTab = ({ user, buttonText, onButtonClick, onClickUser }) => {
+const UserTab = ({
+  showButton,
+  user,
+  buttonText,
+  onButtonClick,
+  onClickUser,
+}) => {
   const { userName, fullName, profilePic, _id } = user;
 
   return (
@@ -28,7 +34,7 @@ const UserTab = ({ user, buttonText, onButtonClick, onClickUser }) => {
           </div>
         </div>
         <div className="flex items-center">
-          {buttonText && onButtonClick && (
+          {showButton && buttonText && onButtonClick && (
             <div className="flex items-center">
               <button
                 className="px-2 py-1 border border-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -48,15 +54,16 @@ const UserTab = ({ user, buttonText, onButtonClick, onClickUser }) => {
 };
 
 UserTab.propTypes = {
+  showButton: PropTypes.bool.isRequired,
   user: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     userName: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
-    profilePic: PropTypes.string, // Optional
+    profilePic: PropTypes.string,
   }).isRequired,
-  buttonText: PropTypes.string, // Optional
-  onButtonClick: PropTypes.func, // Optional
-  onClickUser: PropTypes.func
+  buttonText: PropTypes.string,
+  onButtonClick: PropTypes.func,
+  onClickUser: PropTypes.func,
 };
 
 export default UserTab;
