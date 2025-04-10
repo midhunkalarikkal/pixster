@@ -1,8 +1,9 @@
 import User from "../models/user.model.js";
+import Post from "../models/post.model.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
-import Post from "../models/post.model.js";
+import { generateSignedUrl } from "../utils/aws.config.js";
 
 export const requestConnection = async (req, res) => {
   try {
@@ -18,6 +19,11 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
+    const userData = await User.findById(fromUserId, { _id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    if(!userData) {
+      return res.status(400).json({ message: "User not found." });
+    }
+
     if (fromUserId === toUserId) {
       return res.status(400).json({ message: "Invalid request." });
     }
@@ -27,7 +33,7 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const toUserData = await User.findById(toUserId).select("-password -createdAt -email -updatedAt");
+    const toUserData = await User.findById(toUserId, { password: 0, email: 0, createdAt: 0, updatedAt: 0 });
     if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
     }
@@ -85,9 +91,18 @@ export const requestConnection = async (req, res) => {
       select: "userName fullName profilePic",
     });
 
+    if(userData.profilePic) {
+      userData.profilePic = await generateSignedUrl(userData.profilePic);
+    }
+
+    if(toUserData.profilePic) {
+      toUserData.profilePic = await generateSignedUrl(toUserData.profilePic);
+    }
+
     const followRequestData = {
       message: "You have a new follow request.",
       notification: newNotification,
+      userData
     };
 
     const receiverSocketId = getReceiverSocketId(toUserId);

@@ -19,7 +19,6 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
-
   return (
     <div className="w-[84%] flex">
         <div className={`w-[70%]`}>

@@ -275,10 +275,27 @@ export const fetchNotifications = async (req, res) => {
       .populate({
         path: "fromUserId",
         select: "userName fullName profilePic _id",
-      });
+      }).lean();
 
-    return resstatus(200).json({ message: "Users fetched successfully", notifications });
+      const updatedNotifications = await Promise.all(
+        notifications.map( async (notification) => {
+          if(!notification?.fromUserId?.profilePic) return notification;
+
+          const signedUrl = await generateSignedUrl(notification?.fromUserId?.profilePic);
+
+          return {
+            ...notification,
+            fromUserId : {
+              ...notification.fromUserId,
+              profilePic: signedUrl
+            }
+          }
+        })
+      )
+
+    return res.status(200).json({ message: "Users fetched successfully", notifications: updatedNotifications });
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

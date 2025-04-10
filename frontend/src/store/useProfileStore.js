@@ -23,6 +23,8 @@ export const useProfileStore = create((set) => ({
 
   setListPage: (data) => set({ listPage: data }),
 
+  setIncomingRequestedProfiles: (profiles) => set({ incomingrequestedProfiles: profiles }),
+
   getRequestedProfiles: async () => {
     set({ requestedProfilesLoading: true });
     try {
