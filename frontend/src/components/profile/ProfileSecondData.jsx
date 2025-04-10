@@ -32,11 +32,11 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, setTab, status }) => {
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
     e.stopPropagation();
-    cancelConnectionRequest(user._id, "cancelled")
+    cancelConnectionRequest(user._id, "cancelled", true)
       .then((data) => {
         if (data) {
           const updatedProfiles = requestedProfiles.filter(
-            (user) => user._id !== data._id
+            (user) => user._id !== data
           );
           setReqProfiles(updatedProfiles);
         }

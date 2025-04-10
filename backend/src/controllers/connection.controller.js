@@ -271,9 +271,10 @@ export const rejectConnection = async (req, res) => {
 
 export const cancelConnection = async (req, res) => {
   try {
-    const fromUserId = req.user.id;
+    const fromUserId = req.user?.id;
     const { toUserId } = req.params;
     const { status } = req.query;
+    const { fromSelfProfile } = req.body;
     console.log("fromUserId : ", fromUserId);
     console.log("toUserId : ", toUserId);
     console.log("status : ", status);
@@ -291,9 +292,14 @@ export const cancelConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const toUserData = await User.findById(toUserId).select("-password -createdAt -email -updatedAt");
+    const toUserData = await User.findById(toUserId, {password: 0, createdAt: 0, updatedAt: 0, email: 0})
     if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
+    }
+
+    const userData = await User.findById(fromUserId,{password: 0, createdAt: 0, updatedAt: 0, email: 0})
+    if(!userData) {
+      return res.status(400).json({ message: "Please login again and try again." });
     }
 
     let connectionData = await Connection.findOne({
@@ -321,10 +327,11 @@ export const cancelConnection = async (req, res) => {
     );
 
     return res.status(200).json({
-      message: `You  have cancelled your follow request to ${toUserData.fullName}`,
-      userData: toUserData,
+      message: `You have cancelled your follow request to ${toUserData.fullName}`,
+      userData: fromSelfProfile === true ? userData : toUserData,
       connectionData,
       revConnectionData,
+      requestToRemoveId: toUserData._id
     });
 
   } catch (error) {

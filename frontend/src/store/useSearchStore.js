@@ -135,13 +135,15 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  cancelConnectionRequest: async (toUserId, status) => {
+  cancelConnectionRequest: async (toUserId, status, fromSelfProfile) => {
     set({ connectionStatusLoading: true });
     try {
-        const res = await axiosInstance.post(`/connection/cancelConnectionRequest/${toUserId}?status=${status}`);
+        const res = await axiosInstance.post(`/connection/cancelConnectionRequest/${toUserId}?status=${status}`, {fromSelfProfile} );
         toast.success(res.data.message);
         set({ searchSelectedUser: res.data });
-        return res.data.userData;
+        // This is for removing the cancelled reques from the user profile request list 
+        // and this is using in the ProfileSecondData.jsx
+        return res.data.requestToRemoveId;
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {

@@ -145,7 +145,7 @@ const ProfilePage = () => {
                     connectionStatusLoading ? "Cancelling" : "Cancel Request"
                   }
                   onClick={() =>
-                    cancelConnectionRequest(userData?._id, "cancelled")
+                    cancelConnectionRequest(userData?._id, "cancelled", false)
                   }
                 />
               ) : (
