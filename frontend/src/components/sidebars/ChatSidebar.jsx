@@ -82,7 +82,7 @@ const ChatSidebar = () => {
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-2 flex gap-3 items-center
+              w-full p-2 flex gap-3 items-center border-b border-base-300
               hover:bg-base-300 transition-colors
               ${selectedUser?._id === user._id ? "" : ""}
             `}

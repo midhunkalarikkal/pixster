@@ -3,28 +3,61 @@ import cloudinary from "../lib/cloudinary.js";
 import Message from "../models/message.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 import Connection from "../models/connection.model.js";
+import { generateSignedUrl } from "../utils/aws.config.js";
 
 export const getUsersForSidebar = async (req, res) => {
   try {
     console.log("list users");
-    const loggedInUserId = req.user._id;
+    const currentUserId = req.user._id;
 
-    const usersForTheLoggedInUser = await Connection.find({
-      $and: [
-        {
-          $or: [{ fromUserId: loggedInUserId }, { toUserId: loggedInUserId }],
-        },
-        { status: "accepted" },
-      ],
-    });
+    const users = await Connection.aggregate([
+      { $match : {
+        status: "accepted",
+        $or : [
+          { fromUserId: currentUserId},
+          { toUserId : currentUserId }
+        ]
+      }
+    },
+    {
+      $project: { "_id" : 0, "toUserId" : 1 }
+    },
+    {
+      $lookup : {
+        from: "users",
+        localField: "toUserId",
+        foreignField: "_id",
+        as: "userData"
+      }
+    },
+    {
+      $unwind : "$userData"
+    },
+    {
+      $project: {
+        _id: "$userData._id",
+        fullName: "$userData.fullName",
+        userName: "$userData.userName",
+        profilePic: "$userData.profilePic",
+        __v: "$userData.__v"
+      }
+    }
+    ]);
 
-    console.log("usersForTheLoggedInUser : ", usersForTheLoggedInUser);
-
-    const filteredUsers = await User.find({
-      _id: { $ne: loggedInUserId },
-    }).select("-password");
-
-    return res.status(200).json(filteredUsers);
+    const updatedUsers = await Promise.all(
+      users.map( async (user) => {
+        if(!user?.profilePic) return user;
+        
+        const signedUrl = await generateSignedUrl(user?.profilePic);
+        
+        return {
+          ...user,
+          profilePic: signedUrl
+        }
+      })
+    )
+    
+    return res.status(200).json({ users: updatedUsers});
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
