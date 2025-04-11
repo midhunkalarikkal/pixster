@@ -257,7 +257,7 @@ export const fetchIncomingRequestedAccounts = async (req, res) => {
     const users = await User.find(
       { _id: { $in: incomingRequestedToUserIds } },
       { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
-    );
+    ).lean();
 
     let updatedUsers = await Promise.all(
       users.map(async (user) => {

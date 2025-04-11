@@ -37,7 +37,7 @@ const UserTab = ({
           {showButton && buttonText && onButtonClick && (
             <div className="flex items-center">
               <button
-                className="px-2 py-1 border border-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-2 py-1 border-0 text-blue-500 hover:text-blue-400"
                 onClick={(e) => {
                   e.stopPropagation();
                   onButtonClick(user, e);
