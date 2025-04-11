@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
+import { Image, UserPlus, Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import CustomButton from "../components/CustomButton.jsx";
 import UserStat from "../components/profile/UserStat.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
 import UserTabListing from "../components/UserTabListing.jsx";
-import { AlignJustify, Image, UserPlus, Users } from "lucide-react";
 import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
+import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
-  const [tab, setTab] = useState(0);
 
+  const [tab, setTab] = useState(0);
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
@@ -62,12 +63,6 @@ const ProfilePage = () => {
     );
   }
 
-  // console.log("authUser : ", authUser);
-  // console.log("userData : ", userData);
-  // console.log("searchSelectedUser : ",searchSelectedUser);
-  // console.log("connetionData : ", searchSelectedUser?.connectionData);
-  // console.log("revConnectionData : ", searchSelectedUser?.revConnectionData);
-
   return (
     <>
       <div className={`h-screen w-10/12 px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
@@ -75,40 +70,15 @@ const ProfilePage = () => {
         }`}
       >
         <div className="max-w-4xl mx-auto p-2 md:p-4">
-          <div className={`flex justify-end ${authUser?._id !== userData?._id && 'hidden'}`}>
-            <div className="dropdown">
-              <div tabIndex={0} role="button" className="m-1 rounded-lg">
-                <AlignJustify />
-              </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm z-10 transition-all duration-300 transform opacity-0 scale-95 dropdown-open:opacity-100 dropdown-open:scale-100"
-              >
-                <li>
-                  <button className="w-full text-sm font-medium py-2 px-4 rounded-md"
-                    onClick={() => {
-                      getRequestedProfiles();
-                      setListPage(true);
-                      setTab(4);
-                    }}
-                  >
-                    Requested Profiles
-                  </button>
-                </li>
-                <li>
-                  <button className="w-full text-sm font-medium py-2 px-4 rounded-md"
-                    onClick={() => {
-                      getIncomingRequestedProfiles();
-                      setListPage(true);
-                      setTab(5);
-                    }}
-                  >
-                    Incoming Requests
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <ProfileHeadDropdown
+          authUserId={authUser?._id}
+          userId={userData?._id}
+          getRequestedProfiles={getRequestedProfiles}
+          getIncomingRequestedProfiles={getIncomingRequestedProfiles}
+          setListPage={setListPage}
+          setTab={setTab}
+        />
+
 
           {/* Profile top follow request accept or reject bar */}
           {revConnectionData && revConnectionData.status === "requested" && (
@@ -118,11 +88,10 @@ const ProfilePage = () => {
             />
           )}
 
-          {/* Content */}
           <div className="space-y-8">
+
             {/* Profile Header With Profile image and other details */}
             <div className="flex items-center">
-              {/* Profile image section left */}
               <div className="relative w-4/12 flex justify-center">
                 <img
                   src={userData?.profilePic || "/user_avatar.jpg"}
