@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImagePlus } from "lucide-react";
 import { toast } from "react-toastify";
 import { validateCaption } from "../utils/validator";
@@ -11,7 +11,14 @@ const CreatePost = () => {
   const [uploading, setUploading] = useState(false);
   const [captionError, setCaptionError] = useState(null);
 
-  const { uploadPost } = useProfileStore();
+  const { uploadPost, postForUpdating, updatePost, setPostForUpdating } = useProfileStore();
+
+  useEffect(() => {
+    if (postForUpdating) {
+      setCaption(postForUpdating.content);
+      setImagePreview(postForUpdating.media);
+    }
+  }, [postForUpdating]);
 
   const handleCaptionChange = (event) => {
     setCaption(event.target.value);
@@ -34,39 +41,43 @@ const CreatePost = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!image) {
-      toast.info("Please select an image.");
-      return;
-    }
 
     const error = validateCaption(caption);
     setCaptionError(error);
+    if (error) return;
 
-    if (error) {
+    if (!postForUpdating && !image) {
+      toast.info("Please select an image.");
       return;
     }
 
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("postImage", image);
+    if(image) formData.append("postImage", image);
     formData.append("caption", caption);
 
     try {
+      let response;
+      if (postForUpdating) {
+        response = await updatePost(postForUpdating._id, formData);
+      } else {
+        response = await uploadPost(formData);
+      }
 
-      const uploadResult = await uploadPost(formData);
-
-      if (uploadResult.data.success) {
+      if (response?.status === 200) {
+        toast.success(postForUpdating ? "Post updated!" : "Post created!");
         setCaption("");
         setImage(null);
         setImagePreview("");
         setCaptionError(null);
+        setPostForUpdating(null);
       } else {
-        toast.error("Post upload error, please try again.");
+        toast.error("Something went wrong. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating post:", error);
-      toast.error("Failed to create post.");
+      console.error("Post error:", error);
+      toast.error("Failed to submit post.");
     } finally {
       setUploading(false);
     }
@@ -77,7 +88,7 @@ const CreatePost = () => {
       <div className="w-full flex flex-col justify-center items-center px-4 py-8 h-screen">
         <span className="loading loading-bars loading-lg"></span>
         <p className="font-semibold">
-          Post uploading, please wait, it will take less than a minute
+          Post {postForUpdating ? "updating" : "uploading"}, please wait...
         </p>
       </div>
     );
@@ -86,7 +97,9 @@ const CreatePost = () => {
   return (
     <div className="w-full flex justify-center px-4 py-8 h-screen">
       <div className="p-6 rounded-lg shadow-md w-8/12">
-        <h2 className="text-xl font-semibold mb-4">Create New Post</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {postForUpdating ? "Update Post" : "Create New Post"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Image Upload Field */}
           <div className="form-control">
@@ -135,7 +148,7 @@ const CreatePost = () => {
           {/* Submit Button */}
           <button type="submit" className={`btn btn-neutral w-full`}>
             <ImagePlus className="mr-2" size={20} />
-            Post
+            {postForUpdating ? "Update Post" : "Post"}
           </button>
         </form>
       </div>
