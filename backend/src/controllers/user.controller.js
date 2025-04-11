@@ -85,8 +85,6 @@ export const homeScrollerData = async (req, res) => {
       })
     );
 
-    console.log("postData : ", updatedPostData);
-
     return res
       .status(200)
       .json({ message: "Home scroll data fetched.", posts: updatedPostData });
@@ -431,25 +429,128 @@ export const fetchNotifications = async (req, res) => {
 export const fetchSuggestions = async (req, res) => {
   try {
     console.log("Suggestion controller");
-    const currentUser = req.user?._id;
-    if (!currentUser) {
+    const currentUserId = req.user?._id;
+    if (!currentUserId) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    const suggestions = await Connection.find({
-      $and: [
-        {
-          $or: [{ fromUserId: currentUser }, { toUserId: currentUser }],
-        },
-        {
-          status: "accepted",
-        },
-      ],
-    });
+    const suggestionUsersIds = await Connection.aggregate([
+    {
+      $match : {
+        status: "accepted",
+        $or : [
+          { fromUserId : currentUserId },
+          { toUserId : currentUserId }
+        ]
+      }
+    },
+    {
+      $project : {
+        _id : 0,
+        userId : {
+          $cond : {
+            if : { $eq : [ "$fromUserId", currentUserId ] },
+            then : "$toUserId",
+            else : "$fromUserId",
+          }
+        }
+      }
+    },
+    {
+      $group : {
+        _id : null,
+        friendsIds : { $addToSet : "$userId" }
+      }
+    },
+    {
+      $lookup : {
+        from : "connections",
+        let : { friendsList : "$friendsIds"},
+        pipeline : [
+          {
+            $match : {
+              status : "accepted",
+              $expr : {
+                $or : [
+                  { $in : [ "$fromUserId", "$$friendsList" ]},
+                  { $in : [ "$toUserId", "$$friendsList" ]}
+                ]
+              }
+            }
+          },
+          {
+            $project : {
+              userId : {
+                $cond : {
+                  if : { $in : [ "$fromUserId", "$$friendsList" ] },
+                  then : "$toUserId",
+                  else : "$fromUserId",
+                }
+              }
+            }
+          },
+          {
+            $match : {
+              $expr : {
+                $and : [
+                  { $ne : [ "$userId", currentUserId ] },
+                  { $not : [ { $in : [ "$userId", "$$friendsList" ] } ] }
+                ]
+              }
+            }
+          }
+        ],
+        as : "suggestions"
+      }
+    },
+    {
+      $unwind : "$suggestions"
+    },
+    {
+      $replaceRoot : {
+        newRoot : "$suggestions"
+      }
+    },
+    {
+      $group : {
+        _id : null,
+        userIds : { "$addToSet" : "$userId" }
+      }
+    },
+    {
+      $project : {
+        _id : 0,
+        userIds : 1
+      }
+    }
+    ]);
+
+    const suggestionUsersIdsArray = suggestionUsersIds[0]?.userIds || [];
+
+    const users = await User.find({
+      _id : {
+        $in : suggestionUsersIdsArray
+      }
+    }, { userName: 1, fullName: 1, profilePic: 1 });
+
+    const updatedUsers = await Promise.all(
+      users.map( async (user) => {
+        if(!user?.profilePic) return user;
+
+        const signedUrl = await generateSignedUrl(user?.profilePic);
+
+        return {
+          ...user,
+          profilePic : signedUrl,
+        }
+      })
+    )
+
+    console.log("updatedUsers : ",updatedUsers);
 
     return res
       .status(200)
-      .json({ message: "Suggestions fetched successfully", suggestions });
+      .json({ message: "Suggestions fetched successfully", suggestions: updatedUsers });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

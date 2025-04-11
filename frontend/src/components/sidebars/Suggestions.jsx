@@ -2,16 +2,32 @@ import { useEffect } from "react";
 import { Users } from "lucide-react";
 import AuthUserTab from "../AuthUserTab";
 // import { useSearchStore } from "../../store/useSearchStore";
-import { useSuggestionStore } from '../../store/useSuggestionStore';
+import { useSuggestionStore } from "../../store/useSuggestionStore";
+import UserTab from "../../components/UserTab";
+import { useSearchStore } from "../../store/useSearchStore";
+import { toast } from "react-toastify";
 
 const Suggestions = () => {
-
   // const { sendConnectionRequest } = useSearchStore();
-  const { suggestions, suggestionsLoading, fetchSuggestions } = useSuggestionStore();
+  const { suggestions, suggestionsLoading, fetchSuggestions } =
+    useSuggestionStore();
+  const { getSearchSelectedUser } = useSearchStore();
 
   useEffect(() => {
     fetchSuggestions();
-  },[])
+  }, []);
+
+  const handlefollowConnection = (user, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast.info("Working on it.");
+  };
+
+  const handleUserTabClick = (userId) => {
+    getSearchSelectedUser(userId);
+  };
+
+  console.log("suggestions : ", suggestions);
 
   return (
     <div className="w-4/12 pr-10 pl-4">
@@ -24,19 +40,26 @@ const Suggestions = () => {
           </label>
         </div>
       </div>
-      {
-        suggestionsLoading ? (
+      <div className="lex flex-col overflow-y-scroll no-scrollbar">
+        {suggestionsLoading ? (
           <p>Loading</p>
-        ) : suggestions ? (
-          suggestions.map((suggestion, index) => {
-            <p key={index}>{`user ${index}`}</p>
-          })
+        ) : suggestions && suggestions.length > 0 ? (
+          suggestions.map((user) => (
+            <UserTab
+              key={user._id}
+              user={user}
+              buttonText="Follow"
+              showButton={true}
+              onButtonClick={handlefollowConnection}
+              onClickUser={handleUserTabClick}
+            />
+          ))
         ) : (
           <p className="text-center">No suggestions</p>
-        )
-      }
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Suggestions
+export default Suggestions;

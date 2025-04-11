@@ -11,8 +11,6 @@ dotenv.config();
 export const uploadPost = async (req, res) => {
   try {
     const currentUser = req.user?._id;
-    console.log("req.body : ", req.body);
-    console.log("req.file : ", req.file);
 
     const { caption } = req.body;
     const file = req.file;
@@ -55,8 +53,6 @@ export const uploadPost = async (req, res) => {
       content: caption,
     });
 
-    console.log("s3UploadResponse : ",s3UploadResponse.Location);
-
     await newPost.save();
     await User.findByIdAndUpdate(currentUser, { $inc: { postsCount: 1 } });
 
@@ -83,7 +79,6 @@ export const deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    console.log("post : ", post);
     if (post.media) {
       const oldKey = post.media.split("/").slice(3).join("/");
       const deleteParams = {
@@ -112,12 +107,6 @@ export const updatePost = async (req, res) => {
     console.log("updating post");
     const currentUser = req.user?._id;
     const { postId } = req.params;
-
-    console.log("userId : ",currentUser);
-    console.log("postId : ",postId);
-
-    console.log("req.body : ", req.body);
-    console.log("req.file : ", req.file);
 
     const { caption } = req.body;
     const file = req.file;
