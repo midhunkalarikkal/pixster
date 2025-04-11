@@ -10,7 +10,7 @@ const Navbar = () => {
   const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
   
   return (
-    <aside className="bg-base-100 border-r border-base-300 w-[16%] z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
+    <aside className="bg-base-100 border-r border-base-300 w-2/12 z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
       <div className="flex justify-center h-[10%]">
         <Link
           to="/"

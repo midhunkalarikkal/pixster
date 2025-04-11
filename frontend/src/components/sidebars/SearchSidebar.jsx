@@ -22,7 +22,7 @@ const SearchSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-[30%] flex flex-col transition-all duration-200 px-2`}
+      className={`h-full w-4/12 flex flex-col transition-all duration-200 px-2`}
     >
       <AuthUserTab />
 

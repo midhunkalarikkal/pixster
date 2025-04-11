@@ -1,6 +1,6 @@
 const NoChatSelected = () => {
   return (
-    <div className="w-full hidden lg:flex flex-1 flex-col items-center justify-center p-4 md:p-16 bg-base-100/50">
+    <div className="w-8/12 hidden lg:flex flex-1 flex-col items-center justify-center p-4 md:p-16 bg-base-100/50">
       <div className="w-full text-center space-y-6">
         <div className="flex justify-center gap-4 mb-4">
 

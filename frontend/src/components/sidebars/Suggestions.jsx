@@ -14,7 +14,7 @@ const Suggestions = () => {
   },[])
 
   return (
-    <div className="w-[30%] pr-10 pl-4">
+    <div className="w-4/12 pr-10 pl-4">
       <AuthUserTab />
       <div className="w-full p-3 md:p-5">
         <div className="flex items-center gap-2">

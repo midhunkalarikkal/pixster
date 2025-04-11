@@ -85,7 +85,7 @@ const CreatePost = () => {
 
   if (uploading) {
     return (
-      <div className="w-full flex flex-col justify-center items-center px-4 py-8 h-screen">
+      <div className="w-10/12 flex flex-col justify-center items-center px-4 py-8 h-screen">
         <span className="loading loading-bars loading-lg"></span>
         <p className="font-semibold">
           Post {postForUpdating ? "updating" : "uploading"}, please wait...
@@ -95,7 +95,7 @@ const CreatePost = () => {
   }
 
   return (
-    <div className="w-full flex justify-center px-4 py-8 h-screen">
+    <div className="w-10/12 flex justify-center px-4 py-8 h-screen">
       <div className="p-6 rounded-lg shadow-md w-8/12">
         <h2 className="text-xl font-semibold mb-4">
           {postForUpdating ? "Update Post" : "Create New Post"}

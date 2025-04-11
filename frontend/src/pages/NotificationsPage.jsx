@@ -20,8 +20,8 @@ const NotificationsPage = () => {
   }, []);
 
   return (
-    <div className="w-[84%] flex">
-        <div className={`w-[70%]`}>
+    <div className="w-10/12 flex">
+        <div className="w-8/12">
           {notificationsLoading ? (
             <div className="flex justify-center items-center w-full px-4 py-8 h-screen">
               <span className="loading loading-bars loading-lg"></span>

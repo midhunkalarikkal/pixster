@@ -31,7 +31,7 @@ const Hello = () => {
     );
 
   return (
-    <div className="" data-theme={theme}>
+    <div data-theme={theme}>
       <Routes>
       <Route
           path="/"

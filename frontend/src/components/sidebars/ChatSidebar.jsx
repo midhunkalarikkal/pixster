@@ -52,7 +52,7 @@ const ChatSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-[27%] bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
+      className={`h-full w-4/12 bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
         selectedUser ? "hidden lg:block" : "block"
       }`}
     >
