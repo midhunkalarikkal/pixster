@@ -20,6 +20,8 @@ export const useProfileStore = create((set) => ({
 
   listPage: false,
 
+  homeScrollerDataLoading: false,
+
   setListPage: (data) => set({ listPage: data }),
 
   setPostForUpdating: (post) => set({ postForUpdating : post }),
@@ -115,6 +117,18 @@ export const useProfileStore = create((set) => ({
       set({ postUploading :  false });
     }
   },
+
+  getHomePostScrollerData: async () => {
+    set({ homeScrollerDataLoading :  true });
+    try{
+      const res = await axiosInstance.get('/user/getHomseSrollerData');
+      return res.data.posts;
+    }catch (error) {
+      toast.error(error.response.data.message);
+    }finally {
+      set({ homeScrollerDataLoading : false });
+    }
+  }
 
 
 }));

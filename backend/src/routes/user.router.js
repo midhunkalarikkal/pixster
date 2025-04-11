@@ -1,13 +1,14 @@
 import multer from 'multer';
 import express from 'express';
 import { protectRoute } from '../middleware/auth.middleware.js';
-import { fetchFollowersAccounts, fetchFollowingAccounts, fetchIncomingRequestedAccounts, fetchNotifications, fetchRequestedAccounts, fetchSearchedUserProfile, fetchSuggestions, searchUsers } from '../controllers/user.controller.js';
+import { fetchFollowersAccounts, fetchFollowingAccounts, fetchIncomingRequestedAccounts, fetchNotifications, fetchRequestedAccounts, fetchSearchedUserProfile, fetchSuggestions, homeScrollerData, searchUsers } from '../controllers/user.controller.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const router = express.Router();
 
+router.get('/getHomseSrollerData', protectRoute, homeScrollerData)
 router.get('/searchUsers', protectRoute, searchUsers);
 router.get('/fetchSearchedUserProfile/:userId', protectRoute, fetchSearchedUserProfile);
 router.get('/fetchRequestedProfiles', protectRoute, fetchRequestedAccounts);

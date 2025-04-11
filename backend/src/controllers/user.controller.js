@@ -7,6 +7,79 @@ import { generateSignedUrl } from "../utils/aws.config.js";
 import dotenv from 'dotenv';
 dotenv.config();
 
+export const homeScrollerData = async (req, res) => {
+  try{
+    const currentUserId = req?.user?._id;
+    if(!currentUserId) {
+      return res.status(404).json({ message: "Something went wrong, please login again" });
+    }
+
+    const user = await User.findById(currentUserId);
+    if(!user){
+      return res.status(404).json({ message: "Something went wring, please login again" });
+    }
+
+    const postData = await Connection.aggregate([
+      { 
+        $match : { fromUserId: user?._id , status : "accepted" }
+      },
+      {
+        $lookup : {
+          from : "users",
+          localField: "toUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind : "$userDetails"
+      },
+      {
+        $project : { 
+          _id: "$userDetails._id", 
+          userName: "$userDetails.userName", 
+          profilePic: "$userDetails.profilePic" 
+        }
+      },
+      {
+        $lookup : {
+          from: "posts",
+          localField: "_id",
+          foreignField: "userId",
+          as: "userPostDetails"
+        }
+      },
+      {
+        $unwind : "$userPostDetails"
+      }
+    ]);
+
+    const updatedPostData = await Promise.all(
+      postData.map( async (post) => {
+        if(!post?.userPostDetails?.media) return post;
+
+        const signedUrl = await generateSignedUrl(post.userPostDetails.media);
+
+        return {
+          ...post,
+          userPostDetails : {
+            ...post.userPostDetails,
+            media: signedUrl
+          }
+        }
+      })
+    )
+
+    console.log("postData : ",updatedPostData);
+
+    return res.status(200).json({ message: "Home scroll data fetched.", posts : updatedPostData })
+
+  }catch (error) {
+    console.log("error : ",error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
+
 export const searchUsers = async (req, res) => {
   try {
     const { searchQuery } = req.query;
