@@ -18,17 +18,16 @@ const HomePage = () => {
     fetchPostsData();
   }, []);
 
-  console.log("posts : ",homePostsData)
+  console.log("homePostsData : ",homePostsData);
 
   return (
     <div className="w-[84%] flex">
-      <div className="w-[70%] flex flex-col items-center overflow-y-auto no-scrollbar">
+      <div className="w-[70%] flex flex-col items-center overflow-y-auto no-scrollbar space-y-4">
         <StorySkeleton />
-
         {homePostsData && homePostsData.length > 0 ? (
-          homePostsData.map((post) => {
-            <HomePostsScroller key={post._id} post={post} />
-          })
+          homePostsData.map((post) => (
+            <HomePostsScroller key={post?._id} post={post} />
+          ))
         ) : (
           <>
             <FeedSkeleton />

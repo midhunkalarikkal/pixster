@@ -4,81 +4,97 @@ import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 import { generateSignedUrl } from "../utils/aws.config.js";
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 export const homeScrollerData = async (req, res) => {
-  try{
+  try {
     const currentUserId = req?.user?._id;
-    if(!currentUserId) {
-      return res.status(404).json({ message: "Something went wrong, please login again" });
+    if (!currentUserId) {
+      return res
+        .status(404)
+        .json({ message: "Something went wrong, please login again" });
     }
 
     const user = await User.findById(currentUserId);
-    if(!user){
-      return res.status(404).json({ message: "Something went wring, please login again" });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Something went wring, please login again" });
     }
 
     const postData = await Connection.aggregate([
-      { 
-        $match : { fromUserId: user?._id , status : "accepted" }
+      {
+        $match: { fromUserId: user?._id, status: "accepted" },
       },
       {
-        $lookup : {
-          from : "users",
+        $lookup: {
+          from: "users",
           localField: "toUserId",
           foreignField: "_id",
-          as: "userDetails"
-        }
+          as: "userDetails",
+        },
       },
       {
-        $unwind : "$userDetails"
+        $unwind: "$userDetails",
       },
       {
-        $project : { 
-          _id: "$userDetails._id", 
-          userName: "$userDetails.userName", 
-          profilePic: "$userDetails.profilePic" 
-        }
+        $project: {
+          _id: "$userDetails._id",
+          userName: "$userDetails.userName",
+          profilePic: "$userDetails.profilePic",
+        },
       },
       {
-        $lookup : {
+        $lookup: {
           from: "posts",
           localField: "_id",
           foreignField: "userId",
-          as: "userPostDetails"
-        }
+          as: "userPostDetails",
+        },
       },
       {
-        $unwind : "$userPostDetails"
+        $unwind: "$userPostDetails",
+      },
+      {
+        $sort : { "userPostDetails.createdAt" : -1 }
       }
     ]);
 
     const updatedPostData = await Promise.all(
-      postData.map( async (post) => {
-        if(!post?.userPostDetails?.media) return post;
+      postData.map(async (post) => {
+        let signedProfilePic = post.profilePic;
+        let signedMedia = post.userPostDetails?.media;
 
-        const signedUrl = await generateSignedUrl(post.userPostDetails.media);
+        if (post?.profilePic) {
+          signedProfilePic = await generateSignedUrl(post.profilePic);
+        }
+
+        if (post?.userPostDetails?.media) {
+          signedMedia = await generateSignedUrl(post.userPostDetails.media);
+        }
 
         return {
           ...post,
-          userPostDetails : {
+          profilePic: signedProfilePic,
+          userPostDetails: {
             ...post.userPostDetails,
-            media: signedUrl
-          }
-        }
+            media: signedMedia,
+          },
+        };
       })
-    )
+    );
 
-    console.log("postData : ",updatedPostData);
+    console.log("postData : ", updatedPostData);
 
-    return res.status(200).json({ message: "Home scroll data fetched.", posts : updatedPostData })
-
-  }catch (error) {
-    console.log("error : ",error);
+    return res
+      .status(200)
+      .json({ message: "Home scroll data fetched.", posts: updatedPostData });
+  } catch (error) {
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 export const searchUsers = async (req, res) => {
   try {
@@ -101,18 +117,20 @@ export const searchUsers = async (req, res) => {
 
     const updatedUsers = await Promise.all(
       users.map(async (user) => {
-      if(!user.profilePic) return user;
-      const signedUrl = await generateSignedUrl(user.profilePic);
-      return {
-        ...user,
-        profilePic: signedUrl
-      }
-    })
-  );
+        if (!user.profilePic) return user;
+        const signedUrl = await generateSignedUrl(user.profilePic);
+        return {
+          ...user,
+          profilePic: signedUrl,
+        };
+      })
+    );
 
-    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -122,8 +140,8 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
-    console.log("currentUser : ",currentUser);
-    console.log("userId : ",userId);
+    console.log("currentUser : ", currentUser);
+    console.log("userId : ", userId);
 
     const userData = await User.findById(userId).select(
       "_id fullName userName profilePic about postsCount followersCount followingsCount"
@@ -138,18 +156,21 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    console.log("connectionData : ",connectionData);
+    console.log("connectionData : ", connectionData);
 
     const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
     );
 
-    console.log("revConnectionData : ",revConnectionData);
+    console.log("revConnectionData : ", revConnectionData);
 
     let updatedUserPosts = [];
     const isOwnProfile = currentUser?.toString() === userId;
-    if (connectionData && connectionData?.status === "accepted" || isOwnProfile) {
+    if (
+      (connectionData && connectionData?.status === "accepted") ||
+      isOwnProfile
+    ) {
       const userPosts = await Post.find({ userId }).lean();
 
       updatedUserPosts = await Promise.all(
@@ -163,7 +184,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
       );
     }
 
-    if(userData.profilePic){
+    if (userData.profilePic) {
       userData.profilePic = await generateSignedUrl(userData.profilePic);
     }
 
@@ -172,18 +193,17 @@ export const fetchSearchedUserProfile = async (req, res) => {
       userData,
       connectionData,
       revConnectionData,
-      userPosts : updatedUserPosts,
+      userPosts: updatedUserPosts,
     });
-
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchRequestedAccounts = async (req, res) => {
   try {
-    console.log("fetching")
+    console.log("fetching");
     const fromUserId = req.user?._id;
     if (!fromUserId) {
       return res.status(400).json({ message: "User not found." });
@@ -194,31 +214,38 @@ export const fetchRequestedAccounts = async (req, res) => {
       status: "requested",
     }).distinct("toUserId");
 
-    const users = await User.find({ _id: { $in: requestedToUserIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find(
+      { _id: { $in: requestedToUserIds } },
+      { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
+    );
 
-    let updatedUsers = await Promise.all(users.map( async (user) => {
-      if(!user.profilePic) return user;
+    let updatedUsers = await Promise.all(
+      users.map(async (user) => {
+        if (!user.profilePic) return user;
 
-      const signedUrl = await generateSignedUrl(user.profilePic);
+        const signedUrl = await generateSignedUrl(user.profilePic);
 
-      return {
-        ...user,
-        profilePic: signedUrl
-      }
-  }))
+        return {
+          ...user,
+          profilePic: signedUrl,
+        };
+      })
+    );
 
-  console.log("requested profile : ", updatedUsers);
+    console.log("requested profile : ", updatedUsers);
 
-    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchIncomingRequestedAccounts = async (req, res) => {
   try {
-    console.log("fetching")
+    console.log("fetching");
     const fromUserId = req.user?._id;
     if (!fromUserId) {
       return res.status(400).json({ message: "User not found." });
@@ -229,24 +256,31 @@ export const fetchIncomingRequestedAccounts = async (req, res) => {
       status: "requested",
     }).distinct("fromUserId");
 
-    const users = await User.find({ _id: { $in: incomingRequestedToUserIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find(
+      { _id: { $in: incomingRequestedToUserIds } },
+      { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
+    );
 
-    let updatedUsers = await Promise.all(users.map( async (user) => {
-      if(!user.profilePic) return user;
+    let updatedUsers = await Promise.all(
+      users.map(async (user) => {
+        if (!user.profilePic) return user;
 
-      const signedUrl = await generateSignedUrl(user.profilePic);
+        const signedUrl = await generateSignedUrl(user.profilePic);
 
-      return {
-        ...user,
-        profilePic: signedUrl
-      }
-  }))
+        return {
+          ...user,
+          profilePic: signedUrl,
+        };
+      })
+    );
 
-  console.log("incoming requested profile : ", updatedUsers);
+    console.log("incoming requested profile : ", updatedUsers);
 
-    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -260,33 +294,40 @@ export const fetchFollowingAccounts = async (req, res) => {
       return res.status(404).json({ message: "Please login and try again." });
     }
 
-    if(!userId) {
+    if (!userId) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const followingUsersIds = await Connection.find({
-      fromUserId : userId,
+      fromUserId: userId,
       status: "accepted",
     }).distinct("toUserId");
 
-    const users = await User.find({ _id: { $in: followingUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find(
+      { _id: { $in: followingUsersIds } },
+      { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
+    );
 
-    let updatedUsers = await Promise.all(users.map( async (user) => {
-      if(!user.profilePic) return user;
+    let updatedUsers = await Promise.all(
+      users.map(async (user) => {
+        if (!user.profilePic) return user;
 
-      const signedUrl = await generateSignedUrl(user.profilePic);
+        const signedUrl = await generateSignedUrl(user.profilePic);
 
-      return {
-        ...user,
-        profilePic: signedUrl
-      }
-  }))
+        return {
+          ...user,
+          profilePic: signedUrl,
+        };
+      })
+    );
 
-  console.log("following accounts : ",updatedUsers);
+    console.log("following accounts : ", updatedUsers);
 
-    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -300,33 +341,40 @@ export const fetchFollowersAccounts = async (req, res) => {
       return res.status(404).json({ message: "Please login and try again." });
     }
 
-    if(!userId) {
+    if (!userId) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const followersUsersIds = await Connection.find({
-      toUserId : userId,
+      toUserId: userId,
       status: "accepted",
     }).distinct("fromUserId");
 
-    const users = await User.find({ _id: { $in: followersUsersIds } }, {_id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find(
+      { _id: { $in: followersUsersIds } },
+      { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
+    );
 
-    let updatedUsers = await Promise.all(users.map( async (user) => {
-      if(!user.profilePic) return user;
+    let updatedUsers = await Promise.all(
+      users.map(async (user) => {
+        if (!user.profilePic) return user;
 
-      const signedUrl = await generateSignedUrl(user.profilePic);
+        const signedUrl = await generateSignedUrl(user.profilePic);
 
-      return {
-        ...user,
-        profilePic: signedUrl
-      }
-  }))
+        return {
+          ...user,
+          profilePic: signedUrl,
+        };
+      })
+    );
 
-  console.log("following accounts : ",updatedUsers);
+    console.log("following accounts : ", updatedUsers);
 
-    return res.status(200).json({ message: "Users fetched successfully", users: updatedUsers });
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -347,27 +395,35 @@ export const fetchNotifications = async (req, res) => {
       .populate({
         path: "fromUserId",
         select: "userName fullName profilePic _id",
-      }).lean();
+      })
+      .lean();
 
-      const updatedNotifications = await Promise.all(
-        notifications.map( async (notification) => {
-          if(!notification?.fromUserId?.profilePic) return notification;
+    const updatedNotifications = await Promise.all(
+      notifications.map(async (notification) => {
+        if (!notification?.fromUserId?.profilePic) return notification;
 
-          const signedUrl = await generateSignedUrl(notification?.fromUserId?.profilePic);
+        const signedUrl = await generateSignedUrl(
+          notification?.fromUserId?.profilePic
+        );
 
-          return {
-            ...notification,
-            fromUserId : {
-              ...notification.fromUserId,
-              profilePic: signedUrl
-            }
-          }
-        })
-      )
+        return {
+          ...notification,
+          fromUserId: {
+            ...notification.fromUserId,
+            profilePic: signedUrl,
+          },
+        };
+      })
+    );
 
-    return res.status(200).json({ message: "Users fetched successfully", notifications: updatedNotifications });
+    return res
+      .status(200)
+      .json({
+        message: "Users fetched successfully",
+        notifications: updatedNotifications,
+      });
   } catch (error) {
-    console.log("error : ",error);
+    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -391,8 +447,9 @@ export const fetchSuggestions = async (req, res) => {
       ],
     });
 
-
-    return res.status(200).json({ message: "Suggestions fetched successfully", suggestions });
+    return res
+      .status(200)
+      .json({ message: "Suggestions fetched successfully", suggestions });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
