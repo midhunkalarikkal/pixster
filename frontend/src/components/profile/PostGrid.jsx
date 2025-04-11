@@ -45,6 +45,8 @@ const PostGrid = ({ posts, onDelete }) => {
     return <PostsSkeleton />;
   }
 
+  console.log("posts : ",posts);
+
   return (
     <div className="w-full">
       <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 p-[2px] gap-1">

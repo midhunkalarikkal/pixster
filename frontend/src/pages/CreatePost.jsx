@@ -65,7 +65,7 @@ const CreatePost = () => {
         response = await uploadPost(formData);
       }
 
-      if (response?.status === 200) {
+      if (response?.data?.success) {
         toast.success(postForUpdating ? "Post updated!" : "Post created!");
         setCaption("");
         setImage(null);

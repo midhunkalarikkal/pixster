@@ -5,6 +5,7 @@ import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 import dotenv from "dotenv";
+import { generateRandomString } from "../utils/helper.js";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -32,11 +33,11 @@ export const uploadPost = async (req, res) => {
       return res.status(400).json({ message: "Pos captionlength error." });
     }
 
+    const randomString = await generateRandomString();
+
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `talkzyUsersPostsImages/${currentUser}.${file.originalname
-        .split(".")
-        .pop()}`,
+      Key: `talkzyUsersPostsImages/${currentUser+randomString+file.originalname}`,
       Body: file.buffer,
       ContentType: file.mimetype,
     };
@@ -53,6 +54,8 @@ export const uploadPost = async (req, res) => {
       media: s3UploadResponse.Location,
       content: caption,
     });
+
+    console.log("s3UploadResponse : ",s3UploadResponse.Location);
 
     await newPost.save();
     await User.findByIdAndUpdate(currentUser, { $inc: { postsCount: 1 } });
@@ -142,11 +145,11 @@ export const updatePost = async (req, res) => {
             }
           }
 
+          const randomString = await generateRandomString();
+
           const params = {
             Bucket: process.env.AWS_S3_BUCKET_NAME,
-            Key: `talkzyUsersPostsImages/${currentUser}.${file.originalname
-              .split(".")
-              .pop()}`,
+            Key: `talkzyUsersPostsImages/${currentUser+randomString+file.originalname}`,
             Body: file.buffer,
             ContentType: file.mimetype,
           };
@@ -167,6 +170,7 @@ export const updatePost = async (req, res) => {
     await post.save();
 
     return res.status(200).json({
+        success: true,
         message: "Post updated successfully.",
     })
 
