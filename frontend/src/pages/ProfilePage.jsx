@@ -65,8 +65,8 @@ const ProfilePage = () => {
   // console.log("authUser : ", authUser);
   // console.log("userData : ", userData);
   // console.log("searchSelectedUser : ",searchSelectedUser);
-  console.log("connetionData : ", searchSelectedUser?.connectionData);
-  console.log("revConnectionData : ", searchSelectedUser?.revConnectionData);
+  // console.log("connetionData : ", searchSelectedUser?.connectionData);
+  // console.log("revConnectionData : ", searchSelectedUser?.revConnectionData);
 
   return (
     <>

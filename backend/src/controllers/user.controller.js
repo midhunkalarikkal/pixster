@@ -546,8 +546,6 @@ export const fetchSuggestions = async (req, res) => {
       })
     )
 
-    console.log("updatedUsers : ",updatedUsers);
-
     return res
       .status(200)
       .json({ message: "Suggestions fetched successfully", suggestions: updatedUsers });

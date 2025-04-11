@@ -6,6 +6,7 @@ import { useSuggestionStore } from "../../store/useSuggestionStore";
 import UserTab from "../../components/UserTab";
 import { useSearchStore } from "../../store/useSearchStore";
 import { toast } from "react-toastify";
+import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 
 const Suggestions = () => {
   // const { sendConnectionRequest } = useSearchStore();
@@ -30,7 +31,7 @@ const Suggestions = () => {
   console.log("suggestions : ", suggestions);
 
   return (
-    <div className="w-4/12 pr-10 pl-4">
+    <div className="w-4/12 pr-10 pl-4 overflow-y-scroll no-scrollbar">
       <AuthUserTab />
       <div className="w-full p-3 md:p-5">
         <div className="flex items-center gap-2">
@@ -40,9 +41,9 @@ const Suggestions = () => {
           </label>
         </div>
       </div>
-      <div className="lex flex-col overflow-y-scroll no-scrollbar">
+      <div className="flex flex-col">
         {suggestionsLoading ? (
-          <p>Loading</p>
+          <UserBarSkeleton />
         ) : suggestions && suggestions.length > 0 ? (
           suggestions.map((user) => (
             <UserTab
