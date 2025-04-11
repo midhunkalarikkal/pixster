@@ -1,9 +1,8 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
-import { Upload } from "@aws-sdk/lib-storage";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
-import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+import { generateSignedUrl } from "../utils/aws.config.js";
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -322,63 +321,6 @@ export const fetchSuggestions = async (req, res) => {
 
     return res.status(200).json({ message: "Suggestions fetched successfully", suggestions });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
-
-export const uploadPost = async (req, res) => {
-  try {
-    const currentUser = req.user?._id;
-    console.log("req.body : ",req.body);
-    console.log("req.file : ",req.file);
-    
-    const { caption } = req.body;
-    const file = req.file;
-
-    if (!currentUser) {
-      return res.status(400).json({ message: "User not found." });
-    }
-
-    if (!file) {
-      return res.status(400).json({ message: "Image not found." });
-    }
-
-    if (!caption) {
-      return res.status(400).json({ message: "Caption not found." });
-    }
-
-    if(caption.length < 1 || caption.length > 200) {
-      return res.status(400).json({ message: "Pos captionlength error." });
-    }
-
-    const params = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `talkzyUsersPostsImages/${currentUser}.${file.originalname
-        .split(".")
-        .pop()}`,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    };
-
-    const upload = new Upload({
-      client: s3Client,
-      params: params,
-    });
-
-    const s3UploadResponse = await upload.done();
-
-    const newPost = new Post({
-      userId: currentUser,
-      media: s3UploadResponse.Location,
-      content: caption,
-    });
-
-    await newPost.save();
-    await User.findByIdAndUpdate(currentUser, { $inc : { postsCount : 1 }});
-
-    return res.status(201).json({ success: true, message: "Post uploaded successfully" });
-  } catch (error) {
-    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

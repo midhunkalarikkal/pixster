@@ -17,6 +17,10 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
     setUserPosts(searchSelectedUser.userPosts);
   }, [searchSelectedUser]);
 
+  const handlePostDelete = (id) => {
+    setUserPosts((prevPosts) => prevPosts.filter(post => post._id !== id));
+  }
+
   return (
     <div className="flex flex-col justify-center items-center w-full py-4">
       {authUserId !== userDataId ? (
@@ -40,7 +44,7 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
           {tab === 0 && (
             searchSelectedUser ? (
               userPosts && userPosts.length > 0 ? (
-                <PostGrid posts={userPosts} />
+                <PostGrid posts={userPosts} onDelete={handlePostDelete} />
               ) : (
                 <p>{"You haven't uploaded any post yet."}</p>
               )

@@ -78,7 +78,7 @@ export const useProfileStore = create((set) => ({
     set({ postUploading : true });
     try{
       console.log("data : ",data);
-      const res = await axiosInstance.post('/user/uploadPost', data);
+      const res = await axiosInstance.post('/post/uploadPost', data);
       toast.success(res.data.message);
       return res;
     }catch (error) {
@@ -86,7 +86,21 @@ export const useProfileStore = create((set) => ({
     }finally {
       set({ postUploading :  false });
     }
-  }
+  },
+
+  deletePost: async (postId) => {
+    set({ postUploading : true });
+    try{
+      console.log("postId : ",postId);
+      const res = await axiosInstance.delete(`/post/deletePost/${postId}`);
+      // returning for accessing it in the postGrid compoenent
+      return res;
+    }catch (error) {
+      toast.error(error.response.data.message);
+    }finally {
+      set({ postUploading :  false });
+    }
+  },
 
 
 }));

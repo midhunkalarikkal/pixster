@@ -8,6 +8,7 @@ import authRouter from './routes/auth.route.js';
 import messageRouter from './routes/message.route.js';
 import connectionRouter from './routes/connection.route.js';
 import userRouter from './routes/user.router.js';
+import postRouter from './routes/post.router.js';
 import { app, server } from './lib/socket.js';
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/connection', connectionRouter);
 app.use('/api/user', userRouter);
+app.use('/api/post', postRouter);
 
 server.listen(PORT,() => {
     console.log(`Server is running on post ${PORT}`);
