@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useHomeStore } from "../store/useHomeStore";
+import { FileUpload } from "./ui/file-upload";
 
 const StoryUploader = () => {
   const { storyUploaderOpen, storyUploading, setStoryUploaderOpen } =
@@ -33,7 +34,7 @@ const StoryUploader = () => {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 transition-all duration-500">
-            
+            <FileUpload />
           </div>
         </div>
       )}

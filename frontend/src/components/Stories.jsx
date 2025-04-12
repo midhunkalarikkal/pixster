@@ -1,9 +1,12 @@
 import { Plus } from "lucide-react";
+import { useHomeStore } from "../store/useHomeStore";
 import StorySkeleton from "./skeletons/StorySkeleton";
 
 const Stories = () => {
+  const { setStoryUploaderOpen } = useHomeStore();
+
   const openStoryUploader = () => {
-    
+    setStoryUploaderOpen(true);
   };
 
   return (
