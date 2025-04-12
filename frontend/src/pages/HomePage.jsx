@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useProfileStore } from "../store/useProfileStore";
 import Suggestions from "../components/sidebars/Suggestions";
 import FeedSkeleton from "../components/skeletons/FeedSkeleton";
-import StorySkeleton from "../components/skeletons/StorySkeleton";
-import { useProfileStore } from "../store/useProfileStore";
 import HomePostsScroller from "../components/HomePostsScroller";
+import StorySkeleton from "../components/skeletons/StorySkeleton";
 
 const HomePage = () => {
+
   const [homePostsData, setHomePostsData] = useState([]);
   const { getHomePostScrollerData } = useProfileStore();
 
@@ -24,7 +25,10 @@ const HomePage = () => {
         <StorySkeleton />
         {homePostsData && homePostsData.length > 0 ? (
           homePostsData.map((post) => (
-            <HomePostsScroller key={post?._id} post={post} />
+            <HomePostsScroller 
+              key={post?.userPostDetails?._id} 
+              post={post} 
+            />
           ))
         ) : (
           <>

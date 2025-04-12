@@ -112,23 +112,23 @@ export const useAuthStore = create(persist((set, get) => ({
       set({ onlineUsers: userIds });
     });
 
-    socket.on("followRequest", (followRequestData) => {
+    socket.on("followRequest", (data) => {
       const { notifications, setNotifications } = useNotificationStore.getState();
       const { incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
 
       const newNotifications = [
         ...notifications,
-        followRequestData.notification,
+        data.notification,
       ];
 
       const updatedProfilesList = [
         ...incomingrequestedProfiles,
-        followRequestData.userData,
+        data.userData,
       ]
 
       setNotifications(newNotifications);
       setIncomingRequestedProfiles(updatedProfilesList);
-      toast.info(followRequestData.message);
+      toast.info(data.message);
     });
     
 
@@ -171,6 +171,18 @@ export const useAuthStore = create(persist((set, get) => ({
       const { setSearchSelectedUserRejectConnectionData } =
         useSearchStore.getState();
         setSearchSelectedUserRejectConnectionData(data.connectionData, data.revConnectionData);
+    });
+
+    socket.on("postLikeSocket", (data) => {
+      const { notifications, setNotifications } = useNotificationStore.getState();
+
+      const newNotifications = [
+        ...notifications,
+        data.notification,
+      ];
+
+      setNotifications(newNotifications);
+
     });
 
   },

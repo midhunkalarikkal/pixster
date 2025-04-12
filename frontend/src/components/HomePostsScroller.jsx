@@ -1,11 +1,38 @@
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { formatDistanceToNow } from "date-fns";
+import { usePostStore } from "../store/usePostStore";
 import { useSearchStore } from "../store/useSearchStore";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 const HomePostsScroller = ({ post }) => {
-  console.log("post : ", post);
+
+  const [postLiked, setPostLiked] = useState(false);
+  const [postLikeCount, setPostLikeCount] = useState(0);
+
+  console.log("postLiked : ",postLiked);
+
   const { getSearchSelectedUser } = useSearchStore();
+  const { likeOrDislikePost } = usePostStore();
+
+  useEffect(() => {
+    if(post) {
+      setPostLikeCount(post?.userPostDetails?.likes);
+    }
+  },[post, setPostLikeCount])
+
+  const handleLikeOrDislikePost = async (postId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const res = await likeOrDislikePost(postId);
+    if(res.liked) {
+      setPostLiked(true);
+      setPostLikeCount((prev) => prev + 1);
+    } else if(res.disliked){
+      setPostLiked(false);
+      setPostLikeCount((prev) => prev - 1);
+    }
+  }
 
   const handleUserTabClick = (userId) => {
     getSearchSelectedUser(userId);
@@ -46,11 +73,17 @@ const HomePostsScroller = ({ post }) => {
         <div className="flex justify-between">
           <div className="flex space-x-4 items-center">
             <span className="flex items-center space-x-1">
-              <Heart />
-              <p>{post?.userPostDetails?.likes}</p>
+              <Heart className={`cursor-pointer ${post?.userPostDetails?.likedByCurrentUser || postLiked && 'fill-red-500 text-red-500'}`} 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleLikeOrDislikePost(post?.userPostDetails?._id, e);
+                }} 
+              />
+              <p>{postLikeCount || post?.userPostDetails?.likes}</p>
             </span>
             <span className="flex items-center space-x-1">
-              <MessageCircle />
+              <MessageCircle className="cursor-pointer" />
               <p>{post?.userPostDetails?.commentsCount}</p>
             </span>
             <span className="flex items-center space-x-1">
@@ -80,8 +113,8 @@ HomePostsScroller.propTypes = {
       media: PropTypes.string.isRequired,
       content: PropTypes.string.isRequired,
       createdAt: PropTypes.string.isRequired,
-      likes: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        .isRequired,
+      likes: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      likedByCurrentUser: PropTypes.bool.isRequired,
       commentsCount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
   }).isRequired,

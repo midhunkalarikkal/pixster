@@ -57,6 +57,37 @@ export const homeScrollerData = async (req, res) => {
         $unwind: "$userPostDetails",
       },
       {
+        $lookup : {
+          from : "postlikes",
+          let : { postId : "$userPostDetails._id" },
+          pipeline : [
+            {
+              $match : {
+                $expr : {
+                  $and : [
+                    { $eq : ["$postId", "$$postId"] },
+                    { $eq : ["$userId", currentUserId] },
+                  ]
+                }
+              }
+            }
+          ],
+          as : "likedByCurrentUser"
+        }
+      },
+      {
+        $addFields : {
+          "userPostDetails.likedByCurrentUser" : {
+            $gt : [{ $size : "$likedByCurrentUser" }, 0]
+          }
+        }
+      },
+      {
+        $project: {
+          likedByCurrentUser: 0,
+        },
+      },
+      {
         $sort : { "userPostDetails.createdAt" : -1 }
       }
     ]);
@@ -84,6 +115,8 @@ export const homeScrollerData = async (req, res) => {
         };
       })
     );
+
+    // console.log("updatedPostData : ",updatedPostData)
 
     return res
       .status(200)
