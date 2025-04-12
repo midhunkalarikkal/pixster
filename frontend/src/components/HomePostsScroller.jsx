@@ -10,16 +10,15 @@ const HomePostsScroller = ({ post }) => {
   const [postLiked, setPostLiked] = useState(false);
   const [postLikeCount, setPostLikeCount] = useState(0);
 
-  console.log("postLiked : ",postLiked);
-
   const { getSearchSelectedUser } = useSearchStore();
   const { likeOrDislikePost } = usePostStore();
 
   useEffect(() => {
     if(post) {
       setPostLikeCount(post?.userPostDetails?.likes);
+      setPostLiked(post?.userPostDetails?.likedByCurrentUser);
     }
-  },[post, setPostLikeCount])
+  },[post])
 
   const handleLikeOrDislikePost = async (postId, e) => {
     e.preventDefault();
@@ -73,14 +72,14 @@ const HomePostsScroller = ({ post }) => {
         <div className="flex justify-between">
           <div className="flex space-x-4 items-center">
             <span className="flex items-center space-x-1">
-              <Heart className={`cursor-pointer ${post?.userPostDetails?.likedByCurrentUser || postLiked && 'fill-red-500 text-red-500'}`} 
+              <Heart className={`cursor-pointer ${postLiked && 'fill-red-500 text-red-500'}`} 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   handleLikeOrDislikePost(post?.userPostDetails?._id, e);
                 }} 
               />
-              <p>{postLikeCount || post?.userPostDetails?.likes}</p>
+              <p>{postLikeCount}</p>
             </span>
             <span className="flex items-center space-x-1">
               <MessageCircle className="cursor-pointer" />

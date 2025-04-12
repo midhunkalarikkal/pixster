@@ -116,7 +116,7 @@ export const homeScrollerData = async (req, res) => {
       })
     );
 
-    // console.log("updatedPostData : ",updatedPostData)
+    console.log("updatedPostData : ",updatedPostData)
 
     return res
       .status(200)
