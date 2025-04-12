@@ -60,7 +60,6 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
     setListPage(false);
   };
 
-  console.log("Followings : ",followingProfiles)
 
   return (
     <div

@@ -1,0 +1,44 @@
+import { X } from "lucide-react";
+import { useHomeStore } from "../store/useHomeStore";
+
+const StoryUploader = () => {
+  const { storyUploaderOpen, storyUploading, setStoryUploaderOpen } =
+    useHomeStore();
+
+  const handleCloseStoryUploader = () => {
+    setStoryUploaderOpen(false);
+  };
+
+  return (
+    <div
+      className={`h-screen w-full bg-black/90 flex justify-center items-center ${
+        storyUploaderOpen ? "absolute" : "hidden"
+      }`}
+    >
+      {storyUploading ? (
+        <span className="loading loading-bars loading-lg"></span>
+      ) : (
+        <div className="w-4/12 h-[600px] rounded-2xl shadow-lg border border-base-300 p-4 flex flex-col bg-base-100">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-semibold">Upload Your Story</h2>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCloseStoryUploader();
+              }}
+              className="p-2 rounded-full transition"
+            >
+              <X />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 transition-all duration-500">
+            
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default StoryUploader;
