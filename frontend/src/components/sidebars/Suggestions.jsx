@@ -1,27 +1,28 @@
 import { useEffect } from "react";
 import { Users } from "lucide-react";
 import AuthUserTab from "../AuthUserTab";
-// import { useSearchStore } from "../../store/useSearchStore";
-import { useSuggestionStore } from "../../store/useSuggestionStore";
 import UserTab from "../../components/UserTab";
-import { useSearchStore } from "../../store/useSearchStore";
-import { toast } from "react-toastify";
 import UserBarSkeleton from "../skeletons/UserBarSkeleton";
+import { useSearchStore } from "../../store/useSearchStore";
+import { useSuggestionStore } from "../../store/useSuggestionStore";
 
 const Suggestions = () => {
-  // const { sendConnectionRequest } = useSearchStore();
-  const { suggestions, suggestionsLoading, fetchSuggestions } =
-    useSuggestionStore();
-  const { getSearchSelectedUser } = useSearchStore();
+
+  const { suggestions, suggestionsLoading, fetchSuggestions, setSuggestions } = useSuggestionStore();
+  const { getSearchSelectedUser, sendConnectionRequest } = useSearchStore();
 
   useEffect(() => {
     fetchSuggestions();
   }, []);
 
-  const handlefollowConnection = (user, e) => {
+  const handlefollowConnection = async (user, e) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.info("Working on it.");
+    const res = await sendConnectionRequest(user._id, "requested");
+    if(res.status === 200) {
+      const updatedList = suggestions.filter((item) => item._id !== res.data.userData._id);
+      setSuggestions(updatedList);
+    }
   };
 
   const handleUserTabClick = (userId) => {

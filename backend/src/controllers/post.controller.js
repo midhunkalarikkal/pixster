@@ -3,14 +3,13 @@ import User from "../models/user.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-
-import dotenv from "dotenv";
 import { generateRandomString } from "../utils/helper.js";
 import PostLike from "../models/postLike.model.js";
 import Notification from "../models/notification.model.js";
-import { Types } from "mongoose";
 import { getReceiverSocketId } from "../lib/socket.js";
 import Saved from "../models/saved.model.js";
+
+import dotenv from "dotenv";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -187,9 +186,6 @@ export const likeOrDislikePost = async (req, res) => {
     const currentUserId = req.user?._id;
     const { postId } = req.params;
 
-    console.log("currenUserID : ",currentUserId);
-    console.log("postId : ",postId);
-
     if (!currentUserId || !postId) {
       return res.status(400).json({ message: "Invalid request" });
     }
@@ -273,9 +269,6 @@ export const savePost = async (req,res) => {
     console.log("post saving");
     const currentUserId = req.user?._id;
     const { postId } = req.params;
-
-    console.log("currenUserID : ",currentUserId);
-    console.log("postId : ",postId);
 
     if (!currentUserId || !postId) {
       return res.status(400).json({ message: "Invalid request" });

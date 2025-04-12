@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { usePostStore } from "../../store/usePostStore";
 import { useProfileStore } from "../../store/useProfileStore";
-import { Bookmark, Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
+import { Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
 
 const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
 

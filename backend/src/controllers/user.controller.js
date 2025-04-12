@@ -144,8 +144,6 @@ export const homeScrollerData = async (req, res) => {
       })
     );
 
-    console.log("updatedPostData : ",updatedPostData)
-
     return res
       .status(200)
       .json({ message: "Home scroll data fetched.", posts: updatedPostData });
@@ -215,14 +213,11 @@ export const fetchSearchedUserProfile = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    console.log("connectionData : ", connectionData);
-
     const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
     );
 
-    console.log("revConnectionData : ", revConnectionData);
 
     let updatedUserPosts = [];
     const isOwnProfile = currentUser?.toString() === userId;
@@ -259,7 +254,6 @@ export const fetchSearchedUserProfile = async (req, res) => {
           };
         })
       );
-      console.log("updatedUserSavedPosts : ",updatedUserSavedPosts);
     }
 
     if (userData.profilePic) {
@@ -518,10 +512,18 @@ export const fetchSuggestions = async (req, res) => {
     const suggestionUsersIds = await Connection.aggregate([
     {
       $match : {
-        status: "accepted",
-        $or : [
-          { fromUserId : currentUserId },
-          { toUserId : currentUserId }
+        $and : [{
+          $or : [
+            {  status: "accepted" },
+            {  status: "requested" },
+          ],
+        },
+        {
+          $or : [
+            { fromUserId : currentUserId },
+            { toUserId : currentUserId }
+          ]
+        }
         ]
       }
     },

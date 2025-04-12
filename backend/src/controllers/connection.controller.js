@@ -42,6 +42,7 @@ export const requestConnection = async (req, res) => {
     let newNotification;
 
     if (connectionData) {
+      console.log("ConnectionData");
       if (connectionData.status === status) {
         return res
           .status(400)
@@ -64,6 +65,7 @@ export const requestConnection = async (req, res) => {
         newNotification = await newNotification.save();
       }
     } else {
+      console.log("No connectionData")
       connectionData = new Connection({
         fromUserId,
         toUserId,

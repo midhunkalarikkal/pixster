@@ -7,11 +7,12 @@ export const useSuggestionStore = create((set) => ({
     suggestions: null,
     suggestionsLoading: false,
 
+    setSuggestions: (newSuggestions) => set({ suggestions : newSuggestions }),
+
     fetchSuggestions: async () => {
         set({ suggestionsLoading: true });
         try{
             const res = await axiosInstance.get('/user/getSuggestions');
-            console.log("response : ",res);
             set({ suggestions : res.data.suggestions });
         }catch (error) {
             toast.error(error.response.data.message);
