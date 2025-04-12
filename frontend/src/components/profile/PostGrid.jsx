@@ -1,12 +1,13 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
-import PostsSkeleton from "../skeletons/PostsSkeleton";
-import { useProfileStore } from "../../store/useProfileStore";
-import { Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PostsSkeleton from "../skeletons/PostsSkeleton";
+import { usePostStore } from "../../store/usePostStore";
+import { useProfileStore } from "../../store/useProfileStore";
+import { Bookmark, Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
 
-const PostGrid = ({ posts, onDelete }) => {
+const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -14,6 +15,15 @@ const PostGrid = ({ posts, onDelete }) => {
 
   const { deletePost } = useProfileStore();
   const { setPostForUpdating } = useProfileStore();
+  const { saveRemovePost } = usePostStore();
+
+  const removeFromSaved = async (postId) => {
+    const res = await saveRemovePost(postId);
+    if(res.removed) {
+      onRemove(postId);
+      toast.success("Post removed from your save list.");
+    }
+  }
 
   const confirmDelete = async (id) => {
     if (!id) {
@@ -67,7 +77,19 @@ const PostGrid = ({ posts, onDelete }) => {
                   alt={`Post by user`}
                 />
                 <div className="absolute inset-0 z-20 hidden group-hover:flex flex-col items-center justify-center space-y-2 transition-opacity duration-300">
-                  <div className="flex space-x-4">
+                  <div className={`flex space-x-4 ${!saved && 'hidden'}`}>
+                    <button
+                      className="flex flex-col items-center text-red-500"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeFromSaved(post._id);
+                      }}
+                    >
+                      <Trash />
+                    </button>
+                  </div>
+                  <div className={`flex space-x-4 ${saved && 'hidden'}`}>
                     <p className="flex flex-col items-center">
                       <Heart />
                       {post.likes}
@@ -77,7 +99,7 @@ const PostGrid = ({ posts, onDelete }) => {
                       {post.commentsCount}
                     </p>
                   </div>
-                  <div className="flex space-x-4">
+                  <div className={`flex space-x-4 ${ saved && 'hidden' }`}>
                     <button
                       className="flex flex-col items-center text-red-500"
                       onClick={(e) => {
@@ -138,6 +160,8 @@ const PostGrid = ({ posts, onDelete }) => {
 PostGrid.propTypes = {
   posts: PropTypes.array,
   onDelete: PropTypes.func,
+  onRemove: PropTypes.func,
+  saved: PropTypes.bool,
 };
 
 export default PostGrid;

@@ -7,6 +7,7 @@ import { useSearchStore } from "../../store/useSearchStore";
 const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
 
   const [userPosts, setUserPosts] = useState([]);
+  const [userSavedPosts, setUserSavedPosts] = useState([]);
 
   const { 
     searchSelectedUser, 
@@ -15,10 +16,15 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
   useEffect(() => {
     if (!searchSelectedUser) return;
     setUserPosts(searchSelectedUser.userPosts);
+    setUserSavedPosts(searchSelectedUser?.userSavedPosts);
   }, [searchSelectedUser]);
 
   const handlePostDelete = (id) => {
     setUserPosts((prevPosts) => prevPosts.filter(post => post._id !== id));
+  }
+
+  const handleRemoveFromSaved = (id) => {
+    setUserSavedPosts((prevSavedPost) => prevSavedPost.filter(post => post._id !== id ));
   }
 
   return (
@@ -44,7 +50,7 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
           {tab === 0 && (
             searchSelectedUser ? (
               userPosts && userPosts.length > 0 ? (
-                <PostGrid posts={userPosts} onDelete={handlePostDelete} />
+                <PostGrid posts={userPosts} onDelete={handlePostDelete} saved={false} />
               ) : (
                 <p>{"You haven't uploaded any post yet."}</p>
               )
@@ -52,7 +58,17 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
               <PostsSkeleton />
             )
           )}
-          {tab === 1 && <PostsSkeleton />}
+          {tab === 1 && (
+            searchSelectedUser ? (
+              userSavedPosts && userSavedPosts.length > 0 ? (
+                <PostGrid posts={userSavedPosts} onRemove={handleRemoveFromSaved} saved={true} />
+              ) : (
+                <p>{"You haven't uploaded any post yet."}</p>
+              )
+            ) : (
+              <PostsSkeleton />
+            )
+          )}
         </>
       )}
     </div>

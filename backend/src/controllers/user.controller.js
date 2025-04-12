@@ -5,6 +5,7 @@ import Notification from "../models/notification.model.js";
 import { generateSignedUrl } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
+import Saved from "../models/saved.model.js";
 dotenv.config();
 
 export const homeScrollerData = async (req, res) => {
@@ -230,7 +231,6 @@ export const fetchSearchedUserProfile = async (req, res) => {
       isOwnProfile
     ) {
       const userPosts = await Post.find({ userId }).lean();
-
       updatedUserPosts = await Promise.all(
         userPosts.map(async (post) => {
           const signedUrl = await generateSignedUrl(post.media);
@@ -240,6 +240,26 @@ export const fetchSearchedUserProfile = async (req, res) => {
           };
         })
       );
+    }
+
+    let updatedUserSavedPosts = [];
+    if(isOwnProfile) {
+      let userSavedPosts = await Saved.find({ userId },{_id: 0, postId: 1}).populate({
+        path: "postId",
+        select : "media"
+      }).lean();
+
+      
+      updatedUserSavedPosts = await Promise.all(
+        userSavedPosts.map(async (post) => {
+          const signedUrl = await generateSignedUrl(post?.postId?.media);
+          return {
+            ...post.postId,
+            media: signedUrl,
+          };
+        })
+      );
+      console.log("updatedUserSavedPosts : ",updatedUserSavedPosts);
     }
 
     if (userData.profilePic) {
@@ -252,6 +272,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
       connectionData,
       revConnectionData,
       userPosts: updatedUserPosts,
+      userSavedPosts: isOwnProfile ? updatedUserSavedPosts : [],
     });
   } catch (error) {
     console.log("error : ", error);

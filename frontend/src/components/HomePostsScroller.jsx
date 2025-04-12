@@ -27,7 +27,6 @@ const HomePostsScroller = ({ post }) => {
     e.preventDefault();
     e.stopPropagation();
     const res = await saveRemovePost(postId);
-    console.log("resposne : ",res);
     if(res.saved) {
       setPostSaved(true);
     } else if(res.removed) {
