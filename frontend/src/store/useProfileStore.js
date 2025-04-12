@@ -43,7 +43,6 @@ export const useProfileStore = create((set) => ({
   },
 
   getIncomingRequestedProfiles: async () => {
-    console.log("incoming request")
     set({ incomingrequestedProfilesLoading: true });
     try {
       const res = await axiosInstance.get("/user/fetchIncomingRequestedProfiles");
@@ -82,7 +81,6 @@ export const useProfileStore = create((set) => ({
   uploadPost: async (data) => {
     set({ postUploading : true });
     try{
-      console.log("data : ",data);
       const res = await axiosInstance.post('/post/uploadPost', data);
       return res;
     }catch (error) {
@@ -94,7 +92,6 @@ export const useProfileStore = create((set) => ({
 
   deletePost: async (postId) => {
     try{
-      console.log("postId : ",postId);
       const res = await axiosInstance.delete(`/post/deletePost/${postId}`);
       // returning for accessing it in the postGrid compoenent
       return res;
@@ -106,9 +103,7 @@ export const useProfileStore = create((set) => ({
   updatePost: async (postId, data) => {
     set({ postUploading : true });
     try{
-      console.log("data : ",data);
       const res = await axiosInstance.post(`/post/updatePost/${postId}`, data);
-      console.log("post update respose : ",res);
       return res;
     }catch (error) {
       toast.error(error.response.data.message);

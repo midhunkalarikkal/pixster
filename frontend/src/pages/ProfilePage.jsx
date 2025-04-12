@@ -12,6 +12,8 @@ import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
 
+  console.log("Profile Page")
+
   const [tab, setTab] = useState(0);
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
@@ -117,7 +119,7 @@ const ProfilePage = () => {
                     <p className="text-sm text-zinc-400">Posts</p>
                   </div>
 
-                  {authUser?._id !== userData?._id ? (
+                  {userData && authUser?._id !== userData?._id ? (
                     connectionData && connectionData.status === "accepted" ? (
                       <>
                         <UserStat
@@ -155,7 +157,7 @@ const ProfilePage = () => {
                         />
                       </>
                     )
-                  ) : (
+                  ) : userData && (
                     <>
                       <UserStat
                         icon={Users}
@@ -203,8 +205,11 @@ const ProfilePage = () => {
                 connectionData.status === "cancelled" ? (
                   <CustomButton
                     text={connectionStatusLoading ? "Requesting" : "Follow"}
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       sendConnectionRequest(userData?._id, "requested")
+                    }
                     }
                   />
                 ) : connectionData.status === "requested" ? (
@@ -212,8 +217,11 @@ const ProfilePage = () => {
                     text={
                       connectionStatusLoading ? "Cancelling" : "Cancel Request"
                     }
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       cancelConnectionRequest(userData?._id, "cancelled", false)
+                    }
                     }
                   />
                 ) : (
@@ -222,8 +230,11 @@ const ProfilePage = () => {
                       text={
                         connectionStatusLoading ? "Unfollowing" : "Following"
                       }
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         unFollowConnectionRequest(userData?._id, "unfollowed")
+                      }
                       }
                     />
                   )

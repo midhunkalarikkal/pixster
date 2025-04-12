@@ -379,22 +379,18 @@ export const fetchFollowingAccounts = async (req, res) => {
     const users = await User.find(
       { _id: { $in: followingUsersIds } },
       { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
-    );
+    ).lean();
 
     let updatedUsers = await Promise.all(
       users.map(async (user) => {
         if (!user.profilePic) return user;
-
         const signedUrl = await generateSignedUrl(user.profilePic);
-
         return {
           ...user,
           profilePic: signedUrl,
         };
       })
     );
-
-    console.log("following accounts : ", updatedUsers);
 
     return res
       .status(200)
@@ -426,7 +422,7 @@ export const fetchFollowersAccounts = async (req, res) => {
     const users = await User.find(
       { _id: { $in: followersUsersIds } },
       { _id: 1, userName: 1, fullName: 1, profilePic: 1 }
-    );
+    ).lean();
 
     let updatedUsers = await Promise.all(
       users.map(async (user) => {

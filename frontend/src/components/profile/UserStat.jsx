@@ -1,16 +1,19 @@
+import { memo } from "react";
 import PropTypes from "prop-types";
 
-const UserStat = ({ icon: Icon, count, label, onClick }) => (
-  <button
-    className="flex flex-col items-center"
-    onClick={onClick}
-    disabled={!onClick}
-  >
-    <Icon className="w-6 h-6 text-zinc-400" />
-    <p className="text-lg font-semibold">{count}</p>
-    <p className="text-sm text-zinc-400">{label}</p>
-  </button>
-);
+const UserStat = ({ icon: Icon, count, label, onClick }) => {
+  return (
+    <button
+      className="flex flex-col items-center"
+      onClick={onClick}
+      disabled={!onClick}
+    >
+      <Icon className="w-6 h-6 text-zinc-400" />
+      <p className="text-lg font-semibold">{count}</p>
+      <p className="text-sm text-zinc-400">{label}</p>
+    </button>
+  );
+};
 
 UserStat.propTypes = {
   icon: PropTypes.elementType.isRequired,
@@ -19,4 +22,4 @@ UserStat.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default UserStat;
+export default memo(UserStat);

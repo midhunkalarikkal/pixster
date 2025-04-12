@@ -32,8 +32,6 @@ export const useSearchStore = create(persist((set) => ({
     set({ selectedUserId: userId });
     set({ searchSelectedUserLoading: true });
     try {
-      console.log("calling api")
-      console.log("userId : ", userId);
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       set({ searchSelectedUser: res.data });
       if(navigate) navigate("/profile");
@@ -95,13 +93,9 @@ export const useSearchStore = create(persist((set) => ({
   sendConnectionRequest: async (toUserId, status) => {
     set({ connectionStatusLoading: true });
     try {
-      console.log("api calling");
-      console.log("toUserId : ",toUserId);
-      console.log("status : ",status);
       const res = await axiosInstance.post(
         `/connection/sendConnectionRequest/${toUserId}?status=${status}`
       );
-      console.log("response : ",res);
       toast.success(res.data.message);
       set({ searchSelectedUser: res.data });
       return res;

@@ -9,6 +9,7 @@ import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
 
 const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
+  
   let [reqdProfiles, setReqProfiles] = useState([]);
 
   const { setListPage, listPage } = useProfileStore();
@@ -58,6 +59,8 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
     setTab(0);
     setListPage(false);
   };
+
+  console.log("Followings : ",followingProfiles)
 
   return (
     <div

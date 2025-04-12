@@ -9,6 +9,7 @@ const ProfileHeadDropdown = ({
   setListPage,
   setTab,
 }) => {
+
   const isHidden = authUserId !== userId;
 
   return (
@@ -52,8 +53,8 @@ const ProfileHeadDropdown = ({
 };
 
 ProfileHeadDropdown.propTypes = {
-  authUserId: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired,
+  authUserId: PropTypes.string,
+  userId: PropTypes.string,
   getRequestedProfiles: PropTypes.func.isRequired,
   getIncomingRequestedProfiles: PropTypes.func.isRequired,
   setListPage: PropTypes.func.isRequired,

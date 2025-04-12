@@ -42,7 +42,6 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
   };
 
   const getUpdatePost = (post) => {
-    console.log("post : ", post);
     if (!post) {
       toast.error("Something wnet wrong.");
       return;
@@ -54,8 +53,6 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
   if (!posts) {
     return <PostsSkeleton />;
   }
-
-  console.log("posts : ",posts);
 
   return (
     <div className="w-full">

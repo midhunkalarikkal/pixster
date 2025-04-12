@@ -28,13 +28,9 @@ const Suggestions = () => {
   };
 
   const handleUserTabClick = (userId) => {
-    console.log("get profile");
-    console.log("userId : ",userId);
     getSearchSelectedUser(userId, navigate);
   };
-
-  console.log("suggestions : ", suggestions);
-
+  
   return (
     <div className="w-4/12 pr-10 pl-4 overflow-y-scroll no-scrollbar">
       <AuthUserTab />
