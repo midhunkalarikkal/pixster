@@ -5,9 +5,11 @@ import UserTab from "../../components/UserTab";
 import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 import { useSearchStore } from "../../store/useSearchStore";
 import { useSuggestionStore } from "../../store/useSuggestionStore";
+import { useNavigate } from "react-router-dom";
 
 const Suggestions = () => {
 
+  const navigate = useNavigate();
   const { suggestions, suggestionsLoading, fetchSuggestions, setSuggestions } = useSuggestionStore();
   const { getSearchSelectedUser, sendConnectionRequest } = useSearchStore();
 
@@ -26,7 +28,9 @@ const Suggestions = () => {
   };
 
   const handleUserTabClick = (userId) => {
-    getSearchSelectedUser(userId);
+    console.log("get profile");
+    console.log("userId : ",userId);
+    getSearchSelectedUser(userId, navigate);
   };
 
   console.log("suggestions : ", suggestions);
