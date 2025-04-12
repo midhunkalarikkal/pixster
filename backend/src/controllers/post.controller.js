@@ -10,6 +10,7 @@ import PostLike from "../models/postLike.model.js";
 import Notification from "../models/notification.model.js";
 import { Types } from "mongoose";
 import { getReceiverSocketId } from "../lib/socket.js";
+import Saved from "../models/saved.model.js";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -266,3 +267,49 @@ export const likeOrDislikePost = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const savePost = async (req,res) => {
+  try {
+    console.log("post saving");
+    const currentUserId = req.user?._id;
+    const { postId } = req.params;
+
+    console.log("currenUserID : ",currentUserId);
+    console.log("postId : ",postId);
+
+    if (!currentUserId || !postId) {
+      return res.status(400).json({ message: "Invalid request" });
+    }
+
+    const user = await User.findById(currentUserId);
+    if (!user) {
+      return res.status(404).json({ message: "No user found" });
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "No post found" });
+    }
+
+    const existing = await Saved.findOne({ postId: postId });
+    if(existing) {
+      await Saved.findByIdAndDelete(existing._id);
+
+      return res.status(200).json({ message: "Post removed from your saved list.", saved : false, removed : true });
+    } else {
+
+      const newSaved = new Saved({
+        userId: currentUserId,
+        postId: postId
+      });
+
+      await newSaved.save();
+
+      return res.status(200).json({ message: "Post saved.", saved : true, removed : false });
+    }
+
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

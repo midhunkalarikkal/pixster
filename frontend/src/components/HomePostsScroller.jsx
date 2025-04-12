@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { usePostStore } from "../store/usePostStore";
 import { useSearchStore } from "../store/useSearchStore";
@@ -10,15 +10,30 @@ const HomePostsScroller = ({ post }) => {
   const [postLiked, setPostLiked] = useState(false);
   const [postLikeCount, setPostLikeCount] = useState(0);
 
+  const [postSaved, setPostSaved] = useState(false);
+
   const { getSearchSelectedUser } = useSearchStore();
-  const { likeOrDislikePost } = usePostStore();
+  const { likeOrDislikePost, saveRemovePost } = usePostStore();
 
   useEffect(() => {
     if(post) {
       setPostLikeCount(post?.userPostDetails?.likes);
       setPostLiked(post?.userPostDetails?.likedByCurrentUser);
+      setPostSaved(post?.userPostDetails?.savedByCurrentUser);
     }
   },[post])
+
+  const handlePostSaveOrRemove = async (postId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const res = await saveRemovePost(postId);
+    console.log("resposne : ",res);
+    if(res.saved) {
+      setPostSaved(true);
+    } else if(res.removed) {
+      setPostSaved(false);
+    }
+  }
 
   const handleLikeOrDislikePost = async (postId, e) => {
     e.preventDefault();
@@ -89,7 +104,13 @@ const HomePostsScroller = ({ post }) => {
               <Send />
             </span>
           </div>
-          <Bookmark className="cursor-pointer" />
+          <Bookmark className={`cursor-pointer ${postSaved && 'fill-blue-400 text-blue-400'}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handlePostSaveOrRemove(post?.userPostDetails?._id, e)
+            }}
+          />
         </div>
         <p className="text-sm">
           {post?.userPostDetails?.content}
@@ -114,6 +135,7 @@ HomePostsScroller.propTypes = {
       createdAt: PropTypes.string.isRequired,
       likes: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       likedByCurrentUser: PropTypes.bool.isRequired,
+      savedByCurrentUser: PropTypes.bool.isRequired,
       commentsCount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
   }).isRequired,

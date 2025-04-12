@@ -11,6 +11,15 @@ export const usePostStore = create(() => ({
         }catch (error) {
             toast.error(error.response.data.message);
         }
+    },
+
+    saveRemovePost: async(postId) => {
+        try {
+            const res = await axiosInstance.post(`/post/savePost/${postId}`);
+            return res.data;
+        }catch (error) {
+            toast.error(error.resposen.data.message);
+        }
     }
 
 }))

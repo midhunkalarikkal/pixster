@@ -6,7 +6,7 @@ const savedSchema = new mongoose.Schema({
         required : true,
         ref : "User"
     },
-    post : {
+    postId : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
         ref : "Post"

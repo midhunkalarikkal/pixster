@@ -83,8 +83,35 @@ export const homeScrollerData = async (req, res) => {
         }
       },
       {
+        $lookup : {
+          from : "saveds",
+          let : { postId : "$userPostDetails._id" },
+          pipeline : [
+            {
+              $match : {
+                $expr : {
+                  $and : [
+                    { $eq : ["$postId", "$$postId"] },
+                    { $eq : ["$userId", currentUserId] },
+                  ]
+                }
+              }
+            }
+          ],
+          as : "savedByCurrentUser"
+        }
+      },
+      {
+        $addFields : {
+          "userPostDetails.savedByCurrentUser" : {
+            $gt : [{ $size : "$savedByCurrentUser" }, 0]
+          }
+        }
+      },
+      {
         $project: {
           likedByCurrentUser: 0,
+          savedByCurrentUser: 0,
         },
       },
       {
