@@ -1,7 +1,7 @@
 import multer from 'multer';
 import express from 'express';
 import { protectRoute } from '../middleware/auth.middleware.js';
-import { deletePost, likeOrDislikePost, savePost, updatePost, uploadPost } from '../controllers/post.controller.js';
+import { addComment, deletePost, getComments, likeOrDislikePost, savePost, updatePost, uploadPost } from '../controllers/post.controller.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -13,5 +13,7 @@ router.delete('/deletePost/:postId', protectRoute, deletePost);
 router.post('/updatePost/:postId',protectRoute, upload.single('postImage'), updatePost);
 router.put(`/likeOrDislikePost/:postId`, protectRoute, likeOrDislikePost);
 router.post('/savePost/:postId',protectRoute, savePost);
+router.post('/addComment', protectRoute, addComment);
+router.get('/getComments/:postId',protectRoute, getComments)
 
 export default router;

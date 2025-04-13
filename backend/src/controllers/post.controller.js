@@ -1,13 +1,14 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import Saved from "../models/saved.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
-import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
+import Comment from "../models/comment.model.js";
+import PostLike from "../models/postLike.model.js";
+import { getReceiverSocketId } from "../lib/socket.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { generateRandomString } from "../utils/helper.js";
-import PostLike from "../models/postLike.model.js";
 import Notification from "../models/notification.model.js";
-import { getReceiverSocketId } from "../lib/socket.js";
-import Saved from "../models/saved.model.js";
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -300,6 +301,129 @@ export const savePost = async (req,res) => {
 
       return res.status(200).json({ message: "Post saved.", saved : true, removed : false });
     }
+
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+
+export const addComment = async (req, res) => {
+  try{
+    const currentUserId = req.user._id;
+    const { comment, postId } = req.body;
+
+    if(!currentUserId || !comment) {
+      return res.status(404).json({ message : "Invalid request." });
+    }
+
+    if(comment.length < 0 || comment.length > 200) {
+      return res.status(400).json({ message: "Invalid comment." });
+    }
+
+    const user = await User.findById(currentUserId);
+    if(!user) {
+      return res.status(404).json({ message: "No user found, please login again" });
+    }
+
+    const post = await Post.findById(postId);
+    if(!post) {
+      return res.status(404).json({ message : "No post found" });
+    }
+
+    const newComment = new Comment({
+      postId,
+      userId : currentUserId,
+      content : comment,
+      isRootComment : true,
+    });
+    await newComment.save();
+    
+    await Post.findByIdAndUpdate(postId, { $inc : { commentsCount : 1 }});
+
+    const newNotification = new Notification({
+      message : `commented on your post.`,
+      toUserId: post.userId,
+      fromUserId: currentUserId,
+      notificationType: "postCommented"
+    })
+    await newNotification.save();
+
+    await newNotification.populate({
+      path : "fromUserId",
+      select : "userName fullName profilePic"
+    })
+
+    if(newNotification.fromUserId.profilePic) {
+      newNotification.fromUserId.profilePic = await generateSignedUrl(newNotification.fromUserId.profilePic); 
+    }
+
+    const socketData = {
+      notification: newNotification
+    }
+
+    const receiverSocketId = getReceiverSocketId(post.userId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("commentedOnPost", socketData);
+    }
+
+    return res.status(200).json({
+      message : "Comment added successfully.",
+      comment: newComment,
+    })
+
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+export const getComments = async (req,res) => {
+  try {
+    console.log("getComments")
+    console.log("req.body : ",req.body)
+    const { postId } = req.params;
+
+  if(!postId) {
+    return res.status(404).json({ message : "Invalid request" });
+  }
+
+  const post = await Post.findById(postId);
+  if(!post) {
+    return res.status(404).json({ message : "No post found" });
+  }
+
+  let comments = await Comment.find({ postId : postId }).populate({
+    path : "userId",
+    select : "userName profilePic"
+  }).lean();
+
+  if(!comments) {
+    return res.status(400).json({ message : "Comments fetching error" });
+  }
+
+  if(comments.length > 0) {
+    comments = await Promise.all(
+      comments.map( async (comment) => {
+        if(!comment.userId.profilePic) return comment;
+        
+        const signedUrl = await generateSignedUrl(comment.userId.profilePic);
+        
+        return {
+          ...comment,
+          userId : {
+            ...comment.userId,
+            profilePic : signedUrl
+          }
+        }
+      })
+    )
+  }
+
+  console.log("comments : ",comments);
+
+  return res.status(200).json({ comments });
 
   }catch (error) {
     console.log("error : ", error);

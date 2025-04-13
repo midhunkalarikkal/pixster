@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import Stories from "../components/Stories";
+import StoryUploader from "../components/StoryUploader";
 import { useProfileStore } from "../store/useProfileStore";
 import Suggestions from "../components/sidebars/Suggestions";
 import FeedSkeleton from "../components/skeletons/FeedSkeleton";
 import HomePostsScroller from "../components/HomePostsScroller";
-import StoryUploader from "../components/StoryUploader";
+import CommentUploader from "../components/CommentUploader.jsx";
+import { usePostStore } from "../store/usePostStore.js";
+import { useHomeStore } from "../store/useHomeStore.js";
 
 const HomePage = () => {
+
   const [homePostsData, setHomePostsData] = useState([]);
   const { getHomePostScrollerData } = useProfileStore();
-
+  const { commentUploaderOpen } = usePostStore();
+  const { storyUploaderOpen } = useHomeStore();
+  
   const fetchPostsData = async () => {
     const posts = await getHomePostScrollerData();
     setHomePostsData(posts);
@@ -40,7 +46,12 @@ const HomePage = () => {
       </div>
       <Suggestions />
     </div>
-    <StoryUploader />
+    {storyUploaderOpen && (
+      <StoryUploader />
+    )}
+    {commentUploaderOpen && (
+      <CommentUploader />
+    )}
     </>
   );
 };

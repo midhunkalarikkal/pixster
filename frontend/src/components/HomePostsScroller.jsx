@@ -9,11 +9,10 @@ const HomePostsScroller = ({ post }) => {
 
   const [postLiked, setPostLiked] = useState(false);
   const [postLikeCount, setPostLikeCount] = useState(0);
-
   const [postSaved, setPostSaved] = useState(false);
 
   const { getSearchSelectedUser } = useSearchStore();
-  const { likeOrDislikePost, saveRemovePost } = usePostStore();
+  const { likeOrDislikePost, saveRemovePost, setCommentUploaderOpen, setSelectedPostId } = usePostStore();
 
   useEffect(() => {
     if(post) {
@@ -22,6 +21,13 @@ const HomePostsScroller = ({ post }) => {
       setPostSaved(post?.userPostDetails?.savedByCurrentUser);
     }
   },[post])
+
+  const handleOpenCommentUploader = async (postId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCommentUploaderOpen(true);
+    setSelectedPostId(postId);
+  }
 
   const handlePostSaveOrRemove = async (postId, e) => {
     e.preventDefault();
@@ -96,7 +102,13 @@ const HomePostsScroller = ({ post }) => {
               <p>{postLikeCount}</p>
             </span>
             <span className="flex items-center space-x-1">
-              <MessageCircle className="cursor-pointer" />
+              <MessageCircle className="cursor-pointer" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleOpenCommentUploader(post?.userPostDetails?._id, e)
+                }}
+              />
               <p>{post?.userPostDetails?.commentsCount}</p>
             </span>
             <span className="flex items-center space-x-1">
