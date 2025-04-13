@@ -355,6 +355,15 @@ export const addComment = async (req, res) => {
       select : "userName fullName profilePic"
     })
 
+    await newComment.populate({
+      path : "userId",
+      select : "userName profilePic"
+    })
+
+    if(newComment?.userId?.profilePic) {
+      newComment.userId.profilePic = await generateSignedUrl(newComment?.userId?.profilePic);
+    }
+
     if(newNotification.fromUserId.profilePic) {
       newNotification.fromUserId.profilePic = await generateSignedUrl(newNotification.fromUserId.profilePic); 
     }

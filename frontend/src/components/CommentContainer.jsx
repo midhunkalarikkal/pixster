@@ -3,8 +3,9 @@ import { usePostStore } from "../store/usePostStore";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Comment from "./Comment";
+import { useAuthStore } from "../store/useAuthStore";
 
-const CommentUploader = () => {
+const CommentContainer = () => {
   const {
     commentUploading,
     commentUploaderOpen,
@@ -13,7 +14,11 @@ const CommentUploader = () => {
     setSelectedPostId,
     selectedPostId,
     getComments,
+    commentsLoading,
   } = usePostStore();
+
+  const { authUser } = useAuthStore();
+
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [addComment, setAddComment] = useState(false);
@@ -43,14 +48,13 @@ const CommentUploader = () => {
     }
 
     const res = await uploadComment({ comment, postId: selectedPostId });
-    console.log("res : ",res);
     const newComments = [...comments, res];
     setComments(newComments);
     setComment("");
     setAddComment(false);
   };
 
-  console.log("Comments : ",comments);
+  console.log("Comments : ", comments);
 
   return (
     <div
@@ -64,16 +68,16 @@ const CommentUploader = () => {
             {addComment ? "Add your comment" : "Comments"}
             {!addComment && (
               <button
-              className="btn btn-sm ml-2"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setAddComment(true);
-              }}
+                className="btn btn-sm ml-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setAddComment(true);
+                }}
               >
-              <PlusIcon className="mr-2" />
-              Add Comment
-            </button>
+                <PlusIcon className="mr-2" />
+                Add Comment
+              </button>
             )}
           </h2>
           <button
@@ -129,27 +133,35 @@ const CommentUploader = () => {
           </div>
         )}
 
-        {comments && comments.length > 0 ? (
-          comments.map((comment) => (
-            <Comment 
-              key={comment?._id}
-              profilePic={comment?.userId?.profilePic}
-              userName={comment?.userId?.userName}
-              content={comment?.content}
-              createdAt={comment?.createdAt}
-              likes={comment?.likes}
-            />
-          )
-        )
-        ) : (
-          <p className="text-center my-4">
-            No comments on this post, Be the first to add one
-          </p>
-        )}
-
+        <div className="overflow-y-scroll no-scrollbar max-h-[450px]">
+          {comments && comments.length > 0 ? (
+            comments.map((comment) => (
+              <>
+                <Comment
+                  key={comment?._id}
+                  profilePic={comment?.userId?.profilePic}
+                  userName={comment?.userId?.userName}
+                  content={comment?.content}
+                  createdAt={comment?.createdAt}
+                  likes={comment?.likes}
+                  userId={comment?.userId?._id}
+                  authUserId={authUser._id}
+                />
+              </>
+            ))
+          ) : commentsLoading ? (
+            <div className="flex justify-center">
+              <span className="loading loading-bars loading-md"></span>
+            </div>
+          ) : (
+            <p className="text-center my-4">
+              No comments on this post, Be the first to add one
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default CommentUploader;
+export default CommentContainer;

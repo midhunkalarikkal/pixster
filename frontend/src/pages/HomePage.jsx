@@ -5,7 +5,7 @@ import { useProfileStore } from "../store/useProfileStore";
 import Suggestions from "../components/sidebars/Suggestions";
 import FeedSkeleton from "../components/skeletons/FeedSkeleton";
 import HomePostsScroller from "../components/HomePostsScroller";
-import CommentUploader from "../components/CommentUploader.jsx";
+import CommentContainer from "../components/CommentContainer.jsx";
 import { usePostStore } from "../store/usePostStore.js";
 import { useHomeStore } from "../store/useHomeStore.js";
 
@@ -50,7 +50,7 @@ const HomePage = () => {
       <StoryUploader />
     )}
     {commentUploaderOpen && (
-      <CommentUploader />
+      <CommentContainer />
     )}
     </>
   );
