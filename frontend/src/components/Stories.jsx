@@ -1,9 +1,16 @@
+import Story from "./Story";
+import { useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useHomeStore } from "../store/useHomeStore";
 import StorySkeleton from "./skeletons/StorySkeleton";
 
 const Stories = () => {
-  const { setStoryUploaderOpen, myStory } = useHomeStore();
+  const { setStoryUploaderOpen, myStory, usersStories, getStories } =
+    useHomeStore();
+
+  useEffect(() => {
+    getStories();
+  }, []);
 
   const openStoryUploader = () => {
     setStoryUploaderOpen(true);
@@ -18,7 +25,7 @@ const Stories = () => {
           <div className="p-[4px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full inline-block">
             {myStory ? (
               <img
-                src={myStory.img}
+                src={myStory.img || '/noImg.png'}
                 className="h-20 w-20 rounded-full object-cover"
               />
             ) : (
@@ -36,9 +43,17 @@ const Stories = () => {
           </div>
           <p className="text-xs">My Story</p>
         </div>
-        {Array.from({ length: 15 }).map((_, index) => (
-          <StorySkeleton key={index} />
-        ))}
+        {usersStories && usersStories.length > 0
+          ? usersStories.map((story) => (
+              <Story 
+                key={story._userId}
+                image={story.img}
+                userName={story.userName}
+              />
+            ))
+          : Array.from({ length: 15 }).map((_, index) => (
+              <StorySkeleton key={index} />
+            ))}
       </div>
     </div>
   );

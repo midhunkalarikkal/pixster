@@ -1,5 +1,6 @@
 import Story from "../models/story.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
+import Connection from "../models/connection.model.js";
 import { generateRandomString } from "../utils/helper.js";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
@@ -46,11 +47,93 @@ export const uploadStory = async (req, res) => {
 
     updatedStory.img = await generateSignedUrl(updatedStory.img);
 
-    console.log("updatedStory : ",updatedStory);
+    console.log("updatedStory : ", updatedStory);
 
     return res
       .status(201)
-      .json({ success: true, message: "Story uploaded successfully", story: updatedStory });
+      .json({
+        success: true,
+        message: "Story uploaded successfully",
+        story: updatedStory,
+      });
+  } catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const getStories = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    if (!currentUserId) {
+      return res.status(404).json({ message: " Please login again." });
+    }
+
+    let myStory = await Story.findOne({ userId : currentUserId });
+
+    let Stories = await Connection.aggregate([
+      {
+        $match: {
+          $and: [{ status: "accepted" }, { fromUserId: currentUserId }],
+        },
+      },
+      {
+        $lookup : {
+            from : "stories",
+            localField : "toUserId",
+            foreignField : "userId",
+            as : "usersStories"
+        }
+      },
+      {
+        $unwind : "$usersStories"
+      },
+      {
+        $project : {
+            _id : 0,
+            userId : "$usersStories.userId",
+            img : "$usersStories.img"
+        }
+      },
+      {
+        $lookup : {
+            from : "users",
+            localField : "userId",
+            foreignField : "_id",
+            as : "User"
+        }
+      },
+      {
+        $unwind : "$User"
+      },
+      {
+        $project : {
+            _id : 0,
+            userId : 1,
+            img : 1,
+            userName : "$User.userName"
+        }
+      }
+    ]);
+
+    console.log("Stories : ",Stories);
+    
+    if(myStory) myStory.img = await generateSignedUrl(myStory.img);
+    if(Stories.length > 0) {
+        Stories = await Promise.all(
+            Stories.map( async (story) => {
+                const signedUrl = await generateSignedUrl(story.img);
+
+                return {
+                    ...story,
+                    img : signedUrl
+                }
+            })
+        )
+    }
+
+    return res.status(200).json({ myStory, stories: Stories })
 
   } catch (error) {
     console.log("error : ", error);

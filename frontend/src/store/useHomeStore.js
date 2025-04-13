@@ -7,6 +7,7 @@ export const useHomeStore = create((set) => ({
     storyUploaderOpen: false,
     storyUploading: false,
     myStory: null,
+    usersStories: null,
 
     setStoryUploaderOpen: (data) => set({ storyUploaderOpen : data }),
 
@@ -23,6 +24,16 @@ export const useHomeStore = create((set) => ({
             toast.error(error.response.data.message);
         } finally {
             set({ storyUploading : false })
+        }
+    },
+
+    getStories: async () => {
+        try {
+            const res = await axiosInstance('/story/getStories');
+            set({ usersStories : res.data.stories });
+            set({ myStory : res.data.myStory });
+        }catch (error) {
+            toast.error(error.response.data.message);
         }
     }
 }))
