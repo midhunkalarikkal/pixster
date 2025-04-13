@@ -3,26 +3,38 @@ import { useHomeStore } from "../store/useHomeStore";
 import StorySkeleton from "./skeletons/StorySkeleton";
 
 const Stories = () => {
-  const { setStoryUploaderOpen } = useHomeStore();
+  const { setStoryUploaderOpen, myStory } = useHomeStore();
 
   const openStoryUploader = () => {
     setStoryUploaderOpen(true);
   };
 
+  console.log("myStory : ", myStory);
+
   return (
     <div className="overflow-x-scroll no-scrollbar">
       <div className="flex space-x-3 items-center px-4 py-8 w-max">
-        <div className="p-[4px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full inline-block">
-          <button
-            className="flex justify-center items-center h-20 w-20 rounded-full bg-base-100"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              openStoryUploader();
-            }}
-          >
-            <Plus />
-          </button>
+        <div className="flex flex-col justify-center items-center space-y-2">
+          <div className="p-[4px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full inline-block">
+            {myStory ? (
+              <img
+                src={myStory.img}
+                className="h-20 w-20 rounded-full object-cover"
+              />
+            ) : (
+              <button
+                className="flex justify-center items-center h-20 w-20 rounded-full bg-base-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openStoryUploader();
+                }}
+              >
+                <Plus />
+              </button>
+            )}
+          </div>
+          <p className="text-xs">My Story</p>
         </div>
         {Array.from({ length: 15 }).map((_, index) => (
           <StorySkeleton key={index} />

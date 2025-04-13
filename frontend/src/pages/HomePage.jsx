@@ -22,7 +22,7 @@ const HomePage = () => {
   return (
     <>
     <div className="w-10/12 flex relative">
-      <div className="w-8/12 flex flex-col items-center overflow-y-auto no-scrollbar space-y-4">
+      <div className="w-8/12 flex flex-col items-center overflow-y-auto no-scrollbar space-y-6">
         <div className="w-8/12 h-32">
           <Stories />
         </div>
