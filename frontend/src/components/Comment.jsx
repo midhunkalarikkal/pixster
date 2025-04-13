@@ -2,7 +2,9 @@ import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 import { Ellipsis, Heart } from "lucide-react";
 
-const Comment = ({ profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
+const Comment = ({ onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
+    
+
   return (
     <div className="flex rounded-lg hover:bg-base-200 transition items-start gap-3 p-3">
         
@@ -34,6 +36,7 @@ const Comment = ({ profilePic, userName, createdAt, content, likes, userId, auth
                 <button onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    onDelete()
                 }}>
                     <Ellipsis />
                 </button>
@@ -52,6 +55,7 @@ Comment.propTypes = {
   likes: PropTypes.number,
   userId: PropTypes.string,
   authUserId: PropTypes.string,
+  onDelete: PropTypes.func,
 };
 
 export default Comment;

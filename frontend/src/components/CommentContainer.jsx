@@ -15,6 +15,7 @@ const CommentContainer = () => {
     selectedPostId,
     getComments,
     commentsLoading,
+    deleteComment,
   } = usePostStore();
 
   const { authUser } = useAuthStore();
@@ -22,6 +23,8 @@ const CommentContainer = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [addComment, setAddComment] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null); // commentId
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const fetchAllComments = async () => {
     const res = await getComments({ postId: selectedPostId });
@@ -30,13 +33,33 @@ const CommentContainer = () => {
 
   useEffect(() => {
     if (!selectedPostId) return;
-    console.log("Cooment uploader");
     fetchAllComments();
   }, [selectedPostId]);
 
   const handleCloseCommentUploader = () => {
     setCommentUploaderOpen(false);
     setSelectedPostId(null);
+  };
+
+  const handleDeleteClick = (commentId) => {
+    setCommentToDelete(commentId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!selectedPostId || !commentToDelete) return;
+  
+    try {
+      const res = await deleteComment({ commentId: commentToDelete, postId: selectedPostId });
+      if (res.success) {
+        setComments(prev => prev.filter(c => c._id !== commentToDelete));
+      }
+    } catch {
+      toast.error("Failed to delete comment.");
+    } finally {
+      setShowDeleteConfirm(false);
+      setCommentToDelete(null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -53,8 +76,6 @@ const CommentContainer = () => {
     setComment("");
     setAddComment(false);
   };
-
-  console.log("Comments : ", comments);
 
   return (
     <div
@@ -139,6 +160,7 @@ const CommentContainer = () => {
               <>
                 <Comment
                   key={comment?._id}
+                  _id={comment._id}
                   profilePic={comment?.userId?.profilePic}
                   userName={comment?.userId?.userName}
                   content={comment?.content}
@@ -146,6 +168,7 @@ const CommentContainer = () => {
                   likes={comment?.likes}
                   userId={comment?.userId?._id}
                   authUserId={authUser._id}
+                  onDelete={() => handleDeleteClick(comment._id)}
                 />
               </>
             ))
@@ -160,6 +183,33 @@ const CommentContainer = () => {
           )}
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg shadow-lg w-[90%] max-w-sm space-y-4">
+            <h3 className="text-lg font-semibold">Delete Comment</h3>
+            <p>Are you sure you want to delete this comment?</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setCommentToDelete(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-sm btn-error"
+                onClick={confirmDeleteComment}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };

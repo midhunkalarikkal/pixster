@@ -439,3 +439,32 @@ export const getComments = async (req,res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 }
+
+export const deleteComment = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const { postId, commentId } = req.params;
+
+    if(!currentUserId || !commentId) {
+      return res.status(404).json({ message : "Invalid request" });
+    }
+
+    const comment = await Comment.findById(commentId);
+    if(!comment) {
+      return res.status(404).json({ message : "Comment not found" });
+    }
+
+    if(currentUserId.toString() !== comment.userId.toString()) {
+      return res.status(400).json({ message : "You cant delete this comment" });
+    }
+
+    await Comment.findByIdAndDelete(commentId);
+
+    await Post.findByIdAndUpdate(postId, { $inc : { commentsCount :  -1 } } );
+
+    return res.status(200).json({ success : true, message : "Comment deleted successfully" });
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

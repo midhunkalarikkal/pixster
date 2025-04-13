@@ -55,6 +55,16 @@ export const usePostStore = create(( set ) => ({
         }finally {
             set({ commentsLoading : false });
         }
+    },
+
+    deleteComment: async (data) => {
+        try {
+            const res = await axiosInstance.delete(`/post/deleteComment/${data.postId}/${data.commentId}`);
+            toast.success(res.data.message);
+            return res.data;
+        }catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
 }))
