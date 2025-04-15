@@ -398,9 +398,15 @@ export const addComment = async (req, res) => {
       select: "userName profilePic",
     });
 
-    if (newComment?.userId?.profilePic) {
-      newComment.userId.profilePic = await generateSignedUrl(
-        newComment?.userId?.profilePic
+    newComment = {
+      ...newComment.toObject(),
+      user: newComment.userId
+    };
+    delete newComment.userId;
+
+    if (newComment?.user?.profilePic) {
+      newComment.user.profilePic = await generateSignedUrl(
+        newComment?.user?.profilePic
       );
     }
 
@@ -420,7 +426,7 @@ export const addComment = async (req, res) => {
         });
 
         const savedNotificationForParentCommenter =
-          await notificationToParentCommenter.save();
+        await notificationToParentCommenter.save();
         await savedNotificationForParentCommenter.populate({
           path: "fromUserId",
           select: "userName, profilePic",
@@ -469,13 +475,6 @@ export const getComments = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "No post found" });
     }
-
-    let comments = await Comment.find({ postId: postId })
-      .populate({
-        path: "userId",
-        select: "userName profilePic",
-      })
-      .lean();
 
     let aggregatedComments = await Comment.aggregate([
       {
@@ -526,70 +525,6 @@ export const getComments = async (req, res) => {
           as: "repliesUserDetails",
         },
       },
-      // {
-      //   $addFields: {
-      //     replies: {
-      //       $map: {
-      //         input: "$replies",
-      //         as: "reply",
-      //         in: {
-      //           $mergeObjects: [
-      //             "$$reply",
-      //             {
-      //               user: {
-      //                 $arrayElemAt: [
-      //                   {
-      //                     $filter: {
-      //                       input: "$$ROOT.repliesUserDetails",
-      //                       as: "u",
-      //                       cond: { $eq: ["$$u._id", "$$reply.userId"] }
-      //                     }
-      //                   },
-      //                   0
-      //                 ]
-      //               }
-      //             }
-      //           ]
-      //         }
-      //       }
-      //     }
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     content: 1,
-      //     likes: 1,
-      //     isRootComment: 1,
-      //     parentCommentId: 1,
-      //     createdAt: 1,
-      //     updatedAt: 1,
-      //     replies: {
-      //       $map: {
-      //         input: "$replies",
-      //         as: "reply",
-      //         in: {
-      //           _id: "$$reply._id",
-      //           content: "$$reply.content",
-      //           likes: "$$reply.likes",
-      //           isRootComment: "$$reply.isRootComment",
-      //           parentCommentId: "$$reply.parentCommentId",
-      //           createdAt: "$$reply.createdAt",
-      //           updatedAt: "$$reply.updatedAt",
-      //           user: {
-      //             _id: "$$reply.user._id",
-      //             userName: "$$reply.user.userName",
-      //             profilePic: "$$reply.user.profilePic"
-      //           }
-      //         }
-      //       }
-      //     },
-      //     user: {
-      //       _id: "$user._id",
-      //       userName: "$user.userName",
-      //       profilePic: "$user.profilePic"
-      //     }
-      //   }
-      // }
       {
         $addFields: {
           replies: {
@@ -621,7 +556,6 @@ export const getComments = async (req, res) => {
           },
         },
       },
-      // Final project
       {
         $project: {
           content: 1,
@@ -641,28 +575,6 @@ export const getComments = async (req, res) => {
     ]);
 
     console.log("aggregated comments : ", aggregatedComments);
-
-    if (!comments) {
-      return res.status(400).json({ message: "Comments fetching error" });
-    }
-
-    if (comments.length > 0) {
-      comments = await Promise.all(
-        comments.map(async (comment) => {
-          if (!comment.userId.profilePic) return comment;
-
-          const signedUrl = await generateSignedUrl(comment.userId.profilePic);
-
-          return {
-            ...comment,
-            userId: {
-              ...comment.userId,
-              profilePic: signedUrl,
-            },
-          };
-        })
-      );
-    }
 
     if (aggregatedComments.length > 0) {
       aggregatedComments = await Promise.all(
@@ -690,9 +602,7 @@ export const getComments = async (req, res) => {
       );
     }
 
-    // console.log("comments : ",comments);
-
-    return res.status(200).json({ comments, aggregatedComments });
+    return res.status(200).json({ aggregatedComments });
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });

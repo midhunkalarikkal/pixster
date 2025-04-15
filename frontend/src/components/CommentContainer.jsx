@@ -83,10 +83,20 @@ const CommentContainer = () => {
 
     const res = await uploadComment({ comment, postId: selectedPostId, parentCommentId });
     console.log("res : ",res);
-    if(res.paretCommentId) {
-
+    if(!res.isRootComment) {
+      const newComments = comments.map((comment) => {
+        if(comment._id === res.parentCommentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, res]
+          }
+        }
+        return comment;
+      });
+      setComments(newComments)
       setComment("");
       setParentCommentId(null);
+      setAddComment(false);
     } else {
       const newComments = [...comments, res];
       setComments(newComments);
@@ -178,28 +188,28 @@ const CommentContainer = () => {
               <>
                 <Comment
                   key={comment?._id}
-                  _id={comment._id}
+                  _id={comment?._id}
                   content={comment?.content}
                   createdAt={comment?.createdAt}
                   likes={comment?.likes}
                   userId={comment?.user?._id}
                   userName={comment?.user?.userName}
                   profilePic={comment?.user?.profilePic}
-                  authUserId={authUser._id}
-                  onDelete={() => handleDeleteClick(comment._id)}
+                  authUserId={authUser?._id}
+                  onDelete={() => handleDeleteClick(comment?._id)}
                   showReplyButton={true}
-                  onReply={() => handleReplyClick(comment._id)}
-                  showRepliesButton={comment?.replies.length > 0}
+                  onReply={() => handleReplyClick(comment?._id)}
+                  showRepliesButton={comment?.replies?.length > 0}
                   showReplies={() => setShowReplies(!showReplies)}
-                  replyCount={comment?.replies.length}
+                  replyCount={comment?.replies?.length}
                   isRepliesOn={!showReplies}
                 />
-                {comment.replies && comment.replies.length > 0 && (
+                {comment?.replies && comment?.replies?.length > 0 && (
                   <div className={`ml-10 ${!showReplies && 'hidden'}`}>
-                    {comment.replies.map((reply) => (
+                    {comment?.replies.map((reply) => (
                       <Comment
                         key={reply?._id}
-                        _id={reply._id}
+                        _id={reply?._id}
                         content={reply?.content}
                         createdAt={reply?.createdAt}
                         likes={reply?.likes}
@@ -207,7 +217,7 @@ const CommentContainer = () => {
                         userName={reply?.user?.userName}
                         profilePic={reply?.user?.profilePic}
                         authUserId={authUser._id}
-                        onDelete={() => handleDeleteClick(comment._id)}
+                        onDelete={() => handleDeleteClick(reply?._id)}
                     />
                     ))}
                     <button className="text-neutral-500 text-sm font-semibold ml-10"
