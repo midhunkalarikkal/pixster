@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 import { Ellipsis, Heart } from "lucide-react";
 
-const Comment = ({ onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
+const Comment = ({ onReply, onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
     
 
   return (
@@ -26,7 +26,13 @@ const Comment = ({ onDelete, profilePic, userName, createdAt, content, likes, us
         <p className="text-sm">
           {content}
         </p>
-        <button className="text-neutral-500 text-xs">Reply</button>
+        <button className="text-neutral-500 text-xs"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onReply();
+          }}
+        >Reply</button>
       </div>
 
       <div className="w-[10%] pt-3 flex flex-col justify-center items-center">
@@ -56,6 +62,7 @@ Comment.propTypes = {
   userId: PropTypes.string,
   authUserId: PropTypes.string,
   onDelete: PropTypes.func,
+  onReply: PropTypes.func,
 };
 
 export default Comment;

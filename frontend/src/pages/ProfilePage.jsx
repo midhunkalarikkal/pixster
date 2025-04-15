@@ -27,7 +27,7 @@ const ProfilePage = () => {
     getFollowingsProfiles, 
     getFollowersProfiles, 
     setListPage, 
-    listPage 
+    listPage ,
   } = useProfileStore();
 
   const {
@@ -301,6 +301,7 @@ const ProfilePage = () => {
           status={connectionData && connectionData.status}
         />
       )}
+      
     </>
   );
 };

@@ -1,8 +1,8 @@
-import { PlusIcon, X } from "lucide-react";
-import { usePostStore } from "../store/usePostStore";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import Comment from "./Comment";
+import { toast } from "react-toastify";
+import { PlusIcon, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { usePostStore } from "../store/usePostStore";
 import { useAuthStore } from "../store/useAuthStore";
 
 const CommentContainer = () => {
@@ -23,8 +23,9 @@ const CommentContainer = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [addComment, setAddComment] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState(null); // commentId
+  const [commentToDelete, setCommentToDelete] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [parentCommentId, setParentCommentId] = useState(null);
 
   const fetchAllComments = async () => {
     const res = await getComments({ postId: selectedPostId });
@@ -35,6 +36,11 @@ const CommentContainer = () => {
     if (!selectedPostId) return;
     fetchAllComments();
   }, [selectedPostId]);
+
+  const handleReplyClick = async (commentId) => {
+    setAddComment(true);
+    setParentCommentId(commentId);
+  }
 
   const handleCloseCommentUploader = () => {
     setCommentUploaderOpen(false);
@@ -70,11 +76,22 @@ const CommentContainer = () => {
       return;
     }
 
-    const res = await uploadComment({ comment, postId: selectedPostId });
-    const newComments = [...comments, res];
-    setComments(newComments);
-    setComment("");
-    setAddComment(false);
+    console.log("Comment : ",comment);
+    console.log("postId : ",selectedPostId);
+    console.log("parentCommentId : ",parentCommentId);
+
+    const res = await uploadComment({ comment, postId: selectedPostId, parentCommentId });
+    console.log("res : ",res);
+    if(res.paretCommentId) {
+      
+      setComment("");
+      setParentCommentId(null);
+    } else {
+      const newComments = [...comments, res];
+      setComments(newComments);
+      setComment("");
+      setAddComment(false);
+    }
   };
 
   return (
@@ -169,6 +186,7 @@ const CommentContainer = () => {
                   userId={comment?.userId?._id}
                   authUserId={authUser._id}
                   onDelete={() => handleDeleteClick(comment._id)}
+                  onReply={() => handleReplyClick(comment._id)}
                 />
               </>
             ))
@@ -209,7 +227,7 @@ const CommentContainer = () => {
           </div>
         </div>
       )}
-      
+
     </div>
   );
 };

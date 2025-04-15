@@ -61,6 +61,11 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
           <div
             key={post._id}
             className="relative overflow-hidden group hover:cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              
+            }}
           >
             {deleting ? (
               <div className="h-96 w-full flex justify-center items-center">

@@ -11,6 +11,7 @@ import Notification from "../models/notification.model.js";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -213,14 +214,20 @@ export const likeOrDislikePost = async (req, res) => {
     let newNotification;
 
     if (existLike) {
-      console.log("post dislikign")
+      console.log("post dislikign");
       await PostLike.findByIdAndDelete(existLike._id);
 
-      await Post.findByIdAndUpdate(postId,{ $inc : { likes : -1 }});
+      await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
 
-      return res.status(200).json({ message: "You have disliked a post", liked: false, disliked: true });
+      return res
+        .status(200)
+        .json({
+          message: "You have disliked a post",
+          liked: false,
+          disliked: true,
+        });
     } else {
-      console.log("post liking")
+      console.log("post liking");
       const newLike = new PostLike({
         userId: currentUserId,
         postId: postId,
@@ -228,7 +235,7 @@ export const likeOrDislikePost = async (req, res) => {
 
       await newLike.save();
 
-      await Post.findByIdAndUpdate(postId,{ $inc : { likes : 1 }});
+      await Post.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
 
       newNotification = new Notification({
         message: "Liked your post",
@@ -243,29 +250,36 @@ export const likeOrDislikePost = async (req, res) => {
         select: "userName fullName profilePic",
       });
 
-      if(newNotification.fromUserId.profilePic) {
-        newNotification.fromUserId.profilePic = await generateSignedUrl(newNotification.fromUserId.profilePic)
+      if (newNotification.fromUserId.profilePic) {
+        newNotification.fromUserId.profilePic = await generateSignedUrl(
+          newNotification.fromUserId.profilePic
+        );
       }
-  
+
       const postLikeSocketData = {
         notification: newNotification,
       };
-  
+
       const receiverSocketId = getReceiverSocketId(post.userId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("postLikeSocket", postLikeSocketData);
       }
-  
-      return res.status(200).json({ message: "You have liked a post", liked: true, disliked: false });
-    }
 
+      return res
+        .status(200)
+        .json({
+          message: "You have liked a post",
+          liked: true,
+          disliked: false,
+        });
+    }
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
-export const savePost = async (req,res) => {
+export const savePost = async (req, res) => {
   try {
     console.log("post saving");
     const currentUserId = req.user?._id;
@@ -286,91 +300,146 @@ export const savePost = async (req,res) => {
     }
 
     const existing = await Saved.findOne({ postId: postId });
-    if(existing) {
+    if (existing) {
       await Saved.findByIdAndDelete(existing._id);
 
-      return res.status(200).json({ message: "Post removed from your saved list.", saved : false, removed : true });
+      return res
+        .status(200)
+        .json({
+          message: "Post removed from your saved list.",
+          saved: false,
+          removed: true,
+        });
     } else {
-
       const newSaved = new Saved({
         userId: currentUserId,
-        postId: postId
+        postId: postId,
       });
 
       await newSaved.save();
 
-      return res.status(200).json({ message: "Post saved.", saved : true, removed : false });
+      return res
+        .status(200)
+        .json({ message: "Post saved.", saved: true, removed: false });
     }
-
-  }catch (error) {
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
-
+};
 
 export const addComment = async (req, res) => {
-  try{
+  try {
     const currentUserId = req.user._id;
-    const { comment, postId } = req.body;
+    const { comment, postId, parentCommentId } = req.body;
 
-    if(!currentUserId || !comment) {
-      return res.status(404).json({ message : "Invalid request." });
+    if (!currentUserId || !comment) {
+      return res.status(404).json({ message: "Invalid request." });
     }
 
-    if(comment.length < 0 || comment.length > 200) {
+    if (comment.length < 0 || comment.length > 200) {
       return res.status(400).json({ message: "Invalid comment." });
     }
 
     const user = await User.findById(currentUserId);
-    if(!user) {
-      return res.status(404).json({ message: "No user found, please login again" });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "No user found, please login again" });
     }
 
     const post = await Post.findById(postId);
-    if(!post) {
-      return res.status(404).json({ message : "No post found" });
+    if (!post) {
+      return res.status(404).json({ message: "No post found" });
     }
 
-    const newComment = new Comment({
-      postId,
-      userId : currentUserId,
-      content : comment,
-      isRootComment : true,
-    });
-    await newComment.save();
-    
-    await Post.findByIdAndUpdate(postId, { $inc : { commentsCount : 1 }});
+    let newComment;
+    if (parentCommentId) {
+      const parentComment = await Comment.findById(parentCommentId);
+      if (!parentComment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+
+      newComment = new Comment({
+        postId,
+        userId: currentUserId,
+        content: comment,
+        isRootComment: false,
+        parentCommentId,
+      });
+      await newComment.save();
+    } else {
+      newComment = new Comment({
+        postId,
+        userId: currentUserId,
+        content: comment,
+        isRootComment: true,
+      });
+      await newComment.save();
+    }
+
+    await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 
     const newNotification = new Notification({
-      message : `commented on your post.`,
+      message: `commented on your post.`,
       toUserId: post.userId,
       fromUserId: currentUserId,
-      notificationType: "postCommented"
-    })
+      notificationType: "postCommented",
+    });
     await newNotification.save();
 
     await newNotification.populate({
-      path : "fromUserId",
-      select : "userName fullName profilePic"
-    })
+      path: "fromUserId",
+      select: "userName fullName profilePic",
+    });
 
     await newComment.populate({
-      path : "userId",
-      select : "userName profilePic"
-    })
+      path: "userId",
+      select: "userName profilePic",
+    });
 
-    if(newComment?.userId?.profilePic) {
-      newComment.userId.profilePic = await generateSignedUrl(newComment?.userId?.profilePic);
+    if (newComment?.userId?.profilePic) {
+      newComment.userId.profilePic = await generateSignedUrl(
+        newComment?.userId?.profilePic
+      );
     }
 
-    if(newNotification.fromUserId.profilePic) {
-      newNotification.fromUserId.profilePic = await generateSignedUrl(newNotification.fromUserId.profilePic); 
+    if (newNotification.fromUserId.profilePic) {
+      newNotification.fromUserId.profilePic = await generateSignedUrl(
+        newNotification.fromUserId.profilePic
+      );
+    }
+
+    if (parentCommentId) {
+      if (parentCommentId.toString() !== currentUserId.toString()) {
+        const notificationToParentCommenter = new Notification({
+          message: "Replied to your comment",
+          toUserId: parentCommentId,
+          fromUserId: currentUserId,
+          notificationType: "postCommented",
+        });
+
+        const savedNotificationForParentCommenter =
+          await notificationToParentCommenter.save();
+        await savedNotificationForParentCommenter.populate({
+          path: "fromUserId",
+          select: "userName, profilePic",
+        });
+
+        const socketData = {
+          notification: savedNotificationForParentCommenter,
+        };
+
+        const receiverSocketId = getReceiverSocketId(parentCommentId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("commentedOnPost", socketData);
+        }
+      }
     }
 
     const socketData = {
-      notification: newNotification
-    }
+      notification: newNotification,
+    };
 
     const receiverSocketId = getReceiverSocketId(post.userId);
     if (receiverSocketId) {
@@ -378,93 +447,285 @@ export const addComment = async (req, res) => {
     }
 
     return res.status(200).json({
-      message : "Comment added successfully.",
+      message: "Comment added successfully.",
       comment: newComment,
-    })
-
-  }catch (error) {
+    });
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
-export const getComments = async (req,res) => {
+export const getComments = async (req, res) => {
   try {
-    console.log("getComments")
-    console.log("req.body : ",req.body)
+    console.log("getComments");
     const { postId } = req.params;
 
-  if(!postId) {
-    return res.status(404).json({ message : "Invalid request" });
-  }
+    if (!postId) {
+      return res.status(404).json({ message: "Invalid request" });
+    }
 
-  const post = await Post.findById(postId);
-  if(!post) {
-    return res.status(404).json({ message : "No post found" });
-  }
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "No post found" });
+    }
 
-  let comments = await Comment.find({ postId : postId }).populate({
-    path : "userId",
-    select : "userName profilePic"
-  }).lean();
-
-  if(!comments) {
-    return res.status(400).json({ message : "Comments fetching error" });
-  }
-
-  if(comments.length > 0) {
-    comments = await Promise.all(
-      comments.map( async (comment) => {
-        if(!comment.userId.profilePic) return comment;
-        
-        const signedUrl = await generateSignedUrl(comment.userId.profilePic);
-        
-        return {
-          ...comment,
-          userId : {
-            ...comment.userId,
-            profilePic : signedUrl
-          }
-        }
+    let comments = await Comment.find({ postId: postId })
+      .populate({
+        path: "userId",
+        select: "userName profilePic",
       })
-    )
-  }
+      .lean();
 
-  console.log("comments : ",comments);
+    let aggregatedComments = await Comment.aggregate([
+      {
+        $match: {
+          postId: new mongoose.Types.ObjectId(postId),
+          isRootComment: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "parentCommentId",
+          as: "replies",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $lookup: {
+          from: "users",
+          let: { replyUserIds: "$replies.userId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$_id", "$$replyUserIds"],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                userName: 1,
+                profilePic: 1,
+              },
+            },
+          ],
+          as: "repliesUserDetails",
+        },
+      },
+      // {
+      //   $addFields: {
+      //     replies: {
+      //       $map: {
+      //         input: "$replies",
+      //         as: "reply",
+      //         in: {
+      //           $mergeObjects: [
+      //             "$$reply",
+      //             {
+      //               user: {
+      //                 $arrayElemAt: [
+      //                   {
+      //                     $filter: {
+      //                       input: "$$ROOT.repliesUserDetails",
+      //                       as: "u",
+      //                       cond: { $eq: ["$$u._id", "$$reply.userId"] }
+      //                     }
+      //                   },
+      //                   0
+      //                 ]
+      //               }
+      //             }
+      //           ]
+      //         }
+      //       }
+      //     }
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     content: 1,
+      //     likes: 1,
+      //     isRootComment: 1,
+      //     parentCommentId: 1,
+      //     createdAt: 1,
+      //     updatedAt: 1,
+      //     replies: {
+      //       $map: {
+      //         input: "$replies",
+      //         as: "reply",
+      //         in: {
+      //           _id: "$$reply._id",
+      //           content: "$$reply.content",
+      //           likes: "$$reply.likes",
+      //           isRootComment: "$$reply.isRootComment",
+      //           parentCommentId: "$$reply.parentCommentId",
+      //           createdAt: "$$reply.createdAt",
+      //           updatedAt: "$$reply.updatedAt",
+      //           user: {
+      //             _id: "$$reply.user._id",
+      //             userName: "$$reply.user.userName",
+      //             profilePic: "$$reply.user.profilePic"
+      //           }
+      //         }
+      //       }
+      //     },
+      //     user: {
+      //       _id: "$user._id",
+      //       userName: "$user.userName",
+      //       profilePic: "$user.profilePic"
+      //     }
+      //   }
+      // }
+      {
+        $addFields: {
+          replies: {
+            $map: {
+              input: "$replies",
+              as: "reply",
+              in: {
+                _id: "$$reply._id",
+                content: "$$reply.content",
+                likes: "$$reply.likes",
+                isRootComment: "$$reply.isRootComment",
+                parentCommentId: "$$reply.parentCommentId",
+                createdAt: "$$reply.createdAt",
+                updatedAt: "$$reply.updatedAt",
+                user: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$repliesUserDetails",
+                        as: "u",
+                        cond: { $eq: ["$$u._id", "$$reply.userId"] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      // Final project
+      {
+        $project: {
+          content: 1,
+          likes: 1,
+          isRootComment: 1,
+          parentCommentId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          replies: 1,
+          user: {
+            _id: "$user._id",
+            userName: "$user.userName",
+            profilePic: "$user.profilePic",
+          },
+        },
+      },
+    ]);
 
-  return res.status(200).json({ comments });
+    console.log("aggregated comments : ", aggregatedComments);
 
-  }catch (error) {
+    if (!comments) {
+      return res.status(400).json({ message: "Comments fetching error" });
+    }
+
+    if (comments.length > 0) {
+      comments = await Promise.all(
+        comments.map(async (comment) => {
+          if (!comment.userId.profilePic) return comment;
+
+          const signedUrl = await generateSignedUrl(comment.userId.profilePic);
+
+          return {
+            ...comment,
+            userId: {
+              ...comment.userId,
+              profilePic: signedUrl,
+            },
+          };
+        })
+      );
+    }
+
+    if (aggregatedComments.length > 0) {
+      aggregatedComments = await Promise.all(
+        aggregatedComments.map(async (comment) => {
+          if (comment.user.profilePic) {
+            comment.user.profilePic = await generateSignedUrl(
+              comment.user.profilePic
+            );
+          }
+
+          if (comment.replies.length > 0) {
+            comment.replies = await Promise.all(
+              comment.replies.map(async (reply) => {
+                if (reply.user.profilePic) {
+                  reply.user.profilePic = await generateSignedUrl(
+                    reply.user.profilePic
+                  );
+                }
+                return reply;
+              })
+            );
+          }
+          return comment;
+        })
+      );
+    }
+
+    // console.log("comments : ",comments);
+
+    return res.status(200).json({ comments, aggregatedComments });
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 export const deleteComment = async (req, res) => {
   try {
     const currentUserId = req.user._id;
     const { postId, commentId } = req.params;
 
-    if(!currentUserId || !commentId) {
-      return res.status(404).json({ message : "Invalid request" });
+    if (!currentUserId || !commentId) {
+      return res.status(404).json({ message: "Invalid request" });
     }
 
     const comment = await Comment.findById(commentId);
-    if(!comment) {
-      return res.status(404).json({ message : "Comment not found" });
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
     }
 
-    if(currentUserId.toString() !== comment.userId.toString()) {
-      return res.status(400).json({ message : "You cant delete this comment" });
+    if (currentUserId.toString() !== comment.userId.toString()) {
+      return res.status(400).json({ message: "You cant delete this comment" });
     }
 
     await Comment.findByIdAndDelete(commentId);
 
-    await Post.findByIdAndUpdate(postId, { $inc : { commentsCount :  -1 } } );
+    await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } });
 
-    return res.status(200).json({ success : true, message : "Comment deleted successfully" });
-  }catch (error) {
+    return res
+      .status(200)
+      .json({ success: true, message: "Comment deleted successfully" });
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
