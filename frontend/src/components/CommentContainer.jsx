@@ -26,7 +26,14 @@ const CommentContainer = () => {
   const [commentToDelete, setCommentToDelete] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [parentCommentId, setParentCommentId] = useState(null);
-  const [showReplies, setShowReplies] = useState(false);
+  const [repliesVisible, setRepliesVisible] = useState({});
+
+  const toggleReplies = (commentId) => {
+    setRepliesVisible((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
 
   const fetchAllComments = async () => {
     const res = await getComments({ postId: selectedPostId });
@@ -41,7 +48,7 @@ const CommentContainer = () => {
   const handleReplyClick = async (commentId) => {
     setAddComment(true);
     setParentCommentId(commentId);
-  }
+  };
 
   const handleCloseCommentUploader = () => {
     setCommentUploaderOpen(false);
@@ -55,11 +62,14 @@ const CommentContainer = () => {
 
   const confirmDeleteComment = async () => {
     if (!selectedPostId || !commentToDelete) return;
-  
+
     try {
-      const res = await deleteComment({ commentId: commentToDelete, postId: selectedPostId });
+      const res = await deleteComment({
+        commentId: commentToDelete,
+        postId: selectedPostId,
+      });
       if (res.success) {
-        setComments(prev => prev.filter(c => c._id !== commentToDelete));
+        setComments((prev) => prev.filter((c) => c._id !== commentToDelete));
       }
     } catch {
       toast.error("Failed to delete comment.");
@@ -77,23 +87,27 @@ const CommentContainer = () => {
       return;
     }
 
-    console.log("Comment : ",comment);
-    console.log("postId : ",selectedPostId);
-    console.log("parentCommentId : ",parentCommentId);
+    console.log("Comment : ", comment);
+    console.log("postId : ", selectedPostId);
+    console.log("parentCommentId : ", parentCommentId);
 
-    const res = await uploadComment({ comment, postId: selectedPostId, parentCommentId });
-    console.log("res : ",res);
-    if(!res.isRootComment) {
+    const res = await uploadComment({
+      comment,
+      postId: selectedPostId,
+      parentCommentId,
+    });
+    console.log("res : ", res);
+    if (!res.isRootComment) {
       const newComments = comments.map((comment) => {
-        if(comment._id === res.parentCommentId) {
+        if (comment._id === res.parentCommentId) {
           return {
             ...comment,
-            replies: [...comment.replies, res]
-          }
+            replies: [...comment.replies, res],
+          };
         }
         return comment;
       });
-      setComments(newComments)
+      setComments(newComments);
       setComment("");
       setParentCommentId(null);
       setAddComment(false);
@@ -200,12 +214,16 @@ const CommentContainer = () => {
                   showReplyButton={true}
                   onReply={() => handleReplyClick(comment?._id)}
                   showRepliesButton={comment?.replies?.length > 0}
-                  showReplies={() => setShowReplies(!showReplies)}
+                  showReplies={() => toggleReplies(comment._id)}
                   replyCount={comment?.replies?.length}
-                  isRepliesOn={!showReplies}
+                  isRepliesOn={!!repliesVisible[comment?._id]}
                 />
                 {comment?.replies && comment?.replies?.length > 0 && (
-                  <div className={`ml-10 ${!showReplies && 'hidden'}`}>
+                  <div
+                    className={`ml-10 ${
+                      repliesVisible[comment._id] && "hidden"
+                    }`}
+                  >
                     {comment?.replies.map((reply) => (
                       <Comment
                         key={reply?._id}
@@ -218,15 +236,18 @@ const CommentContainer = () => {
                         profilePic={reply?.user?.profilePic}
                         authUserId={authUser._id}
                         onDelete={() => handleDeleteClick(reply?._id)}
-                    />
+                      />
                     ))}
-                    <button className="text-neutral-500 text-sm font-semibold ml-10"
+                    <button
+                      className="text-neutral-500 text-sm font-semibold ml-10"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setShowReplies(!showReplies);
+                        toggleReplies(comment._id);
                       }}
-                    >Hide replies</button>
+                    >
+                      Hide replies
+                    </button>
                   </div>
                 )}
               </>
@@ -268,7 +289,6 @@ const CommentContainer = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
