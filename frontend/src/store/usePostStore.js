@@ -51,7 +51,7 @@ export const usePostStore = create(( set ) => ({
             set({ commentsLoading : true });
             const res = await axiosInstance.get(`/post/getComments/${data.postId}`);
             console.log("Response : ",res);
-            return res.data.comments;
+            return res.data.aggregatedComments;
         }catch (error) {
             toast.error(error.response.data.message);
         }finally {

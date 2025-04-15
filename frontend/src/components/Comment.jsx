@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 import { Ellipsis, Heart } from "lucide-react";
 
-const Comment = ({ onReply, onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
+const Comment = ({ isRepliesOn, replyCount, showReplies, showRepliesButton, onReply, showReplyButton, onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
     
 
   return (
@@ -26,14 +26,26 @@ const Comment = ({ onReply, onDelete, profilePic, userName, createdAt, content, 
         <p className="text-sm">
           {content}
         </p>
-        <button className="text-neutral-500 text-xs"
+
+        <button className={`text-neutral-500 text-xs font-semibold ${!showReplyButton && 'hidden'}`}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onReply();
           }}
-        >Reply</button>
-      </div>
+          >Reply</button>
+          <div className="ml-10">
+            {showRepliesButton && isRepliesOn &&(
+              <button className="text-neutral-500 text-sm font-semibold"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showReplies();
+              }}
+              >View {replyCount} replies</button>
+            )}
+          </div>
+        </div>
 
       <div className="w-[10%] pt-3 flex flex-col justify-center items-center">
             <Heart className={`h-4 w-4`}/>
@@ -62,7 +74,12 @@ Comment.propTypes = {
   userId: PropTypes.string,
   authUserId: PropTypes.string,
   onDelete: PropTypes.func,
+  showReplyButton: PropTypes.bool,
   onReply: PropTypes.func,
+  showRepliesButton: PropTypes.bool,
+  showReplies: PropTypes.func,
+  isRepliesOn: PropTypes.bool,
+  replyCount: PropTypes.number,
 };
 
 export default Comment;
