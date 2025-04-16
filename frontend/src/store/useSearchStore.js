@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useProfileStore } from "./useProfileStore";
 
 export const useSearchStore = create(persist((set) => ({
   selectedUserId: null,
@@ -108,10 +109,12 @@ export const useSearchStore = create(persist((set) => ({
 
   acceptConnectionRequest: async (toUserId, status) => {
     set({ acceptRejectLoading: true });
+    const { setRevConnection } = useProfileStore.getState();
     try {
         const res = await axiosInstance.post(`/connection/acceptConnectionRequest/${toUserId}?status=${status}`);
         toast.success(res.data.message);
         set({ searchSelectedUser: res.data });
+        setRevConnection(null);
         return res.data.userData;
     } catch (error) {
       toast.error(error.response.data.message);
@@ -122,10 +125,12 @@ export const useSearchStore = create(persist((set) => ({
 
   rejectConnectionRequest: async (toUserId, status) => {
     set({ acceptRejectLoading: true });
+    const { setRevConnection } = useProfileStore.getState();
     try {
         const res = await axiosInstance.post(`/connection/rejectConnectionRequest/${toUserId}?status=${status}`);
         toast.success(res.data.message);
         set({ searchSelectedUser: res.data });
+        setRevConnection(null);
         return res.data.userData;
     } catch (error) {
       toast.error(error.response.data.message);
