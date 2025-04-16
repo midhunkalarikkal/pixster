@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { formatDistanceToNow } from "date-fns";
 import { Ellipsis, Heart } from "lucide-react";
 
-const Comment = ({ liked, isRepliesOn, replyCount, showReplies, showRepliesButton, onReply, showReplyButton, onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
+const Comment = ({ onLikeOrDislike, liked, isRepliesOn, replyCount, showReplies, showRepliesButton, onReply, showReplyButton, onDelete, profilePic, userName, createdAt, content, likes, userId, authUserId }) => {
     
 
   return (
@@ -51,7 +51,7 @@ const Comment = ({ liked, isRepliesOn, replyCount, showReplies, showRepliesButto
         <button onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-
+          onLikeOrDislike();
         }}>
             <Heart className={`h-4 w-4 ${liked && 'fill-red-500 text-red-500'}`}/>
         </button>
@@ -87,6 +87,7 @@ Comment.propTypes = {
   isRepliesOn: PropTypes.bool,
   replyCount: PropTypes.number,
   liked: PropTypes.bool,
+  onLikeOrDislike: PropTypes.func,
 };
 
 export default Comment;

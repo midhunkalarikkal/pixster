@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Saved from "../models/saved.model.js";
@@ -6,13 +7,12 @@ import Comment from "../models/comment.model.js";
 import PostLike from "../models/postLike.model.js";
 import { getReceiverSocketId } from "../lib/socket.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import CommentLike from "../models/commentLike.model.js";
 import { generateRandomString } from "../utils/helper.js";
 import Notification from "../models/notification.model.js";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import CommentLike from "../models/commentLike.model.js";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -656,3 +656,77 @@ export const deleteComment = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const likeOrDislikeComment = async (req, res) => {
+  try {
+    const currentUserId = req.user?._id;
+    const { commentId } = req.params;
+
+    if(!currentUserId || !commentId) {
+      return res.statusa(404).json({ message : "Invalid request" });
+    }
+
+    const comment = await Comment.findById(commentId);
+    if(!comment) {
+      return res.status(404).json({ message : "Comment not found" });
+    }
+
+    const existingLike = await CommentLike.findOne({
+      commentId : comment._id,
+      userId : currentUserId,
+    });
+
+    if(existingLike) {
+      console.log("existingLike : ",existingLike);
+      await CommentLike.findByIdAndDelete(existingLike._id);
+
+      await Comment.findByIdAndUpdate(comment._id, { $inc : { likes : -1 } } );
+    } else {
+      const newCommentLike = await CommentLike({
+        commentId,
+        userId : currentUserId,
+      });
+      
+      await newCommentLike.save();
+
+      await Comment.findByIdAndUpdate(comment._id, { $inc : { likes : 1 } } );
+      
+      const newNotification = new Notification({
+        message : "liked your comment",
+        toUserId : comment.userId,
+        fromUserId : currentUserId,
+        notificationType : "commentLiked"
+      })
+      
+      await newNotification.save();
+      
+      await newNotification.populate({
+        path : "fromUserId",
+        select : "userName profilePic"
+      })
+      
+      if(currentUserId.toString() !== comment.userId.toString()) {
+        const socketData = {
+          notification : newNotification
+        }
+        
+        const receiverSocketId = getReceiverSocketId(comment.userId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("commentLiked", socketData);
+        }
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      liked: !existingLike,
+      disliked: !!existingLike,
+      isRootComment: comment.isRootComment,
+      parentCommentId: comment.parentCommentId
+    });
+
+  } catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

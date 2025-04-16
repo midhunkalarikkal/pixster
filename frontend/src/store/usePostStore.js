@@ -67,6 +67,16 @@ export const usePostStore = create(( set ) => ({
         }catch (error) {
             toast.error(error.response.data.message);
         }
+    },
+
+    likeOrDislikeComment: async (data) => {
+        try {
+            console.log("data : ",data);
+            const res = await axiosInstance.put(`/post/likeOrDislikeComment/${data.commentId}`);
+            return res.data;
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
 }))

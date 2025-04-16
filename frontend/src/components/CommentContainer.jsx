@@ -16,6 +16,7 @@ const CommentContainer = () => {
     getComments,
     commentsLoading,
     deleteComment,
+    likeOrDislikeComment,
   } = usePostStore();
 
   const { authUser } = useAuthStore();
@@ -27,6 +28,7 @@ const CommentContainer = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [parentCommentId, setParentCommentId] = useState(null);
   const [repliesVisible, setRepliesVisible] = useState({});
+  const [likedComment, setLikedComment] = useState({});
 
   const toggleReplies = (commentId) => {
     setRepliesVisible((prev) => ({
@@ -59,6 +61,80 @@ const CommentContainer = () => {
     setCommentToDelete(commentId);
     setShowDeleteConfirm(true);
   };
+
+  const handleCommentLikeOrDislike = async(commentId) => {
+    if(!commentId) return;
+
+    try {
+      const res = await likeOrDislikeComment({commentId});
+      console.log("res : ",res);
+      if (res.success) {
+        if (res.liked) {
+          setLikedComment((prev) => ({
+            ...prev,
+            [commentId]: true,
+          }));
+      
+          if (res.isRootComment) {
+            const updatedComments = comments.map((comment) =>
+              comment._id.toString() === commentId.toString()
+                ? { ...comment, likes: comment.likes + 1 }
+                : comment
+            );
+            setComments(updatedComments);
+      
+          } else {
+            const updatedComments = comments.map((comment) => {
+              if (comment._id.toString() === res.parentCommentId.toString()) {
+                const updatedReplies = comment.replies?.map((reply) => {
+                  if (reply._id.toString() === commentId.toString()) {
+                    return { ...reply, likes: reply.likes + 1 };
+                  }
+                  return reply;
+                });
+                return { ...comment, replies: updatedReplies };
+              }
+              return comment;
+            });
+            setComments(updatedComments);
+          }
+      
+        } else if (res.disliked) {
+          setLikedComment((prev) => ({
+            ...prev,
+            [commentId]: false,
+          }));
+
+          if (res.isRootComment) {
+            const updatedComments = comments.map((comment) =>
+              comment._id.toString() === commentId.toString()
+                ? { ...comment, likes: comment.likes - 1 }
+                : comment
+            );
+            setComments(updatedComments);
+      
+          } else {
+            const updatedComments = comments.map((comment) => {
+              if (comment._id.toString() === res.parentCommentId.toString()) {
+                const updatedReplies = comment.replies?.map((reply) => {
+                  if (reply._id.toString() === commentId.toString()) {
+                    return { ...reply, likes: reply.likes - 1 };
+                  }
+                  return reply;
+                });
+                return { ...comment, replies: updatedReplies };
+              }
+              return comment;
+            });
+            setComments(updatedComments);
+          }
+          
+        }
+      }
+    } catch {
+      toast.error("Please try again.");
+    }
+  }
 
   const confirmDeleteComment = async () => {
     if (!selectedPostId || !commentToDelete) return;
@@ -217,7 +293,8 @@ const CommentContainer = () => {
                   showReplies={() => toggleReplies(comment._id)}
                   replyCount={comment?.replies?.length}
                   isRepliesOn={!!repliesVisible[comment?._id]}
-                  liked={comment?.commentLikedByAuthUser}
+                  liked={comment?.commentLikedByAuthUser || likedComment[comment?._id]}
+                  onLikeOrDislike={() =>handleCommentLikeOrDislike(comment?._id)}
                 />
                 {comment?.replies && comment?.replies?.length > 0 && (
                   <div
@@ -237,7 +314,8 @@ const CommentContainer = () => {
                         profilePic={reply?.user?.profilePic}
                         authUserId={authUser._id}
                         onDelete={() => handleDeleteClick(reply?._id)}
-                        liked={reply?.commentLikedByAuthUser}
+                        liked={reply?.commentLikedByAuthUser || likedComment[reply?._id]}
+                        onLikeOrDislike={() => handleCommentLikeOrDislike(reply?._id)}
                       />
                     ))}
                     <button

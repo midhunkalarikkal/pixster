@@ -197,6 +197,18 @@ export const useAuthStore = create(persist((set, get) => ({
 
     });
 
+    socket.on("commentLiked", (data) => {
+      const { notifications, setNotifications } = useNotificationStore.getState();
+
+      const newNotifications = [
+        ...notifications,
+        data.notification,
+      ];
+
+      setNotifications(newNotifications);
+
+    });
+
   },
 
   disconnectSocket: () => {
