@@ -67,7 +67,6 @@ const CommentContainer = () => {
 
     try {
       const res = await likeOrDislikeComment({commentId});
-      console.log("res : ",res);
       if (res.success) {
         if (res.liked) {
           setLikedComment((prev) => ({
@@ -163,16 +162,11 @@ const CommentContainer = () => {
       return;
     }
 
-    console.log("Comment : ", comment);
-    console.log("postId : ", selectedPostId);
-    console.log("parentCommentId : ", parentCommentId);
-
     const res = await uploadComment({
       comment,
       postId: selectedPostId,
       parentCommentId,
     });
-    console.log("res : ", res);
     if (!res.isRootComment) {
       const newComments = comments.map((comment) => {
         if (comment._id === res.parentCommentId) {

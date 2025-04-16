@@ -465,8 +465,8 @@ export const addComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
   try {
-    const currentUserId = req.user?._id;
     console.log("getComments");
+    const currentUserId = req.user?._id;
     const { postId } = req.params;
 
     if (!postId) {
@@ -591,8 +591,6 @@ export const getComments = async (req, res) => {
       })
     ) 
 
-    console.log("aggregated comments : ", aggregatedComments);
-
     if (aggregatedComments.length > 0) {
       aggregatedComments = await Promise.all(
         aggregatedComments.map(async (comment) => {
@@ -677,7 +675,6 @@ export const likeOrDislikeComment = async (req, res) => {
     });
 
     if(existingLike) {
-      console.log("existingLike : ",existingLike);
       await CommentLike.findByIdAndDelete(existingLike._id);
 
       await Comment.findByIdAndUpdate(comment._id, { $inc : { likes : -1 } } );

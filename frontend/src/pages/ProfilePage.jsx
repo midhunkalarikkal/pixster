@@ -12,8 +12,6 @@ import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
 
-  console.log("Profile Page")
-
   const [tab, setTab] = useState(0);
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
@@ -22,6 +20,7 @@ const ProfilePage = () => {
   const { authUser } = useAuthStore();
 
   const { 
+    revConnection,
     getRequestedProfiles, 
     getIncomingRequestedProfiles, 
     getFollowingsProfiles, 
@@ -57,6 +56,8 @@ const ProfilePage = () => {
     }
   }, [searchSelectedUser, selectedUserId, getSearchSelectedUser]);
 
+  console.log("revConnection : ",revConnection);
+
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
@@ -83,7 +84,10 @@ const ProfilePage = () => {
 
 
           {/* Profile top follow request accept or reject bar */}
-          {revConnectionData && revConnectionData.status === "requested" && (
+          {(
+            (revConnection && revConnection.status === "requested") || 
+            (revConnectionData && revConnectionData.status === "requested")
+          ) && (
             <ProfileAcceptReject
               userId={userData?._id}
               userName={userData?.userName}

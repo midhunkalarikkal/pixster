@@ -197,9 +197,6 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const currentUser = req.user?._id;
     const { userId } = req.params;
 
-    console.log("currentUser : ", currentUser);
-    console.log("userId : ", userId);
-
     const userData = await User.findById(userId).select(
       "_id fullName userName profilePic about postsCount followersCount followingsCount"
     );
@@ -305,8 +302,6 @@ export const fetchRequestedAccounts = async (req, res) => {
       })
     );
 
-    console.log("requested profile : ", updatedUsers);
-
     return res
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
@@ -346,8 +341,6 @@ export const fetchIncomingRequestedAccounts = async (req, res) => {
         };
       })
     );
-
-    console.log("incoming requested profile : ", updatedUsers);
 
     return res
       .status(200)
@@ -436,8 +429,6 @@ export const fetchFollowersAccounts = async (req, res) => {
         };
       })
     );
-
-    console.log("following accounts : ", updatedUsers);
 
     return res
       .status(200)

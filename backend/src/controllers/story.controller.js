@@ -47,8 +47,6 @@ export const uploadStory = async (req, res) => {
 
     updatedStory.img = await generateSignedUrl(updatedStory.img);
 
-    console.log("updatedStory : ", updatedStory);
-
     return res
       .status(201)
       .json({
@@ -116,8 +114,6 @@ export const getStories = async (req, res) => {
         }
       }
     ]);
-
-    console.log("Stories : ",Stories);
     
     if(myStory) myStory.img = await generateSignedUrl(myStory.img);
     if(Stories.length > 0) {

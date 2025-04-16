@@ -15,7 +15,6 @@ export const useHomeStore = create((set) => ({
 
     uploadStory: async (data) => {
         try{
-            console.log("data : ",data);
             set({ storyUploading : true });
             const res = await axiosInstance.post('/story/uploadStory',data);
             set({ myStory : res.data.story });

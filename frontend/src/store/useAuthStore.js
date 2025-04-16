@@ -113,32 +113,35 @@ export const useAuthStore = create(persist((set, get) => ({
     });
 
     socket.on("followRequest", (data) => {
+
       const { notifications, setNotifications } = useNotificationStore.getState();
-      const { incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
+      const { setRevConnection, incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
 
       const newNotifications = [
-        ...notifications,
         data.notification,
+        ...notifications,
       ];
 
       const updatedProfilesList = [
-        ...incomingrequestedProfiles,
+        ...(incomingrequestedProfiles || []),
         data.userData,
       ]
 
+      setRevConnection(data.revConnectionData);
       setNotifications(newNotifications);
       setIncomingRequestedProfiles(updatedProfilesList);
-      toast.info(data.message);
     });
     
 
     socket.on("requestCancel", (data) => {
-      const { incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore();
+      const { setRevConnection, incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
 
       const updatedProfileList = incomingrequestedProfiles.filter((profile) => {
         profile._id !== data.fromUserId;
       });
+
       setIncomingRequestedProfiles(updatedProfileList);
+      setRevConnection(data.revConnection);
     });
 
 

@@ -11,9 +11,6 @@ export const requestConnection = async (req, res) => {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -39,10 +36,10 @@ export const requestConnection = async (req, res) => {
     }
 
     let connectionData = await Connection.findOne({ fromUserId, toUserId }, { status: 1 });
+
     let newNotification;
 
     if (connectionData) {
-      console.log("ConnectionData");
       if (connectionData.status === status) {
         return res
           .status(400)
@@ -65,7 +62,6 @@ export const requestConnection = async (req, res) => {
         newNotification = await newNotification.save();
       }
     } else {
-      console.log("No connectionData")
       connectionData = new Connection({
         fromUserId,
         toUserId,
@@ -93,6 +89,10 @@ export const requestConnection = async (req, res) => {
       select: "userName fullName profilePic",
     });
 
+    if(newNotification?.fromUserId?.profilePic) {
+      newNotification.fromUserId.profilePic = await generateSignedUrl(newNotification.fromUserId.profilePic);
+    }
+
     if(userData.profilePic) {
       userData.profilePic = await generateSignedUrl(userData.profilePic);
     }
@@ -101,15 +101,15 @@ export const requestConnection = async (req, res) => {
       toUserData.profilePic = await generateSignedUrl(toUserData.profilePic);
     }
 
-    const followRequestData = {
-      message: "You have a new follow request.",
+    const socketData = {
       notification: newNotification,
-      userData
+      userData,
+      revConnectionData : connectionData
     };
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("followRequest", followRequestData);
+      io.to(receiverSocketId).emit("followRequest", socketData);
     }
 
     return res.status(200).json({
@@ -292,9 +292,6 @@ export const cancelConnection = async (req, res) => {
     const { toUserId } = req.params;
     const { status } = req.query;
     const { fromSelfProfile } = req.body;
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -343,13 +340,24 @@ export const cancelConnection = async (req, res) => {
       { _id: 0, status: 1 }
     );
 
-    const requestCancelData = {
+    const socketData = {
       fromUserId,
+      revConnectionData : connectionData
     }
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("requestCancel", requestCancelData);
+      io.to(receiverSocketId).emit("requestCancel", socketData);
+    }
+
+    if(fromSelfProfile) {
+      if(userData.profilePic) {
+        userData.profilePic = await generateSignedUrl(userData.profilePic);
+      }
+    } else { 
+      if(toUserData.profilePic) {
+        toUserData.profilePic = await generateSignedUrl(toUserData.profilePic);
+      }
     }
 
     return res.status(200).json({

@@ -75,8 +75,7 @@ const CreatePost = () => {
       } else {
         toast.error("Something went wrong. Please try again.");
       }
-    } catch (error) {
-      console.error("Post error:", error);
+    } catch {
       toast.error("Failed to submit post.");
     } finally {
       setUploading(false);

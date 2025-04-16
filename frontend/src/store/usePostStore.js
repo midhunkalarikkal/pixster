@@ -34,7 +34,6 @@ export const usePostStore = create(( set ) => ({
     uploadComment: async(data) => {
         try{
             set({ commentUploading : true });
-            console.log("upload comment data : ",data);
             const res = await axiosInstance.post('/post/addComment',data);
             toast.success(res.data.message);
             return res.data.comment;
@@ -47,10 +46,8 @@ export const usePostStore = create(( set ) => ({
 
     getComments: async (data) => {
         try {
-            console.log("data : ",data);
             set({ commentsLoading : true });
             const res = await axiosInstance.get(`/post/getComments/${data.postId}`);
-            console.log("Response : ",res);
             return res.data.aggregatedComments;
         }catch (error) {
             toast.error(error.response.data.message);
@@ -71,7 +68,6 @@ export const usePostStore = create(( set ) => ({
 
     likeOrDislikeComment: async (data) => {
         try {
-            console.log("data : ",data);
             const res = await axiosInstance.put(`/post/likeOrDislikeComment/${data.commentId}`);
             return res.data;
         } catch (error) {

@@ -16,8 +16,6 @@ const Stories = () => {
     setStoryUploaderOpen(true);
   };
 
-  console.log("myStory : ", myStory);
-
   return (
     <div className="overflow-x-scroll no-scrollbar">
       <div className="flex space-x-3 items-center px-4 py-8 w-max">
