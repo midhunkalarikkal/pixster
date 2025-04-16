@@ -35,7 +35,7 @@ const ProfileSecondData = ({ authUserId, userDataId, tab, status }) => {
             {tab === 0 && (
             searchSelectedUser ? (
               userPosts && userPosts.length > 0 ? (
-                <PostGrid posts={userPosts} />
+                <PostGrid posts={userPosts} authUserId={authUserId} userDataId={userDataId} />
               ) : (
                 <p>{authUserId === userDataId ? "You haven't uploaded any post yet." : "Not uploaded any post yet."}</p>
               )

@@ -130,9 +130,6 @@ export const acceptConnection = async (req, res) => {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -171,19 +168,24 @@ export const acceptConnection = async (req, res) => {
       notificationType: "requestAccept",
     });
     await newNotification.save();
+    await newNotification.populate({
+      path : "fromUserId",
+      select : "userName fullName profilePic"
+    })
 
     await User.findByIdAndUpdate( fromUserId, { $inc: { followersCount: 1 } }, { new: true } );
 
     const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followingsCount: 1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
+    if(userData.profilePic) {
+      userData.profilePic = await generateSignedUrl(userData.profilePic);
+    }
 
     const connectionData = await Connection.findOne(
       { fromUserId, toUserId },
       { _id: 0, status: 1 }
     );
-
-    const userPosts = await Post.find({ userId : toUserId });
-
-    const requestAcceptedData = {
+    
+    const socketData = {
       fromUserId,
       connectionData: revConnectionData,
       revConnectionData: connectionData,
@@ -191,18 +193,14 @@ export const acceptConnection = async (req, res) => {
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("requestAccepted", requestAcceptedData);
+      io.to(receiverSocketId).emit("requestAccepted", socketData);
     }
-
-    console.log("connectionData : ",connectionData);
-    console.log("revConnectionData : ",revConnectionData);
 
     return res.status(200).json({
       message: `You have accepted ${userData.fullName}'s follow request`,
       userData,
       connectionData,
       revConnectionData,
-      userPosts,
     });
 
   } catch (error) {
@@ -217,9 +215,6 @@ export const rejectConnection = async (req, res) => {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -239,6 +234,10 @@ export const rejectConnection = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
+    if(toUserData.profilePic) {
+      toUserData.profilePic = await generateSignedUrl(toUserData.profilePic);
+    }
+
     let revConnectionData = await Connection.findOne({
       fromUserId: toUserId,
       toUserId: fromUserId,
@@ -256,9 +255,7 @@ export const rejectConnection = async (req, res) => {
       { status: 1 }
     );
 
-    const userPosts = await Post.find({ userId : toUserId });
-
-    const requestRejectData = {
+    const socketData = {
       fromUserId,
       connectionData: revConnectionData,
       revConnectionData: connectionData,
@@ -266,18 +263,15 @@ export const rejectConnection = async (req, res) => {
 
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("requestReject", requestRejectData);
+      io.to(receiverSocketId).emit("requestReject", socketData);
     }
-
-    console.log("connectionData : ",connectionData);
-    console.log("revConnectionData : ",revConnectionData);
 
     return res.status(200).json({
       message: `You have rejected ${toUserData.fullName}'s follow request`,
       userData: toUserData,
       connectionData,
       revConnectionData,
-      userPosts,
+      userPosts : [],
     });
 
   } catch (error) {

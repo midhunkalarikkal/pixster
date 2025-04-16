@@ -7,7 +7,7 @@ import { usePostStore } from "../../store/usePostStore";
 import { useProfileStore } from "../../store/useProfileStore";
 import { Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
 
-const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
+const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) => {
 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -101,7 +101,8 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
                       {post.commentsCount}
                     </p>
                   </div>
-                  <div className={`flex space-x-4 ${ saved && 'hidden' }`}>
+                  { authUserId === userDataId && (
+                    <div className={`flex space-x-4 ${ saved && 'hidden' }`}>
                     <button
                       className="flex flex-col items-center text-red-500"
                       onClick={(e) => {
@@ -109,7 +110,7 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
                         e.stopPropagation();
                         setDeleteTarget(post._id);
                       }}
-                    >
+                      >
                       <Trash />
                     </button>
                     <button
@@ -119,10 +120,11 @@ const PostGrid = ({ posts, onDelete, onRemove, saved }) => {
                         e.stopPropagation();
                         getUpdatePost(post);
                       }}
-                    >
+                      >
                       <Edit />
                     </button>
                   </div>
+                    )}
                 </div>
               </>
             )}
@@ -164,6 +166,8 @@ PostGrid.propTypes = {
   onDelete: PropTypes.func,
   onRemove: PropTypes.func,
   saved: PropTypes.bool,
+  authUserId: PropTypes.string,
+  userDataId: PropTypes.string,
 };
 
 export default PostGrid;

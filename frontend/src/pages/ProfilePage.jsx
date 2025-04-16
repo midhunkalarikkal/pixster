@@ -56,8 +56,6 @@ const ProfilePage = () => {
     }
   }, [searchSelectedUser, selectedUserId, getSearchSelectedUser]);
 
-  console.log("revConnection : ",revConnection);
-
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
