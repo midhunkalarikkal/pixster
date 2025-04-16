@@ -12,6 +12,7 @@ import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import CommentLike from "../models/commentLike.model.js";
 dotenv.config();
 
 export const uploadPost = async (req, res) => {
@@ -464,6 +465,7 @@ export const addComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
   try {
+    const currentUserId = req.user?._id;
     console.log("getComments");
     const { postId } = req.params;
 
@@ -574,23 +576,38 @@ export const getComments = async (req, res) => {
       },
     ]);
 
+    const likedComments = await CommentLike.find({ userId : currentUserId }).select("commentId");
+    const likedCommentsIdsSet = new Set(likedComments.map(like => like.commentId.toString()));
+
+    aggregatedComments = await Promise.all(
+      aggregatedComments.map(async (comment) => {
+        comment.commentLikedByAuthUser = likedCommentsIdsSet.has(comment._id.toString())
+        
+        comment.replies = comment.replies.map(reply => ({
+          ...reply,
+          commentLikedByAuthUser : likedCommentsIdsSet.has(reply._id.toString())
+        }))
+        return comment;
+      })
+    ) 
+
     console.log("aggregated comments : ", aggregatedComments);
 
     if (aggregatedComments.length > 0) {
       aggregatedComments = await Promise.all(
         aggregatedComments.map(async (comment) => {
-          if (comment.user.profilePic) {
+          if (comment?.user?.profilePic) {
             comment.user.profilePic = await generateSignedUrl(
-              comment.user.profilePic
+              comment?.user?.profilePic
             );
           }
 
-          if (comment.replies.length > 0) {
+          if (comment?.replies?.length > 0) {
             comment.replies = await Promise.all(
-              comment.replies.map(async (reply) => {
-                if (reply.user.profilePic) {
+              comment?.replies.map(async (reply) => {
+                if (reply?.user?.profilePic) {
                   reply.user.profilePic = await generateSignedUrl(
-                    reply.user.profilePic
+                    reply?.user?.profilePic
                   );
                 }
                 return reply;

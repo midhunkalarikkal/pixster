@@ -217,6 +217,7 @@ const CommentContainer = () => {
                   showReplies={() => toggleReplies(comment._id)}
                   replyCount={comment?.replies?.length}
                   isRepliesOn={!!repliesVisible[comment?._id]}
+                  liked={comment?.commentLikedByAuthUser}
                 />
                 {comment?.replies && comment?.replies?.length > 0 && (
                   <div
@@ -236,6 +237,7 @@ const CommentContainer = () => {
                         profilePic={reply?.user?.profilePic}
                         authUserId={authUser._id}
                         onDelete={() => handleDeleteClick(reply?._id)}
+                        liked={reply?.commentLikedByAuthUser}
                       />
                     ))}
                     <button
