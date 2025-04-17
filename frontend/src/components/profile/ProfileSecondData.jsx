@@ -13,10 +13,11 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
   const [userSavedPostsLoading, setUserSavedPostsLoading] = useState(false);
 
   const { getUserPosts, getUserSavedPosts } = useProfileStore();
+  const isOwnProfile = authUserId === userDataId;
 
   useEffect(() => {
     const fetchData = async () => {
-      if (authUserId.toString() === userDataId.toString()) {
+      if (isOwnProfile) {
         setUserPostsLoading(true);
         const posts = await getUserPosts({ userId: authUserId });
         setUserPosts(posts);
@@ -35,7 +36,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
     };
 
     fetchData();
-  }, [authUserId, userDataId, status,]);
+  }, [authUserId, userDataId, status]);
 
   const handlePostDelete = (id) => {
     setUserPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
@@ -47,7 +48,6 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
     );
   };
 
-  const isOwnProfile = authUserId === userDataId;
 
   return (
     <>
@@ -89,28 +89,30 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
         </div>
       )}
       <div className="flex flex-col justify-center items-center w-full py-4">
-        {tab === 0 && (
-          userPostsLoading ? (
-            <PostsSkeleton />
-          ) : userPosts.length > 0 ? (
-            <PostGrid
-              posts={userPosts}
-              authUserId={authUserId}
-              userDataId={userDataId}
-              onDelete={isOwnProfile ? handlePostDelete : undefined}
-              saved={false}
-            />
-          ) : (
-            <p>
-              {isOwnProfile
-                ? "You haven't uploaded any post yet."
-                : "Not uploaded any post yet."}
-            </p>
-          )
-        )}
+        {tab === 0 &&
+          (isOwnProfile || status === "accepted" ? (
+            userPostsLoading ? (
+              <PostsSkeleton />
+            ) : userPosts.length > 0 ? (
+              <PostGrid
+                posts={userPosts}
+                authUserId={authUserId}
+                userDataId={userDataId}
+                onDelete={isOwnProfile ? handlePostDelete : undefined}
+                saved={false}
+              />
+            ) : (
+              <p>
+                {isOwnProfile
+                  ? "You haven't uploaded any post yet."
+                  : "This user hasn't uploaded any posts yet."}
+              </p>
+            )
+          ) : null)}
 
-        {tab === 1 && isOwnProfile && (
-          userSavedPostsLoading ? (
+        {tab === 1 &&
+          isOwnProfile &&
+          (userSavedPostsLoading ? (
             <PostsSkeleton />
           ) : userSavedPosts.length > 0 ? (
             <PostGrid
@@ -120,8 +122,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
             />
           ) : (
             <p>{"You haven't saved any post yet."}</p>
-          )
-        )}
+          ))}
       </div>
     </>
   );
@@ -130,8 +131,6 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 ProfileSecondData.propTypes = {
   authUserId: PropTypes.string.isRequired,
   userDataId: PropTypes.string.isRequired,
-  tab: PropTypes.number.isRequired,
-  setTab: PropTypes.func.isRequired,
   status: PropTypes.string,
 };
 

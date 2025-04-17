@@ -146,8 +146,7 @@ export const useAuthStore = create(persist((set, get) => ({
     socket.on("requestAccepted", (data) => {
       const { requestedProfiles } = useProfileStore.getState();
       const { setRequestedProfiles } = useProfileStore.getState();
-      const { setSearchSelectedUserAcceptConnectionData } =
-        useSearchStore.getState();
+      const { setSearchSelectedUserAcceptConnectionData } = useSearchStore.getState();
 
       setSearchSelectedUserAcceptConnectionData(
         data.connectionData,

@@ -24,7 +24,6 @@ const MediaGrid = () => {
     fetchPosts()
   }, []);
   
-  console.log("posts : ",posts);
   return (
     <div className="w-8/12 h-full flex justify-center">
       <div className="w-10/12 items-center justify-center bg-base-100/50 overflow-y-scroll no-scrollbar px-4 py-8">
