@@ -91,6 +91,17 @@ export const useSearchStore = create(persist((set) => ({
     }));
   },
 
+  fetchMediaGrid: async () => {
+    try {
+      const res = await axiosInstance.get('/user/getMediaGrid');
+      return res.data.mediaPosts;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  },
+
+  // Connection calls
+
   sendConnectionRequest: async (toUserId, status) => {
     set({ connectionStatusLoading: true });
     try {

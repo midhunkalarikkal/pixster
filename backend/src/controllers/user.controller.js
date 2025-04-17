@@ -58,56 +58,56 @@ export const homeScrollerData = async (req, res) => {
         $unwind: "$userPostDetails",
       },
       {
-        $lookup : {
-          from : "postlikes",
-          let : { postId : "$userPostDetails._id" },
-          pipeline : [
+        $lookup: {
+          from: "postlikes",
+          let: { postId: "$userPostDetails._id" },
+          pipeline: [
             {
-              $match : {
-                $expr : {
-                  $and : [
-                    { $eq : ["$postId", "$$postId"] },
-                    { $eq : ["$userId", currentUserId] },
-                  ]
-                }
-              }
-            }
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$postId", "$$postId"] },
+                    { $eq: ["$userId", currentUserId] },
+                  ],
+                },
+              },
+            },
           ],
-          as : "likedByCurrentUser"
-        }
+          as: "likedByCurrentUser",
+        },
       },
       {
-        $addFields : {
-          "userPostDetails.likedByCurrentUser" : {
-            $gt : [{ $size : "$likedByCurrentUser" }, 0]
-          }
-        }
+        $addFields: {
+          "userPostDetails.likedByCurrentUser": {
+            $gt: [{ $size: "$likedByCurrentUser" }, 0],
+          },
+        },
       },
       {
-        $lookup : {
-          from : "saveds",
-          let : { postId : "$userPostDetails._id" },
-          pipeline : [
+        $lookup: {
+          from: "saveds",
+          let: { postId: "$userPostDetails._id" },
+          pipeline: [
             {
-              $match : {
-                $expr : {
-                  $and : [
-                    { $eq : ["$postId", "$$postId"] },
-                    { $eq : ["$userId", currentUserId] },
-                  ]
-                }
-              }
-            }
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$postId", "$$postId"] },
+                    { $eq: ["$userId", currentUserId] },
+                  ],
+                },
+              },
+            },
           ],
-          as : "savedByCurrentUser"
-        }
+          as: "savedByCurrentUser",
+        },
       },
       {
-        $addFields : {
-          "userPostDetails.savedByCurrentUser" : {
-            $gt : [{ $size : "$savedByCurrentUser" }, 0]
-          }
-        }
+        $addFields: {
+          "userPostDetails.savedByCurrentUser": {
+            $gt: [{ $size: "$savedByCurrentUser" }, 0],
+          },
+        },
       },
       {
         $project: {
@@ -116,8 +116,8 @@ export const homeScrollerData = async (req, res) => {
         },
       },
       {
-        $sort : { "userPostDetails.createdAt" : -1 }
-      }
+        $sort: { "userPostDetails.createdAt": -1 },
+      },
     ]);
 
     const updatedPostData = await Promise.all(
@@ -213,7 +213,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
-    );    
+    );
 
     if (userData.profilePic) {
       userData.profilePic = await generateSignedUrl(userData.profilePic);
@@ -233,23 +233,22 @@ export const fetchSearchedUserProfile = async (req, res) => {
 
 export const fetchUserPosts = async (req, res) => {
   try {
-
     const { userId } = req.params;
-    if(!userId) {
-      return res.status(404).json({ message : "Invalid request" });
-    }
-    
-    const user = await User.findById(userId);
-    if(!user) {
-      return res.status(404).json({ message : "User not found" });
+    if (!userId) {
+      return res.status(404).json({ message: "Invalid request" });
     }
 
-    let userPosts = await Post.find({ userId : userId}).lean();
-    if(userPosts.length > 0) {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let userPosts = await Post.find({ userId: userId }).lean();
+    if (userPosts.length > 0) {
       userPosts = await Promise.all(
         userPosts.map(async (post) => {
           const signedUrl = await generateSignedUrl(post.media);
-          
+
           return {
             ...post,
             media: signedUrl,
@@ -259,47 +258,48 @@ export const fetchUserPosts = async (req, res) => {
     }
 
     return res.status(200).json({ userPosts });
-
-  }catch (error) {
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 export const fetchUserSavedPosts = async (req, res) => {
   try {
     const currentUserId = req.user._id;
 
-    if(!currentUserId) {
-      return res.status(404).json({ message : "No user found" });
+    if (!currentUserId) {
+      return res.status(404).json({ message: "No user found" });
     }
 
-
-    let userSavedPosts = await Saved.find({ userId : currentUserId },{_id: 0, postId: 1}).populate({
+    let userSavedPosts = await Saved.find(
+      { userId: currentUserId },
+      { _id: 0, postId: 1 }
+    )
+      .populate({
         path: "postId",
-        select : "media"
-      }).lean();
+        select: "media",
+      })
+      .lean();
 
-      
-      if(userSavedPosts.length > 0) {
-        userSavedPosts = await Promise.all(
-          userSavedPosts.map(async (post) => {
-            const signedUrl = await generateSignedUrl(post?.postId?.media);
-            return {
-              ...post.postId,
-              media: signedUrl,
-            };
-          })
-        );
-      }
+    if (userSavedPosts.length > 0) {
+      userSavedPosts = await Promise.all(
+        userSavedPosts.map(async (post) => {
+          const signedUrl = await generateSignedUrl(post?.postId?.media);
+          return {
+            ...post.postId,
+            media: signedUrl,
+          };
+        })
+      );
+    }
 
     return res.status(200).json({ userSavedPosts });
-
-  }catch (error) {
+  } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 export const fetchRequestedAccounts = async (req, res) => {
   try {
@@ -506,12 +506,10 @@ export const fetchNotifications = async (req, res) => {
       })
     );
 
-    return res
-      .status(200)
-      .json({
-        message: "Users fetched successfully",
-        notifications: updatedNotifications,
-      });
+    return res.status(200).json({
+      message: "Users fetched successfully",
+      notifications: updatedNotifications,
+    });
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -527,128 +525,182 @@ export const fetchSuggestions = async (req, res) => {
     }
 
     const suggestionUsersIds = await Connection.aggregate([
-    {
-      $match : {
-        $and : [{
-          $or : [
-            {  status: "accepted" },
-            {  status: "requested" },
+      {
+        $match: {
+          $and: [
+            {
+              $or: [{ status: "accepted" }, { status: "requested" }],
+            },
+            {
+              $or: [{ fromUserId: currentUserId }, { toUserId: currentUserId }],
+            },
           ],
         },
-        {
-          $or : [
-            { fromUserId : currentUserId },
-            { toUserId : currentUserId }
-          ]
-        }
-        ]
-      }
-    },
-    {
-      $project : {
-        _id : 0,
-        userId : {
-          $cond : {
-            if : { $eq : [ "$fromUserId", currentUserId ] },
-            then : "$toUserId",
-            else : "$fromUserId",
-          }
-        }
-      }
-    },
-    {
-      $group : {
-        _id : null,
-        friendsIds : { $addToSet : "$userId" }
-      }
-    },
-    {
-      $lookup : {
-        from : "connections",
-        let : { friendsList : "$friendsIds"},
-        pipeline : [
-          {
-            $match : {
-              status : "accepted",
-              $expr : {
-                $or : [
-                  { $in : [ "$fromUserId", "$$friendsList" ]},
-                  { $in : [ "$toUserId", "$$friendsList" ]}
-                ]
-              }
-            }
+      },
+      {
+        $project: {
+          _id: 0,
+          userId: {
+            $cond: {
+              if: { $eq: ["$fromUserId", currentUserId] },
+              then: "$toUserId",
+              else: "$fromUserId",
+            },
           },
-          {
-            $project : {
-              userId : {
-                $cond : {
-                  if : { $in : [ "$fromUserId", "$$friendsList" ] },
-                  then : "$toUserId",
-                  else : "$fromUserId",
-                }
-              }
-            }
-          },
-          {
-            $match : {
-              $expr : {
-                $and : [
-                  { $ne : [ "$userId", currentUserId ] },
-                  { $not : [ { $in : [ "$userId", "$$friendsList" ] } ] }
-                ]
-              }
-            }
-          }
-        ],
-        as : "suggestions"
-      }
-    },
-    {
-      $unwind : "$suggestions"
-    },
-    {
-      $replaceRoot : {
-        newRoot : "$suggestions"
-      }
-    },
-    {
-      $group : {
-        _id : null,
-        userIds : { "$addToSet" : "$userId" }
-      }
-    },
-    {
-      $project : {
-        _id : 0,
-        userIds : 1
-      }
-    }
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          friendsIds: { $addToSet: "$userId" },
+        },
+      },
+      {
+        $lookup: {
+          from: "connections",
+          let: { friendsList: "$friendsIds" },
+          pipeline: [
+            {
+              $match: {
+                status: "accepted",
+                $expr: {
+                  $or: [
+                    { $in: ["$fromUserId", "$$friendsList"] },
+                    { $in: ["$toUserId", "$$friendsList"] },
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                userId: {
+                  $cond: {
+                    if: { $in: ["$fromUserId", "$$friendsList"] },
+                    then: "$toUserId",
+                    else: "$fromUserId",
+                  },
+                },
+              },
+            },
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $ne: ["$userId", currentUserId] },
+                    { $not: [{ $in: ["$userId", "$$friendsList"] }] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "suggestions",
+        },
+      },
+      {
+        $unwind: "$suggestions",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$suggestions",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          userIds: { $addToSet: "$userId" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          userIds: 1,
+        },
+      },
     ]);
 
     const suggestionUsersIdsArray = suggestionUsersIds[0]?.userIds || [];
 
-    const users = await User.find({
-      _id : {
-        $in : suggestionUsersIdsArray
-      }
-    }, { userName: 1, fullName: 1, profilePic: 1 });
+    const users = await User.find(
+      {
+        _id: {
+          $in: suggestionUsersIdsArray,
+        },
+      },
+      { userName: 1, fullName: 1, profilePic: 1 }
+    );
 
     const updatedUsers = await Promise.all(
-      users.map( async (user) => {
-        if(!user?.profilePic) return user;
+      users.map(async (user) => {
+        if (!user?.profilePic) return user;
 
         const signedUrl = await generateSignedUrl(user?.profilePic);
 
         return {
           ...user,
-          profilePic : signedUrl,
-        }
+          profilePic: signedUrl,
+        };
       })
-    )
+    );
 
     return res
       .status(200)
-      .json({ message: "Suggestions fetched successfully", suggestions: updatedUsers });
+      .json({
+        message: "Suggestions fetched successfully",
+        suggestions: updatedUsers,
+      });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const fetchMediaGrid = async (req, res) => {
+  try {
+    const currentUserId = req.user?._id;
+    if (!currentUserId) {
+      return res.status(404).json({ message: "Please login again" });
+    }
+
+    let mediaPosts = await Connection.aggregate([
+      {
+        $match: {
+          status: "accepted",
+          fromUserId: currentUserId,
+        },
+      },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "toUserId",
+          foreignField: "userId",
+          as: "posts",
+        },
+      },
+      {
+        $unwind: "$posts",
+      },
+      {
+        $project: {
+          _id: 0,
+          postId: "$posts._id",
+          media: "$posts.media",
+        },
+      },
+    ]);
+
+    if (mediaPosts.length > 0) {
+      mediaPosts = await Promise.all(
+        mediaPosts.map(async (post) => {
+          const signedUrl = await generateSignedUrl(post.media);
+          return {
+            ...post,
+            media: signedUrl,
+          };
+        })
+      );
+    }
+
+    return res.status(200).json({ mediaPosts });
+
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
