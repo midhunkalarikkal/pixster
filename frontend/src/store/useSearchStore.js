@@ -5,6 +5,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { useProfileStore } from "./useProfileStore";
 
 export const useSearchStore = create(persist((set) => ({
+
   selectedUserId: null,
   searchSelectedUser: null,
   searchSelectedUserLoading: false,
@@ -90,7 +91,6 @@ export const useSearchStore = create(persist((set) => ({
     }));
   },
 
-  // **** Connection Requests **** //
   sendConnectionRequest: async (toUserId, status) => {
     set({ connectionStatusLoading: true });
     try {

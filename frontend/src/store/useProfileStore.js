@@ -25,8 +25,6 @@ export const useProfileStore = create((set) => ({
 
   listPage: false,
 
-  homeScrollerDataLoading: false,
-
   setTab: (data) => set({ tab : data }),
 
   setRevConnection: (data) => set({ revConnection : data }),
@@ -47,7 +45,7 @@ export const useProfileStore = create((set) => ({
       toast.error(error.response.data.message);
     } 
   },
-  
+
   getUserSavedPosts: async() => {
     try {
         const res = await axiosInstance.get('/user/getUserSavedPosts');
@@ -139,18 +137,5 @@ export const useProfileStore = create((set) => ({
       set({ postUploading :  false });
     }
   },
-
-  getHomePostScrollerData: async () => {
-    set({ homeScrollerDataLoading :  true });
-    try{
-      const res = await axiosInstance.get('/user/getHomseSrollerData');
-      return res.data.posts;
-    }catch (error) {
-      toast.error(error.response.data.message);
-    }finally {
-      set({ homeScrollerDataLoading : false });
-    }
-  }
-
 
 }));

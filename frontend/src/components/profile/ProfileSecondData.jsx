@@ -5,10 +5,6 @@ import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileSecondData = ({ authUserId, userDataId, status }) => {
-  console.log("profileSecondData");
-  console.log("authUserId : ", authUserId);
-  console.log("userDataId : ", userDataId);
-  console.log("status : ", status);
 
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);

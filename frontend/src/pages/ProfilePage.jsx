@@ -12,7 +12,6 @@ import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
 
-  console.log("ProfilePage")
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);

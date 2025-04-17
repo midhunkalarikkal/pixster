@@ -136,9 +136,7 @@ export const useAuthStore = create(persist((set, get) => ({
     socket.on("requestCancel", (data) => {
       const { setRevConnection, incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
 
-      const updatedProfileList = incomingrequestedProfiles.filter((profile) => {
-        profile._id !== data.fromUserId;
-      });
+      const updatedProfileList = incomingrequestedProfiles.filter((profile) => profile._id !== data.fromUserId );
 
       setIncomingRequestedProfiles(updatedProfileList);
       setRevConnection(data.revConnection);

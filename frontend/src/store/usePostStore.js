@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 
 export const usePostStore = create(( set ) => ({
-
+    
     commentUploading: false,
     commentUploaderOpen: false,
     selectedPostId : null,
