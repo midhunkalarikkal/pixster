@@ -39,6 +39,24 @@ export const useProfileStore = create((set) => ({
 
   setIncomingRequestedProfiles: (profiles) => set({ incomingrequestedProfiles: profiles }),
 
+  getUserPosts: async (data) => {
+    try{
+      const res = await axiosInstance.get(`/user/getUserPosts/${data.userId}`);
+      return res.data.userPosts;
+    }catch (error) {
+      toast.error(error.response.data.message);
+    } 
+  },
+  
+  getUserSavedPosts: async() => {
+    try {
+        const res = await axiosInstance.get('/user/getUserSavedPosts');
+        return res.data.userSavedPosts;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  },
+
   getRequestedProfiles: async () => {
     set({ requestedProfilesLoading: true });
     try {

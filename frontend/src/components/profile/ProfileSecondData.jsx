@@ -2,7 +2,7 @@ import PostGrid from "./PostGrid";
 import PropTypes from "prop-types";
 import { memo, useEffect, useState } from "react";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
-import { useSearchStore } from "../../store/useSearchStore";
+import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileSecondData = ({ authUserId, userDataId, status }) => {
   console.log("profileSecondData");
@@ -12,15 +12,34 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);
+  const [userPostsLoading, setUserPostsLoading] = useState(false);
   const [userSavedPosts, setUserSavedPosts] = useState([]);
+  const [userSavedPostsLoading, setUserSavedPostsLoading] = useState(false);
 
-  const { searchSelectedUser } = useSearchStore();
+  const { getUserPosts, getUserSavedPosts } = useProfileStore();
 
   useEffect(() => {
-    if (!searchSelectedUser) return;
-    setUserPosts(searchSelectedUser.userPosts);
-    setUserSavedPosts(searchSelectedUser?.userSavedPosts);
-  }, [searchSelectedUser]);
+    const fetchData = async () => {
+      if (authUserId.toString() === userDataId.toString()) {
+        setUserPostsLoading(true);
+        const posts = await getUserPosts({ userId: authUserId });
+        setUserPosts(posts);
+        setUserPostsLoading(false);
+
+        setUserSavedPostsLoading(true);
+        const savedPosts = await getUserSavedPosts();
+        setUserSavedPosts(savedPosts);
+        setUserSavedPostsLoading(false);
+      } else if (status === "accepted") {
+        setUserPostsLoading(true);
+        const posts = await getUserPosts({ userId: userDataId });
+        setUserPosts(posts);
+        setUserPostsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [authUserId, userDataId, status,]);
 
   const handlePostDelete = (id) => {
     setUserPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
@@ -31,6 +50,8 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
       prevSavedPost.filter((post) => post._id !== id)
     );
   };
+
+  const isOwnProfile = authUserId === userDataId;
 
   return (
     <>
@@ -72,60 +93,38 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
         </div>
       )}
       <div className="flex flex-col justify-center items-center w-full py-4">
-        {authUserId !== userDataId ? (
-          status === "accepted" ? (
-            <>
-              {tab === 0 &&
-                (searchSelectedUser ? (
-                  userPosts && userPosts.length > 0 ? (
-                    <PostGrid
-                      posts={userPosts}
-                      authUserId={authUserId}
-                      userDataId={userDataId}
-                    />
-                  ) : (
-                    <p>
-                      {authUserId === userDataId
-                        ? "You haven't uploaded any post yet."
-                        : "Not uploaded any post yet."}
-                    </p>
-                  )
-                ) : (
-                  <PostsSkeleton />
-                ))}
-            </>
-          ) : null
-        ) : (
-          <>
-            {tab === 0 &&
-              (searchSelectedUser ? (
-                userPosts && userPosts.length > 0 ? (
-                  <PostGrid
-                    posts={userPosts}
-                    onDelete={handlePostDelete}
-                    saved={false}
-                  />
-                ) : (
-                  <p>{"You haven't uploaded any post yet."}</p>
-                )
-              ) : (
-                <PostsSkeleton />
-              ))}
-            {tab === 1 &&
-              (searchSelectedUser ? (
-                userSavedPosts && userSavedPosts.length > 0 ? (
-                  <PostGrid
-                    posts={userSavedPosts}
-                    onRemove={handleRemoveFromSaved}
-                    saved={true}
-                  />
-                ) : (
-                  <p>{"You haven't uploaded any post yet."}</p>
-                )
-              ) : (
-                <PostsSkeleton />
-              ))}
-          </>
+        {tab === 0 && (
+          userPostsLoading ? (
+            <PostsSkeleton />
+          ) : userPosts.length > 0 ? (
+            <PostGrid
+              posts={userPosts}
+              authUserId={authUserId}
+              userDataId={userDataId}
+              onDelete={isOwnProfile ? handlePostDelete : undefined}
+              saved={false}
+            />
+          ) : (
+            <p>
+              {isOwnProfile
+                ? "You haven't uploaded any post yet."
+                : "Not uploaded any post yet."}
+            </p>
+          )
+        )}
+
+        {tab === 1 && isOwnProfile && (
+          userSavedPostsLoading ? (
+            <PostsSkeleton />
+          ) : userSavedPosts.length > 0 ? (
+            <PostGrid
+              posts={userSavedPosts}
+              onRemove={handleRemoveFromSaved}
+              saved={true}
+            />
+          ) : (
+            <p>{"You haven't saved any post yet."}</p>
+          )
         )}
       </div>
     </>

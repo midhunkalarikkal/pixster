@@ -213,45 +213,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
     const revConnectionData = await Connection.findOne(
       { fromUserId: userId, toUserId: currentUser },
       { _id: 0, status: 1 }
-    );
-
-
-    let updatedUserPosts = [];
-    const isOwnProfile = currentUser?.toString() === userId;
-    if (
-      (connectionData && connectionData?.status === "accepted") ||
-      isOwnProfile
-    ) {
-      const userPosts = await Post.find({ userId }).lean();
-      updatedUserPosts = await Promise.all(
-        userPosts.map(async (post) => {
-          const signedUrl = await generateSignedUrl(post.media);
-          return {
-            ...post,
-            media: signedUrl,
-          };
-        })
-      );
-    }
-
-    let updatedUserSavedPosts = [];
-    if(isOwnProfile) {
-      let userSavedPosts = await Saved.find({ userId },{_id: 0, postId: 1}).populate({
-        path: "postId",
-        select : "media"
-      }).lean();
-
-      
-      updatedUserSavedPosts = await Promise.all(
-        userSavedPosts.map(async (post) => {
-          const signedUrl = await generateSignedUrl(post?.postId?.media);
-          return {
-            ...post.postId,
-            media: signedUrl,
-          };
-        })
-      );
-    }
+    );    
 
     if (userData.profilePic) {
       userData.profilePic = await generateSignedUrl(userData.profilePic);
@@ -262,14 +224,82 @@ export const fetchSearchedUserProfile = async (req, res) => {
       userData,
       connectionData,
       revConnectionData,
-      userPosts: updatedUserPosts,
-      userSavedPosts: isOwnProfile ? updatedUserSavedPosts : [],
     });
   } catch (error) {
     console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const fetchUserPosts = async (req, res) => {
+  try {
+
+    const { userId } = req.params;
+    if(!userId) {
+      return res.status(404).json({ message : "Invalid request" });
+    }
+    
+    const user = await User.findById(userId);
+    if(!user) {
+      return res.status(404).json({ message : "User not found" });
+    }
+
+    let userPosts = await Post.find({ userId : userId}).lean();
+    if(userPosts.length > 0) {
+      userPosts = await Promise.all(
+        userPosts.map(async (post) => {
+          const signedUrl = await generateSignedUrl(post.media);
+          
+          return {
+            ...post,
+            media: signedUrl,
+          };
+        })
+      );
+    }
+
+    return res.status(200).json({ userPosts });
+
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+export const fetchUserSavedPosts = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    if(!currentUserId) {
+      return res.status(404).json({ message : "No user found" });
+    }
+
+
+    let userSavedPosts = await Saved.find({ userId : currentUserId },{_id: 0, postId: 1}).populate({
+        path: "postId",
+        select : "media"
+      }).lean();
+
+      
+      if(userSavedPosts.length > 0) {
+        userSavedPosts = await Promise.all(
+          userSavedPosts.map(async (post) => {
+            const signedUrl = await generateSignedUrl(post?.postId?.media);
+            return {
+              ...post.postId,
+              media: signedUrl,
+            };
+          })
+        );
+      }
+
+    return res.status(200).json({ userSavedPosts });
+
+  }catch (error) {
+    console.log("error : ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
 
 export const fetchRequestedAccounts = async (req, res) => {
   try {
