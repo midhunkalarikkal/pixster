@@ -13,14 +13,14 @@ const UserTab = ({
     <div
       key={_id}
       onClick={() => onClickUser(_id)}
-      className={`w-full p-2 flex gap-3 items-center cursor-pointer
+      className={`w-full p-1 lg:p-2 flex gap-3 items-center cursor-pointer
                   hover:bg-base-300 transition-colors border-b border-base-300`}
     >
       <div className="relative w-2/12">
         <img
           src={profilePic || "/user_avatar.jpg"}
           alt={userName}
-          className="size-10 object-cover rounded-full"
+          className="size-8 lg:size-10 object-cover rounded-full"
         />
       </div>
 

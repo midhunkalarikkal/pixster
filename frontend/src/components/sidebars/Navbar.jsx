@@ -18,47 +18,48 @@ const Navbar = () => {
   const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
 
   return (
-    <aside className="bg-base-100 border-r border-base-300 w-2/12 z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
+    <aside className="bg-base-100 border-r border-base-300 md:w-1/12 lg:w-2/12 z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
       {authUser && (
         <div className="flex flex-col items-center justify-between space-y-6 gap-2 h-full">
-          <div className=" flex flex-col space-y-4 items-start">
+          <div className=" flex flex-col space-y-4 items-center lg:items-start">
             
             <Link
               to="/"
               className="flex items-center gap-2.5 hover:opacity-80 transition-all ml-4 my-6"
             >
-              <h3 className="text-2xl font-bold italic">Talkzy</h3>
+              <h3 className="text-2xl font-bold italic hidden lg:block">Talkzy</h3>
+              <h3 className="text-2xl font-bold italic block lg:hidden">T</h3>
             </Link>
 
             <Link to={"/"} className={`flex btn bg-base-100 border-0`}>
-              <Home className="size-5" />
-              <span className="hidden sm:inline">Home</span>
+              <Home className="size-6" />
+              <span className="hidden lg:block">Home</span>
             </Link>
 
             <button
               className={`flex btn bg-base-100 border-0`}
               onClick={() => getSearchSelectedUser(authUser._id, navigate)}
             >
-              <User className="size-5" />
-              <span className="hidden sm:inline">Profile</span>
+              <User className="size-6" />
+              <span className="hidden lg:block">Profile</span>
             </button>
 
             <Link to={"/chat"} className={`flex btn bg-base-100 border-0`}>
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Chat</span>
+              <MessageCircle className="size-6" />
+              <span className="hidden lg:block">Chat</span>
             </Link>
 
             <Link
               to={"/createPost"}
               className={`flex btn bg-base-100 border-0`}
             >
-              <PlusSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Create</span>
+              <PlusSquare className="size-6" />
+              <span className="hidden lg:block">Create</span>
             </Link>
 
             <Link to={"/search"} className={`flex btn bg-base-100 border-0`}>
-              <Search className="w-4 h-4" />
-              <span className="hidden sm:inline">Search</span>
+              <Search className="size-6" />
+              <span className="hidden lg:block">Search</span>
             </Link>
 
             <Link
@@ -66,20 +67,20 @@ const Navbar = () => {
               onClick={() => setSearchSelectedUserNull()}
               className={`flex btn bg-base-100 border-0`}
             >
-              <BellIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Notifications</span>
+              <BellIcon className="size-6" />
+              <span className="hidden lg:block">Notifications</span>
             </Link>
 
             <Link to={"/settings"} className={`flex btn bg-base-100 border-0`}>
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <Settings className="size-6" />
+              <span className="hidden lg:block">Settings</span>
             </Link>
           </div>
 
           <div className="">
             <button className="flex btn bg-base-100 border-0" onClick={logout}>
-              <LogOut className="size-5" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className="size-6" />
+              <span className="hidden lg:block">Logout</span>
             </button>
           </div>
         </div>

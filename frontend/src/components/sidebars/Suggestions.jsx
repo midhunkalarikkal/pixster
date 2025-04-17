@@ -32,9 +32,9 @@ const Suggestions = () => {
   };
   
   return (
-    <div className="w-4/12 pr-10 pl-4 overflow-y-scroll no-scrollbar">
+    <div className="md:w-4/12 lg:w-4/12 xl:w-4/12 md:pr-2 md:pl-1 lg:pr-10 lg:pl-4 overflow-y-scroll no-scrollbar">
       <AuthUserTab />
-      <div className="w-full p-3 md:p-5">
+      <div className="w-full md:p-3 lg:p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <label className="cursor-pointer flex items-center gap-2">

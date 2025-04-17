@@ -29,9 +29,9 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="w-10/12 flex relative">
-        <div className="w-8/12 flex flex-col items-center overflow-y-auto no-scrollbar space-y-6">
-          <div className="w-8/12 h-32">
+      <div className="md:w-11/12 lg:w-10/12 flex relative">
+        <div className="md:w-8/12 lg:w-8/12 xl:w-8/12 flex flex-col items-center overflow-y-auto no-scrollbar space-y-6">
+          <div className="md:w-11/12 lg:w-10/12 xl:w-10/12 h-32 my-2">
             <Stories />
           </div>
           {homeScrollerDataLoading ? (

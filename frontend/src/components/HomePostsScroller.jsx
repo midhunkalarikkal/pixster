@@ -58,32 +58,32 @@ const HomePostsScroller = ({ post }) => {
   };
 
   return (
-    <div className="flex flex-col w-7/12">
+    <div className="flex flex-col md:w-11/12 lg:w-9/12 xl:w-7/12">
       {/* Post header */}
       <div className="flex justify-between p-2 items-center">
         <div className="flex space-x-2 items-center">
           <img
             src={post?.profilePic || "/user_avatar.jpg"}
             alt="User avatar"
-            className="h-10 w-10 rounded-full"
+            className="h-8 w-8 lg:h-10 lg:w-10 rounded-full"
             onClick={() => handleUserTabClick(post?._id)}
           />
           <div
             className="flex flex-col space-y-1"
             onClick={() => handleUserTabClick(post?._id)}
           >
-            <h5 className="font-semibold">{post?.userName}</h5>
+            <h5 className="font-semibold text-sm lg:text-md">{post?.userName}</h5>
           </div>
         </div>
         <Ellipsis className="cursor-pointer" />
       </div>
 
       {/* Post media */}
-      <div className="h-[32rem] w-full overflow-hidden bg-black">
+      <div className="md:h-[28rem] lg:h-[32rem] w-full overflow-hidden bg-black">
         <img
           src={post?.userPostDetails?.media}
           alt="Post media"
-          className="object-cover w-full h-full"
+          className="object-cover w-full h-full hover:object-contain"
         />
       </div>
 

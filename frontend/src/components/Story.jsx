@@ -6,7 +6,7 @@ const Story = ({ image, userName }) => {
       <div className="p-[4px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full inline-block">
         <img
           src={image || "/noImg.png"}
-          className="h-20 w-20 rounded-full object-cover"
+          className="md:h-16 md:w-16 lg:h-20 lg:w-20 rounded-full object-cover"
         />
       </div>
       <p className="text-xs">{userName}</p>

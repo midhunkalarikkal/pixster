@@ -14,7 +14,7 @@ const AuthUserTab = () => {
         <button
           onClick={() => getSearchSelectedUser(authUser?._id, navigate)}
           className={`
-              w-full p-2 flex gap-3 items-center
+              w-full md:p-1 lg:p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors
             `}
         >
@@ -22,13 +22,13 @@ const AuthUserTab = () => {
             <img
               src={authUser?.profilePic || "/user_avatar.jpg"}
               alt={"Profile Image"}
-              className="size-10 object-cover rounded-full"
+              className="size-8 lg:size-10 object-cover rounded-full"
             />
           </div>
           <div>
             <div className="flex flex-col items-start">
-              <p className="font-medium truncate">{authUser?.fullName}</p>
-              <p className="font-light truncate">{authUser?.userName}</p>
+              <p className="font-medium truncate text-sm lg:text-md">{authUser?.fullName}</p>
+              <p className="font-light truncate text-sm lg:text-md">{authUser?.userName}</p>
             </div>
           </div>
         </button>
