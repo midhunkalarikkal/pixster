@@ -8,7 +8,7 @@ import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
 
-const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
+const UserTabListing = ({ authUserId, userDataId }) => {
   
   let [reqdProfiles, setReqProfiles] = useState([]);
 
@@ -23,6 +23,8 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
     followingProfilesLoading,
     followersProfiles,
     followersProfilesLoading,
+    tab,
+    setTab,
   } = useProfileStore();
 
 
@@ -171,8 +173,6 @@ const UserTabListing = ({ authUserId, userDataId, tab, setTab }) => {
 UserTabListing.propTypes = {
   authUserId: PropTypes.string.isRequired,
   userDataId: PropTypes.string.isRequired,
-  tab: PropTypes.number.isRequired,
-  setTab: PropTypes.func.isRequired,
 };
 
 export default memo(UserTabListing);

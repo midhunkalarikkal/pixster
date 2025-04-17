@@ -12,7 +12,7 @@ import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
 
-  const [tab, setTab] = useState(0);
+  console.log("ProfilePage")
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
@@ -27,6 +27,7 @@ const ProfilePage = () => {
     getFollowersProfiles, 
     setListPage, 
     listPage ,
+    setTab,
   } = useProfileStore();
 
   const {
@@ -77,7 +78,6 @@ const ProfilePage = () => {
           getRequestedProfiles={getRequestedProfiles}
           getIncomingRequestedProfiles={getIncomingRequestedProfiles}
           setListPage={setListPage}
-          setTab={setTab}
         />
 
 
@@ -244,53 +244,14 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {authUser?._id !== userData?._id ? (
-              connectionData && connectionData.status === "accepted" ? (
-                <div className="border-t-[1px] border-base-300 flex justify-center">
-                  <div className="flex justify-around w-8/12 mt-4">
-                    <button
-                      className={`flex flex-col items-center w-full ${
-                        tab !== 0 && "text-zinc-400"
-                      }`}
-                      onClick={() => setTab(0)}
-                    >
-                      <span className="text-sm">POSTS</span>
-                    </button>
-                  </div>
-                </div>
-              ) : null
-            ) : (
-              <div className="border-t-[1px] border-base-300 flex justify-center">
-                <div className="flex justify-around w-8/12 mt-4">
-                  <button
-                    className={`flex flex-col items-center w-full ${
-                      tab !== 0 && "text-zinc-400"
-                    }`}
-                    onClick={() => setTab(0)}
-                  >
-                    <span className="text-sm">POSTS</span>
-                  </button>
-                  <button
-                    className={`flex flex-col items-center w-full ${
-                      tab !== 4 && "text-zinc-400"
-                    }`}
-                    onClick={() => setTab(1)}
-                  >
-                    <span className="text-sm">SAVED</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             {userData && (
               <ProfileSecondData
                 authUserId={authUser?._id}
                 userDataId={userData?._id}
-                tab={tab}
-                setTab={setTab}
                 status={connectionData && connectionData.status}
               />
             )}
+
           </div>
         </div>
       </div>
@@ -298,8 +259,6 @@ const ProfilePage = () => {
         <UserTabListing
           authUserId={authUser?._id}
           userDataId={userData?._id}
-          tab={tab}
-          setTab={setTab}
           status={connectionData && connectionData.status}
         />
       )}

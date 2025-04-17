@@ -17,5 +17,7 @@ router.get('/fetchFollowingProfiles/:userId', protectRoute, fetchFollowingAccoun
 router.get('/fetchFollowersProfiles/:userId', protectRoute, fetchFollowersAccounts);
 router.get('/fetchNotifications', protectRoute, fetchNotifications);
 router.get('/getSuggestions', protectRoute, fetchSuggestions);
+router.get('/getUserPosts', protectRoute, fetchSuggestions);
+router.get('/getUserSavedPosts', protectRoute, fetchSuggestions);
 
 export default router;

@@ -3,6 +3,9 @@ import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 
 export const useProfileStore = create((set) => ({
+
+  tab: 0,
+
   revConnection: null,
 
   requestedProfiles: null,
@@ -23,6 +26,8 @@ export const useProfileStore = create((set) => ({
   listPage: false,
 
   homeScrollerDataLoading: false,
+
+  setTab: (data) => set({ tab : data }),
 
   setRevConnection: (data) => set({ revConnection : data }),
 

@@ -1,5 +1,7 @@
+import { memo } from "react";
 import PropTypes from "prop-types";
 import { AlignJustify } from "lucide-react";
+import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileHeadDropdown = ({
   authUserId,
@@ -7,8 +9,9 @@ const ProfileHeadDropdown = ({
   getRequestedProfiles,
   getIncomingRequestedProfiles,
   setListPage,
-  setTab,
 }) => {
+
+  const { setTab } = useProfileStore();
 
   const isHidden = authUserId !== userId;
 
@@ -58,7 +61,6 @@ ProfileHeadDropdown.propTypes = {
   getRequestedProfiles: PropTypes.func.isRequired,
   getIncomingRequestedProfiles: PropTypes.func.isRequired,
   setListPage: PropTypes.func.isRequired,
-  setTab: PropTypes.func.isRequired,
 };
 
-export default ProfileHeadDropdown;
+export default memo(ProfileHeadDropdown);
