@@ -5,7 +5,7 @@ import Saved from "../models/saved.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
 import Comment from "../models/comment.model.js";
 import PostLike from "../models/postLike.model.js";
-import { getReceiverSocketId } from "../lib/socket.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import CommentLike from "../models/commentLike.model.js";
 import { generateRandomString } from "../utils/helper.js";
@@ -218,7 +218,12 @@ export const likeOrDislikePost = async (req, res) => {
       console.log("post dislikign");
       await PostLike.findByIdAndDelete(existLike._id);
 
-      await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+      const updatedPost = await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+
+      if(updatedPost.likes < 0) {
+        updatedPost.likes = 0;
+        await updatedPost.save();
+      }
 
       return res
         .status(200)
