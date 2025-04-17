@@ -81,7 +81,8 @@ const ProfilePage = () => {
 
 
           {/* Profile top follow request accept or reject bar */}
-          {(
+          {(authUser?._id !== userData?._id) &&
+          ( 
             (revConnection && revConnection.status === "requested") || 
             (revConnectionData && revConnectionData.status === "requested")
           ) && (
