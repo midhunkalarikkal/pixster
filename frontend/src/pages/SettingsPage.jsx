@@ -8,7 +8,7 @@ const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
   
   return (
-    <div className="md:w-11/12 lg:w-10/12 h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbar">
+    <div className="md:w-11/12 lg:w-10/12 h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbarmz mt-10 md:mt-0 mb-6">
       <div className="space-y-6">
 
         <ProfileSettings />
@@ -19,7 +19,8 @@ const SettingsPage = () => {
             Choose a theme for your chat interface
           </p>
         </div>
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-8 gap-2">
           {THEMES.map((t) => (
             <button
               key={t}
@@ -49,7 +50,7 @@ const SettingsPage = () => {
 
         <h3 className="text-lg font-semibold mb-3">Preview</h3>
         <div className="rounded-xl border border-base-300 overflow-hidden bg-base-100 shadow-lg">
-          <div className="p-4 bg-base-200">
+          <div className="md:p-4 bg-base-200">
             <div className="max-w-lg mx-auto">
               <div className="bg-base-100 rounded-xl shadow-sm overflow-hidden">
                 <div className="px-4 py-3 border-b border-base-300 bg-base-100">

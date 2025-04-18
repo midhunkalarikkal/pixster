@@ -96,7 +96,7 @@ const CreatePost = () => {
   return (
     <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
       <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-lg md:text-xl font-semibold mb-4">
           {postForUpdating ? "Update Post" : "Create New Post"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -107,7 +107,7 @@ const CreatePost = () => {
             </label>
             <input
               type="file"
-              className="file-input file-input-bordered w-full"
+              className="file-input file-input-bordered w-full file-input-sm md:file-input-md"
               onChange={handleImageChange}
               accept="image/*"
             />
