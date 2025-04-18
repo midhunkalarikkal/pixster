@@ -1,7 +1,7 @@
 
 const UserBarSkeleton = () => {
   return (
-    <div className="w-full bg-pink-400">
+    <div className="w-full">
       {Array.from({ length: 9 }).map((_, index) => (
         <div
           key={index}

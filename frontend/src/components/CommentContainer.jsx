@@ -269,9 +269,8 @@ const CommentContainer = () => {
         <div className="overflow-y-scroll no-scrollbar max-h-[450px]">
           {comments && comments.length > 0 ? (
             comments.map((comment) => (
-              <>
+              <div key={comment?._id}>
                 <Comment
-                  key={comment?._id}
                   _id={comment?._id}
                   content={comment?.content}
                   createdAt={comment?.createdAt}
@@ -292,9 +291,7 @@ const CommentContainer = () => {
                 />
                 {comment?.replies && comment?.replies?.length > 0 && (
                   <div
-                    className={`ml-10 ${
-                      repliesVisible[comment._id] && "hidden"
-                    }`}
+                    className={`ml-10 ${repliesVisible[comment._id] && "hidden"}`}
                   >
                     {comment?.replies.map((reply) => (
                       <Comment
@@ -324,7 +321,7 @@ const CommentContainer = () => {
                     </button>
                   </div>
                 )}
-              </>
+              </div>
             ))
           ) : commentsLoading ? (
             <div className="flex justify-center">

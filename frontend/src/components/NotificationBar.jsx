@@ -7,13 +7,13 @@ const NotificationBar = ({ user, onClick, message, time }) => {
     <button
       key={user._id}
       onClick={(e) => onClick(user._id, e)}
-      className={`w-full md:w-6/12 p-2 flex gap-3 items-center hover:bg-base-300 transition-colors border-b border-base-300`}
+      className={`w-full md:w-8/12 lg:w-6/12 p-2 flex gap-3 items-center hover:bg-base-300 transition-colors border-b border-base-300`}
     >
       <div className="relative w-2/12">
         <img
           src={user.profilePic || "/user_avatar.jpg"}
           alt={user.userName}
-          className="size-10 object-cover rounded-full"
+          className="md:size-8 lg:size-10 object-cover rounded-full"
         />
       </div>
 

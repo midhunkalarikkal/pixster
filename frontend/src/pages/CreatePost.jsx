@@ -94,8 +94,8 @@ const CreatePost = () => {
   }
 
   return (
-    <div className="w-10/12 flex justify-center px-4 py-8 h-screen">
-      <div className="p-6 rounded-lg shadow-md w-8/12">
+    <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
+      <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
         <h2 className="text-xl font-semibold mb-4">
           {postForUpdating ? "Update Post" : "Create New Post"}
         </h2>
@@ -145,7 +145,7 @@ const CreatePost = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className={`btn btn-neutral w-full`}>
+          <button type="submit" className={`btn btn-neutral w-full btn-sm lg:btn-md`}>
             <ImagePlus className="mr-2" size={20} />
             {postForUpdating ? "Update Post" : "Post"}
           </button>
