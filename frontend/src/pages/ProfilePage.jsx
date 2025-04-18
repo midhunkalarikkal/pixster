@@ -66,7 +66,7 @@ const ProfilePage = () => {
   return (
     <>
       <div
-        className={`h-screen w-full md:w-11/12 lg:10/12 p-2 md:px-4 md:py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
+        className={`h-screen w-full md:w-11/12 lg:10/12 p-2 md:px-4 md:py-8 overflow-y-scroll no-scrollbar bg-base-100 mt-10 md:mt-0 ${
           listPage && "relative"
         }`}
       >

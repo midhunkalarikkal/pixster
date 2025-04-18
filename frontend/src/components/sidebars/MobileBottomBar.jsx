@@ -14,7 +14,7 @@ const MobileBottomBar = () => {
   const { getSearchSelectedUser } = useSearchStore();
 
   return (
-    <footer className="bg-base-100 border-t border-base-300 w-full z-40 backdrop-blur-lg md:hidden fixed bottom-0 h-[6%]">
+    <footer className="bg-base-100 w-full z-40 backdrop-blur-lg md:hidden fixed bottom-0 h-[6%]">
       {authUser && (
         <div className="flex justify-around">
           <button className="btn bg-base-100 border-0" onClick={logout}>
