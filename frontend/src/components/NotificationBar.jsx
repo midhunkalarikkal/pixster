@@ -13,7 +13,7 @@ const NotificationBar = ({ user, onClick, message, time }) => {
         <img
           src={user.profilePic || "/user_avatar.jpg"}
           alt={user.userName}
-          className="md:size-8 lg:size-10 object-cover rounded-full"
+          className="size-8 lg:size-10 object-cover rounded-full"
         />
       </div>
 
@@ -25,7 +25,7 @@ const NotificationBar = ({ user, onClick, message, time }) => {
         </div>
         <div className="text-sm flex items-center justify-between">
           <p className="text-xs truncate text-stone-500">{user.userName}</p>
-          <p className="text-xs">
+          <p className="text-xs text-stone-500">
             {formatDistanceToNow(new Date(time), { addSuffix: true })}
           </p>
         </div>

@@ -190,7 +190,7 @@ const ProfilePage = () => {
                   <h2 className="text-sm md:text-lg font-semibold">
                     {userData?.fullName}
                   </h2>
-                  <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2">
+                  <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2 w-10/12">
                     {userData?.about}
                   </p>
                 </div>

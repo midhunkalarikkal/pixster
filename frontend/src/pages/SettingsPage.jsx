@@ -8,7 +8,7 @@ const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
   
   return (
-    <div className="md:w-11/12 lg:w-10/12 h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbarmz mt-10 md:mt-0 mb-6">
+    <div className="md:w-11/12 lg:w-10/12 h-screen px-4 py-8 container mx-auto overflow-y-scroll no-scrollbar mt-10 md:mt-0 mb-6">
       <div className="space-y-6">
 
         <ProfileSettings />

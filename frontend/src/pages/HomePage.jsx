@@ -29,7 +29,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="md:w-11/12 lg:w-10/12 flex relative h-full mt-10 md:mt-0">
+      <div className="md:w-11/12 lg:w-10/12 flex relative h-[88%] md:h-full mt-14 md:mt-0">
         <div className="w-full md:w-8/12 lg:w-8/12 xl:w-8/12 flex flex-col items-center overflow-y-auto no-scrollbar md:space-y-4">
           <div className="w-full lg:w-10/12 xl:w-10/12 h-32 my-1 md:my-2">
             <Stories />

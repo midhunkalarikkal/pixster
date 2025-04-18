@@ -20,8 +20,8 @@ const NotificationsPage = () => {
   }, []);
 
   return (
-    <div className="md:w-11/12 lg:w-10/12 flex h-full">
-      <div className="w-8/12 overflow-y-scroll no-scrollbar">
+    <div className="w-full md:w-11/12 lg:w-10/12 flex h-[88%] md:h-full mt-10 md:mt-0">
+      <div className="w-full md:w-8/12 overflow-y-scroll no-scrollbar">
         {notificationsLoading ? (
           <div className="flex justify-center items-center w-full px-4 py-8 h-screen">
             <span className="loading loading-bars loading-lg"></span>
