@@ -13,6 +13,8 @@ const router = express.Router();
 
 router.post('/signup', signup);
 
+router.post('/verifyOtp', verifyOtp)
+
 router.post('/login',login);
 
 router.post('/logout', logout);

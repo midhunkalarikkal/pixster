@@ -17,6 +17,9 @@ export const useAuthStore = create(persist((set, get) => ({
   isCheckingAuth: true,
   onLineUsers: [],
   socket: null,
+  signUpPage: true,
+  otpPage: false,
+  isOtpVerifying: false,
 
   checkAuth: async () => {
     try {
@@ -34,14 +37,35 @@ export const useAuthStore = create(persist((set, get) => ({
   signup: async (data) => {
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data });
-      toast.success("Account created successfully.");
+      // set({ authUser: res.data });
+      set({ signUpPage : false });
+      set({ otpPage : true });
+      toast.success(res.data.message);
       get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ isSigningUp: false });
     }
+  },
+
+  verifyOtp: async (data) => {
+    set({ isOtpVerifying : true });
+    try {
+      const res = await axiosInstance.post("/auth/verifyOtp", data);
+      set({ authUser: res.data });
+      toast.success(res.data.message);
+      get().connectSocket();
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isOtpVerifying : false });
+    }
+  },
+
+  cancelOtpVerifying : () => {
+    set({ signUpPage : true });
+    set({ otpPage : false });
   },
 
   login: async (data) => {

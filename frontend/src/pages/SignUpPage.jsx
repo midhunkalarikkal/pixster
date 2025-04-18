@@ -19,13 +19,15 @@ const SignUpPage = () => {
     userName: "",
     email: "",
     password: "",
+    otp: "",
   });
+  
   const [fullNameError, setFullNameError] = useState(null);
   const [userNameError, setUserNameError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
 
-  const { signup, isSigningUp } = useAuthStore();
+  const { signup, isSigningUp, signUpPage, otpPage, verifyOtp, cancelOtpVerifying } = useAuthStore();
 
   const validateForm = () => {
     if (
@@ -59,6 +61,18 @@ const SignUpPage = () => {
     const success = validateForm();
     if (success === true) signup(formData);
   };
+
+  const handleOtpSubmit = (e) => {
+    e.preventDefault();
+    if(formData.otp.length === 6) {
+      verifyOtp({
+        otp: formData.otp
+      })
+    } else {
+      toast.error("Invalid otp");
+      return;
+    }
+  }
 
   const checkInput = (e, field) => {
     let error = null;
@@ -99,7 +113,7 @@ const SignUpPage = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className={`space-y-6 ${!signUpPage && 'hidden'}`}>
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Fullname</span>
@@ -111,7 +125,7 @@ const SignUpPage = () => {
                 <input
                   type="text"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="John Doe"
+                  placeholder="Midhun Kalarikkal"
                   value={formData.fullName}
                   onInput={(e) => checkInput(e, "fullName")}
                   onChange={(e) =>
@@ -135,7 +149,7 @@ const SignUpPage = () => {
                 <input
                   type="text"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="John_d_e"
+                  placeholder="midhun_kalarikkal"
                   value={formData.userName}
                   onInput={(e) => checkInput(e, "userName")}
                   onChange={(e) =>
@@ -159,7 +173,7 @@ const SignUpPage = () => {
                 <input
                   type="email"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="you@example.com"
+                  placeholder="midhun@gmail.com"
                   value={formData.email}
                   onInput={(e) => checkInput(e, "email")}
                   onChange={(e) =>
@@ -223,10 +237,58 @@ const SignUpPage = () => {
             </button>
           </form>
 
+          <form onSubmit={handleOtpSubmit} className={`space-y-6 ${!otpPage && 'hidden'}`}>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">OTP</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="size-5 text-base-content/40" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className={`input input-bordered w-full pl-10`}
+                  placeholder="0-0-0-0-0-0"
+                  value={formData.password}
+                  onInput={(e) => checkInput(e, "password")}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSigningUp}
+            >
+              {isSigningUp ? (
+                <>
+                  <Loader2 className="size-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Verify"
+              )}
+            </button>
+            
+            <div className="text-center py-6">
+              <button onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                cancelOtpVerifying();
+              }}>Cancel verifying</button>
+            </div>
+
+          </form>
+
           <div className="text-center py-6">
             <p className="text-base-content/60">
               Already have an account?{" "}
-              <Link to="/login" className="link link-primary">
+              <Link to="/login" className="link">
                 login
               </Link>
             </p>

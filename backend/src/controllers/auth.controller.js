@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
 import User from "../models/user.model.js";
 import { generateToken } from "../lib/utils.js";
 import {
@@ -12,6 +13,8 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from 'dotenv';
+import { generateOTP } from "../utils/helper.js";
+import Otp from "../models/otp.model.js";
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -62,16 +65,46 @@ export const signup = async (req, res) => {
     await newUser.save();
     console.log("User successfully registered");
 
-    generateToken(newUser._id, res);
+    await generateToken(newUser._id, email, res);
+
+    const otp = await generateOTP();
+
+    console.log("otp : ",otp);
+
+    const newOtp = new Otp({
+      otp,
+      email
+    });
+
+    await newOtp.save();
+ 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.OFFICIAL_EMAIL,
+        pass: process.env.OFFICIALEMAIL_PASS,
+      },
+    });
+ 
+    const mailOptions = {
+      from: process.env.OFFICIAL_EMAIL,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP is: ${otp}`,
+    };
+ 
+    await transporter.sendMail(mailOptions);
+    console.log("OTP sent to email");
 
     return res.status(201).json({
-      _id: newUser._id,
-      fullName: newUser.fullName,
-      userName: newUser.userName,
-      email: newUser.email,
-      profilePic: newUser.profilePic,
-      about: newUser.about,
-      createdAt: newUser.createdAt,
+      // _id: newUser._id,
+      // fullName: newUser.fullName,
+      // userName: newUser.userName,
+      // email: newUser.email,
+      // profilePic: newUser.profilePic,
+      // about: newUser.about,
+      // createdAt: newUser.createdAt,
+      message : "Otp sent successfully.",
     });
 
   } catch (error) {
@@ -79,6 +112,28 @@ export const signup = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const token = res.cookies.jwt;
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    const userEmail = decoded.email;
+
+    const verify = await Otp.findOne({
+      email: email
+    });
+
+    if(!verify) {
+      return res.status(404).json({ message : "Otp verification failed" });
+    }
+
+  } catch (error) {
+    console.error("Signup error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}
 
 export const login = async (req, res) => {
   try {
@@ -106,7 +161,7 @@ export const login = async (req, res) => {
       user.profilePic = signedUrl;
     }
 
-    generateToken(user._id, res);
+    generateToken(user._id, email, res);
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
