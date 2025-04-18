@@ -8,9 +8,9 @@ const MobileTopBar = () => {
   const { setSearchSelectedUserNull } = useSearchStore();
 
   return (
-    <header className="bg-base-100 border-b border-base-300 w-full z-40 backdrop-blur-lg md:hidden">
+    <header className="bg-base-100 border-b border-base-300 w-full z-40 backdrop-blur-lg md:hidden fixed top-0 h-[6%]">
       {authUser && (
-        <div className="flex">
+        <div className="flex">          
           <div className="w-6/12">
             <Link to={"/"} className={`btn bg-base-100 border-0`}>
               <h3 className="text-xl font-bold italic">

@@ -1,13 +1,12 @@
-import Dock from "../Dock";
-import { useEffect, useState } from "react";
 import AuthUserTab from "../AuthUserTab";
-import { useSearchStore } from "../../store/useSearchStore";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSearchStore } from "../../store/useSearchStore";
+import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 
 const SearchSidebar = () => {
 
   const navigate = useNavigate();
-  const skeletonContacts = Array(8).fill(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { getSearchUsers, searchLoading, searchedUsers, getSearchSelectedUser } = useSearchStore();
 
@@ -22,7 +21,7 @@ const SearchSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-4/12 flex flex-col transition-all duration-200 w-px-1 lg:px-2`}
+      className={`h-full w-full md:w-4/12 flex flex-col transition-all duration-200 px-2`}
     >
       <AuthUserTab />
 
@@ -38,20 +37,9 @@ const SearchSidebar = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-1 flex-1">
+      <div className="overflow-y-auto w-full md:py-1 flex-1 no-scrollbar">
         {searchLoading ? (
-          skeletonContacts.map((_, idx) => (
-            <div key={idx} className="w-full p-3 flex items-center gap-3">
-              <div className="relative mx-auto lg:mx-0">
-                <div className="skeleton size-12 rounded-full" />
-              </div>
-
-              <div className="hidden lg:block text-left min-w-0 flex-1">
-                <div className="skeleton h-4 w-32 mb-2" />
-                <div className="skeleton h-3 w-16" />
-              </div>
-            </div>
-          ))
+          <UserBarSkeleton />
         ) : searchedUsers && searchedUsers.length > 0 ? (
           searchedUsers.map((user) => (
             <button
@@ -84,8 +72,6 @@ const SearchSidebar = () => {
           </div>
         )}
       </div>
-
-      <Dock />
     </aside>
   );
 };

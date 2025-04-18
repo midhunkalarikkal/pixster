@@ -25,7 +25,7 @@ const MediaGrid = () => {
   }, []);
   
   return (
-    <div className="w-8/12 h-full flex justify-center">
+    <div className="md:w-8/12 h-full hidden md:flex justify-center">
       <div className="w-full lg:w-10/12 items-center justify-center bg-base-100/50 overflow-y-scroll no-scrollbar px-4 py-8">
         <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-1 auto-rows-[192px]">
           {!loading &&

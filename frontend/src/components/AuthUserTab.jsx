@@ -22,7 +22,7 @@ const AuthUserTab = () => {
             <img
               src={authUser?.profilePic || "/user_avatar.jpg"}
               alt={"Profile Image"}
-              className="size-8 lg:size-10 object-cover rounded-full"
+              className="size-10 object-cover rounded-full"
             />
           </div>
           <div>
