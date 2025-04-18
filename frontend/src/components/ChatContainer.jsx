@@ -46,7 +46,7 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="w-8/12 flex flex-col overflow-auto py-6 border-r border-base-300">
+    <div className="w-full flex flex-col overflow-auto py-6 border-r border-base-300">
       <ChatHeader />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
@@ -55,8 +55,8 @@ const ChatContainer = () => {
             className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
             ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
-              <div className="size-6 md:size-10 rounded-full border">
+            <div className="chat-image avatar">
+              <div className="size-6 md:size-8 rounded-full border">
                 <img
                   src={
                     message.senderId === authUser._id

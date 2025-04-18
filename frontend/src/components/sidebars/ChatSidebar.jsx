@@ -59,7 +59,7 @@ const ChatSidebar = () => {
       <AuthUserTab />
 
       <div className="border-b border-base-300 w-full p-3 md:p-5">
-        <div className="flex items-center gap-2">
+        <div className="lg:flex items-center gap-2 space-y-2">
           <Users className="size-6" />
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -70,7 +70,7 @@ const ChatSidebar = () => {
             />
             <span className="text-sm">Show online only</span>
           </label>
-          <span className="text-xs text-zinc-500 mt-1 ml-auto">
+          <span className="text-sm text-zinc-500 mt-1">
             ({onlineUsers?.length - 1} online)
           </span>
         </div>
@@ -82,16 +82,16 @@ const ChatSidebar = () => {
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-2 flex gap-3 items-center border-b border-base-300
+              w-full md:p-1 lg:p-2 flex gap-3 items-center border-b border-base-300
               hover:bg-base-300 transition-colors
               ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
-            <div className="relative">
+            <div className="relative w-2/12">
               <img
                 src={user.profilePic || "/user_avatar.jpg"}
                 alt={user.name}
-                className="size-10 object-cover rounded-full"
+                className="size-8 lg:size-10 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
                 <span
@@ -101,18 +101,18 @@ const ChatSidebar = () => {
               )}
             </div>
 
-            <div className="w-full">
+            <div className="w-10/12">
               <div className="flex justify-between">
-                <p className="font-medium truncate">{user.fullName}</p>
+                <p className="font-medium truncate text-sm lg:text-md">{user.fullName}</p>
                 {getLastMessage(user._id) && (
-                  <p className="text-xs truncate mt-1 text-stone-500">
+                  <p className="text-xs truncate mt-1 ">
                     {formatDate(getLastMessage(user._id)?.date)}
                   </p>
                 )}
               </div>
-              <div className="text-sm flex">
+              <div className="flex text-sm lg:text-md text-stone-500">
                 {getLastMessage(user._id) ? (
-                  <p className="font-normal truncate text-stone-500">
+                  <p className="font-normal truncate">
                     {getLastMessage(user._id)?.message}
                   </p>
                 ) : onlineUsers.includes(user._id) ? (
