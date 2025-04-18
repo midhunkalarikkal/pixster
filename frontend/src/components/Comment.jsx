@@ -6,13 +6,13 @@ const Comment = ({ onLikeOrDislike, liked, isRepliesOn, replyCount, showReplies,
     
 
   return (
-    <div className="flex rounded-lg hover:bg-base-200 transition items-start gap-3 p-3">
+    <div className="flex rounded-lg hover:bg-base-200 transition items-start gap-3 p-2 lg:p-3">
         
       <div className="w-[15%] pt-1">
         <img
           src={profilePic || "/user_avatar.jpg"}
           alt="User Avatar"
-          className="w-full h-auto rounded-full"
+          className="size-10 lg:size-12 rounded-full"
         />
       </div>
 

@@ -197,7 +197,7 @@ const CommentContainer = () => {
     >
       <div className="w-11/12 md:w-7/12 lg:w-4/12 h-auto rounded-2xl shadow-lg border border-base-300 p-6 flex flex-col bg-base-100">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold flex items-center">
+          <h2 className="text-md lg:text-lg font-semibold flex items-center">
             {addComment ? "Add your comment" : "Comments"}
             {!addComment && (
               <button
@@ -230,7 +230,7 @@ const CommentContainer = () => {
             {commentUploading ? (
               <div className="flex flex-col justify-center items-center space-y-4 h-full">
                 <span className="loading loading-bars loading-md"></span>
-                <p>Comment uploading, please wait</p>
+                <p className="text-md lg:text-lg">Comment uploading, please wait</p>
               </div>
             ) : (
               <form
