@@ -74,7 +74,7 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
             ) : (
               <>
                 <img
-                  className="md:h-72 lg:h-96 w-auto object-cover transition-opacity duration-300 group-hover:opacity-70"
+                  className="h-44 md:h-72 lg:h-96 w-auto object-cover transition-opacity duration-300 group-hover:opacity-70"
                   src={post.media || "/user_avatar.jpg"}
                   alt={`Post by user`}
                 />
@@ -88,16 +88,16 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
                         removeFromSaved(post._id);
                       }}
                     >
-                      <Trash />
+                      <Trash className="size-5 md:size-6"/>
                     </button>
                   </div>
                   <div className={`flex space-x-4 ${saved && 'hidden'}`}>
                     <p className="flex flex-col items-center">
-                      <Heart />
+                      <Heart className="size-5 md:size-6"/>
                       {post.likes}
                     </p>
                     <p className="flex flex-col items-center">
-                      <MessageCircleMore />
+                      <MessageCircleMore className="size-5 md:size-6"/>
                       {post.commentsCount}
                     </p>
                   </div>
@@ -111,7 +111,7 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
                         setDeleteTarget(post._id);
                       }}
                       >
-                      <Trash />
+                      <Trash className="size-5 md:size-6"/>
                     </button>
                     <button
                       className="flex flex-col items-center text-blue-500"
@@ -121,7 +121,7 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
                         getUpdatePost(post);
                       }}
                       >
-                      <Edit />
+                      <Edit className="size-5 md:size-6"/>
                     </button>
                   </div>
                     )}

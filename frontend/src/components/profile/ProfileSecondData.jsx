@@ -61,7 +61,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
                 }`}
                 onClick={() => setTab(0)}
               >
-                <span className="text-sm">POSTS</span>
+                <span className="text-xs md:text-sm">POSTS</span>
               </button>
             </div>
           </div>
@@ -75,7 +75,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
               }`}
               onClick={() => setTab(0)}
             >
-              <span className="text-sm">POSTS</span>
+              <span className="text-xs md:text-sm">POSTS</span>
             </button>
             <button
               className={`flex flex-col items-center w-full ${
@@ -83,12 +83,12 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
               }`}
               onClick={() => setTab(1)}
             >
-              <span className="text-sm">SAVED</span>
+              <span className="text-xs md:text-sm">SAVED</span>
             </button>
           </div>
         </div>
       )}
-      <div className="flex flex-col justify-center items-center w-full py-4">
+      <div className="flex flex-col justify-center items-center w-full py-1 md:py-4">
         {tab === 0 &&
           (isOwnProfile || status === "accepted" ? (
             userPostsLoading ? (

@@ -8,9 +8,9 @@ const UserStat = ({ icon: Icon, count, label, onClick }) => {
       onClick={onClick}
       disabled={!onClick}
     >
-      <Icon className="w-6 h-6 text-zinc-400" />
-      <p className="text-lg font-semibold">{count}</p>
-      <p className="text-sm text-zinc-400">{label}</p>
+      <Icon className="size-5 md:size-6 text-zinc-400" />
+      <p className="text-md md:text-lg font-semibold">{count}</p>
+      <p className="text-xs md:text-sm text-zinc-400">{label}</p>
     </button>
   );
 };

@@ -66,7 +66,7 @@ const ProfilePage = () => {
   return (
     <>
       <div
-        className={`h-screen md:w-11/12 lg:10/12 px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
+        className={`h-screen w-full md:w-11/12 lg:10/12 p-2 md:px-4 md:py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
           listPage && "relative"
         }`}
       >
@@ -97,25 +97,26 @@ const ProfilePage = () => {
                 <img
                   src={userData?.profilePic || "/user_avatar.jpg"}
                   alt="Profile"
-                  className="size-32 rounded-full object-cover border-4 "
+                  className="size-20 md:size-32 rounded-full object-cover border-2 md:border-4"
                 />
               </div>
 
               {/* Profile Post, following, followers count, Fullename, about */}
               <div className="flex flex-col w-8/12 justify-center">
+
                 <div className="flex flex-col my-4">
-                  <h2 className="text-lg font-semibold">
+                  <h2 className="text-md md:text-lg font-semibold">
                     {userData?.userName}
                   </h2>
                 </div>
 
                 <div className="flex space-x-12">
                   <div className="flex flex-col items-center">
-                    <Image className="w-6 h-6 text-zinc-400" />
-                    <p className="text-lg font-semibold">
+                    <Image className="size-5 md:size-6 text-zinc-400" />
+                    <p className="text-md md:text-lg font-semibold">
                       {userData?.postsCount}
                     </p>
-                    <p className="text-sm text-zinc-400">Posts</p>
+                    <p className="text-xs md:text-sm text-zinc-400">Posts</p>
                   </div>
 
                   {userData && authUser?._id !== userData?._id ? (
@@ -186,10 +187,10 @@ const ProfilePage = () => {
 
                 {/* Fullname and about */}
                 <div className="flex flex-col mt-4">
-                  <h2 className="text-lg font-semibold">
+                  <h2 className="text-sm md:text-lg font-semibold">
                     {userData?.fullName}
                   </h2>
-                  <p className="text-zinc-400 text-sm mt-1 line-clamp-2 w-8/12">
+                  <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2">
                     {userData?.about}
                   </p>
                 </div>

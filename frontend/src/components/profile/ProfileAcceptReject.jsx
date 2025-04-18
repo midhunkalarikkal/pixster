@@ -29,13 +29,13 @@ const ProfileAcceptReject = ({ userId, userName }) => {
           ) : (
             <>
               <button
-                className="px-4 py-1 border border-blue-500 rounded-lg hover:bg-blue-500"
+                className="px-4 py-1 border border-blue-500 rounded-lg hover:bg-blue-500 btn-sm"
                 onClick={(e) => handleRequest(userId, e, true)}
               >
                 Accept
               </button>
               <button
-                className="px-4 py-1 border border-red-500 rounded-lg hover:bg-red-500"
+                className="px-4 py-1 border border-red-500 rounded-lg hover:bg-red-500 btn-sm"
                 onClick={(e) => handleRequest(userId, e, false)}
               >
                 Reject

@@ -69,7 +69,7 @@ const UserTabListing = ({ authUserId, userDataId }) => {
         listPage && "absolute"
       }`}
     >
-      <div className="w-full max-w-md h-[500px] rounded-2xl shadow-lg border border-base-300 p-4 flex flex-col bg-base-100">
+      <div className="w-full max-w-md h-[60%] md:h-[550px] rounded-2xl shadow-lg border border-base-300 p-4 flex flex-col bg-base-100">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold">
             {
@@ -88,7 +88,7 @@ const UserTabListing = ({ authUserId, userDataId }) => {
             }}
             className="p-2 rounded-full transition"
           >
-            <X className="w-5 h-5" />
+            <X className="size-5 md:size-6" />
           </button>
         </div>
 
