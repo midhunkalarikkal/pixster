@@ -92,7 +92,7 @@ const HomePostsScroller = ({ post }) => {
         <div className="flex justify-between">
           <div className="flex space-x-4 items-center">
             <span className="flex items-center space-x-1">
-              <Heart className={`cursor-pointer ${postLiked && 'fill-red-500 text-red-500'}`} 
+              <Heart className={`cursor-pointer size-6 ${postLiked && 'fill-red-500 text-red-500'}`} 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -102,7 +102,7 @@ const HomePostsScroller = ({ post }) => {
               <p>{postLikeCount}</p>
             </span>
             <span className="flex items-center space-x-1">
-              <MessageCircle className="cursor-pointer" 
+              <MessageCircle className="cursor-pointer size-6" 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -112,10 +112,10 @@ const HomePostsScroller = ({ post }) => {
               <p>{post?.userPostDetails?.commentsCount}</p>
             </span>
             <span className="flex items-center space-x-1">
-              <Send />
+              <Send className="size-6"/>
             </span>
           </div>
-          <Bookmark className={`cursor-pointer ${postSaved && 'fill-blue-400 text-blue-400'}`}
+          <Bookmark className={`cursor-pointer size-6 ${postSaved && 'fill-blue-400 text-blue-400'}`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

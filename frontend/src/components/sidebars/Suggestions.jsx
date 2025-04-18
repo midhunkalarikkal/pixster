@@ -32,7 +32,7 @@ const Suggestions = () => {
   };
   
   return (
-    <div className="md:w-4/12 lg:w-4/12 xl:w-4/12 md:pr-2 md:pl-1 lg:pr-10 lg:pl-4 overflow-y-scroll no-scrollbar">
+    <div className="md:w-4/12 lg:w-4/12 xl:w-4/12 md:pr-2 md:pl-1 lg:pr-10 lg:pl-4 overflow-y-scroll no-scrollbar hidden md:block">
       <AuthUserTab />
       <div className="w-full md:p-3 lg:p-5">
         <div className="flex items-center gap-2">
