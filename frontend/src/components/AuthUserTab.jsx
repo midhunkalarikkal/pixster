@@ -14,7 +14,7 @@ const AuthUserTab = () => {
         <button
           onClick={() => getSearchSelectedUser(authUser?._id, navigate)}
           className={`
-              w-full md:p-1 lg:p-2 flex gap-3 items-center
+              w-full p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors
             `}
         >

@@ -7,7 +7,7 @@ const ChatPage = () => {
   const { selectedUser } = useChatStore();
 
   return (
-    <div className="flex md:w-1/12 lg:w-10/12">
+    <div className="flex w-full md:w-11/12 lg:w-10/12 h-[88%] md:h-full mt-10 md:mt-0">
       {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
       <ChatSidebar />
     </div>

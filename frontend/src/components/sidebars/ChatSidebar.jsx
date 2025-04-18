@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../../store/useChatStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import SidebarSkeleton from "../skeletons/SidebarSkeleton";
-import Dock from "../Dock";
 import AuthUserTab from "../AuthUserTab";
 
 const ChatSidebar = () => {
@@ -52,7 +51,7 @@ const ChatSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-4/12 bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
+      className={`h-full w-full sm:w-6/12 md:w-4/12 bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
         selectedUser ? "hidden lg:block" : "block"
       }`}
     >
@@ -82,7 +81,7 @@ const ChatSidebar = () => {
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full md:p-1 lg:p-2 flex gap-3 items-center border-b border-base-300
+              w-full p-2 flex gap-3 items-center border-b border-base-300
               hover:bg-base-300 transition-colors
               ${selectedUser?._id === user._id ? "" : ""}
             `}
@@ -129,7 +128,6 @@ const ChatSidebar = () => {
           <div className="text-center text-zinc-500 py-4">No online users</div>
         )}
       </div>
-        <Dock />
     </aside>
   );
 };
