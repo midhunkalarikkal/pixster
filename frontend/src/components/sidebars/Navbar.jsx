@@ -9,7 +9,6 @@ import {
   PlusSquare,
   Search,
   Settings,
-  User,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -40,7 +39,7 @@ const Navbar = () => {
               className={`flex btn bg-base-100 border-0`}
               onClick={() => getSearchSelectedUser(authUser._id, navigate)}
             >
-              <User className="size-6" />
+              <img src={authUser.profilePic || '/user_avatar.jpg'} className="size-6 rounded-full"/>
               <span className="hidden lg:block">Profile</span>
             </button>
 
