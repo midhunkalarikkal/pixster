@@ -16,7 +16,7 @@ const ProfileHeadDropdown = ({
   const isHidden = authUserId !== userId;
 
   return (
-    <div className={`flex justify-end ${isHidden ? "hidden" : ""}`}>
+    <div className={`flex justify-start ${isHidden ? "hidden" : ""}`}>
       <div className="dropdown">
         <div tabIndex={0} role="button" className="m-1 rounded-lg">
           <AlignJustify />

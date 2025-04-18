@@ -11,21 +11,20 @@ import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
-
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
 
   const { authUser } = useAuthStore();
 
-  const { 
+  const {
     revConnection,
-    getRequestedProfiles, 
-    getIncomingRequestedProfiles, 
-    getFollowingsProfiles, 
-    getFollowersProfiles, 
-    setListPage, 
-    listPage ,
+    getRequestedProfiles,
+    getIncomingRequestedProfiles,
+    getFollowingsProfiles,
+    getFollowersProfiles,
+    setListPage,
+    listPage,
     setTab,
   } = useProfileStore();
 
@@ -66,34 +65,32 @@ const ProfilePage = () => {
 
   return (
     <>
-      <div className={`h-screen w-10/12 px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
+      <div
+        className={`h-screen md:w-11/12 lg:10/12 px-4 py-8 overflow-y-scroll no-scrollbar bg-base-100 ${
           listPage && "relative"
         }`}
       >
         <div className="max-w-4xl mx-auto p-2 md:p-4">
-        <ProfileHeadDropdown
-          authUserId={authUser?._id}
-          userId={userData?._id}
-          getRequestedProfiles={getRequestedProfiles}
-          getIncomingRequestedProfiles={getIncomingRequestedProfiles}
-          setListPage={setListPage}
-        />
-
+          <ProfileHeadDropdown
+            authUserId={authUser?._id}
+            userId={userData?._id}
+            getRequestedProfiles={getRequestedProfiles}
+            getIncomingRequestedProfiles={getIncomingRequestedProfiles}
+            setListPage={setListPage}
+          />
 
           {/* Profile top follow request accept or reject bar */}
-          {(authUser?._id !== userData?._id) &&
-          ( 
-            (revConnection && revConnection.status === "requested") || 
-            (revConnectionData && revConnectionData.status === "requested")
-          ) && (
-            <ProfileAcceptReject
-              userId={userData?._id}
-              userName={userData?.userName}
-            />
-          )}
+          {authUser?._id !== userData?._id &&
+            ((revConnection && revConnection.status === "requested") ||
+              (revConnectionData &&
+                revConnectionData.status === "requested")) && (
+              <ProfileAcceptReject
+                userId={userData?._id}
+                userName={userData?.userName}
+              />
+            )}
 
           <div className="space-y-8">
-
             {/* Profile Header With Profile image and other details */}
             <div className="flex items-center">
               <div className="relative w-4/12 flex justify-center">
@@ -159,29 +156,31 @@ const ProfilePage = () => {
                         />
                       </>
                     )
-                  ) : userData && (
-                    <>
-                      <UserStat
-                        icon={Users}
-                        count={userData?.followersCount}
-                        label="Followers"
-                        onClick={() => {
-                          getFollowersProfiles(authUser._id)
-                          setListPage(true);
-                          setTab(2);
-                        }}
-                      />
-                      <UserStat
-                        icon={UserPlus}
-                        count={userData?.followingsCount}
-                        label="Following"
-                        onClick={() => {
-                          getFollowingsProfiles(authUser._id);
-                          setListPage(true);
-                          setTab(3);
-                        }}
-                      />
-                    </>
+                  ) : (
+                    userData && (
+                      <>
+                        <UserStat
+                          icon={Users}
+                          count={userData?.followersCount}
+                          label="Followers"
+                          onClick={() => {
+                            getFollowersProfiles(authUser._id);
+                            setListPage(true);
+                            setTab(2);
+                          }}
+                        />
+                        <UserStat
+                          icon={UserPlus}
+                          count={userData?.followingsCount}
+                          label="Following"
+                          onClick={() => {
+                            getFollowingsProfiles(authUser._id);
+                            setListPage(true);
+                            setTab(3);
+                          }}
+                        />
+                      </>
+                    )
                   )}
                 </div>
 
@@ -210,9 +209,8 @@ const ProfilePage = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      sendConnectionRequest(userData?._id, "requested")
-                    }
-                    }
+                      sendConnectionRequest(userData?._id, "requested");
+                    }}
                   />
                 ) : connectionData.status === "requested" ? (
                   <CustomButton
@@ -222,9 +220,12 @@ const ProfilePage = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      cancelConnectionRequest(userData?._id, "cancelled", false)
-                    }
-                    }
+                      cancelConnectionRequest(
+                        userData?._id,
+                        "cancelled",
+                        false
+                      );
+                    }}
                   />
                 ) : (
                   connectionData.status === "accepted" && (
@@ -235,9 +236,8 @@ const ProfilePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        unFollowConnectionRequest(userData?._id, "unfollowed")
-                      }
-                      }
+                        unFollowConnectionRequest(userData?._id, "unfollowed");
+                      }}
                     />
                   )
                 )}
@@ -251,7 +251,6 @@ const ProfilePage = () => {
                 status={connectionData && connectionData.status}
               />
             )}
-
           </div>
         </div>
       </div>
@@ -262,7 +261,6 @@ const ProfilePage = () => {
           status={connectionData && connectionData.status}
         />
       )}
-      
     </>
   );
 };
