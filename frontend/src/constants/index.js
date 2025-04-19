@@ -69,3 +69,12 @@ export const THEMES = [
     email: "Verify Email",
     reset: "Reset Password",
   };
+
+  export const formBottomText = {
+    login: "Don't have an account?",
+    signup: "Already a Talkzy user?",
+    otp: "Back to login",
+    email: "Back to login",
+    reset: "Back to login",
+  };
+  

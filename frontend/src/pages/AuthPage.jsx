@@ -1,4 +1,4 @@
-import { formTitle } from "../constants";
+import { formBottomText, formTitle } from "../constants";
 import LoginForm from "../components/forms/loginForm";
 import { useAuthFormStore } from '../store/useAuthFormStore';
 import AuthImagePattern from "../components/AuthImagePattern";
@@ -13,9 +13,7 @@ const AuthPage = () => {
     verifyOtpForm,
     verifyEmailForm,
     resetPasswordForm,
-    // forgotPassword,
-    // otpRemainingTime,
-    // otpTimerIsRunning,
+    handleGotoSignUp,
   } = useAuthFormStore()
 
   const activeForm =
@@ -52,9 +50,17 @@ const AuthPage = () => {
 
           <div className="text-center">
             <p className="text-base-content/60">
-            {
-              
-            }
+              {formBottomText[activeForm]}
+              {loginForm ? (
+                <button className="underline ml-2" onClick={(e) => {
+                  e.preventDefault();
+                  handleGotoSignUp();
+                }}>Sign Up</button>
+              ) : signUpForm ? (
+                <button className="underline-offset-1">Login</button>
+              ) : (
+                <button className="underline-offset-1">Cancel</button>
+              )}
             </p>
           </div>
         </div>

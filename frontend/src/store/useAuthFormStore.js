@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useAuthFormStore = create(() => ({
+export const useAuthFormStore = create((set) => ({
     loginForm: true,
     signUpForm: false,
     verifyOtpForm: false,
@@ -9,4 +9,14 @@ export const useAuthFormStore = create(() => ({
     forgotPassword: false,
     otpRemainingTime: 0,
     otpTimerIsRunning: false,
+
+    handleGotoSignUp: () => {
+        set({
+            loginForm : false,
+            signUpForm : true,
+            verifyOtpForm : false,
+            verifyEmailForm : false,
+            resetPassword : false,
+        });
+    }
 }))
