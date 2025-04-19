@@ -1,32 +1,69 @@
 import { create } from "zustand";
+import { useAuthStore } from "./useAuthStore";
 
-export const useAuthFormStore = create((set) => ({
-    loginForm: true,
-    signUpForm: false,
-    verifyOtpForm: false,
-    verifyEmailForm: false,
-    resetPasswordForm: false,
-    forgotPassword: false,
-    otpRemainingTime: 0,
-    otpTimerIsRunning: false,
+export const useAuthFormStore = create((set, get) => ({
+  loginForm: true,
+  signUpForm: false,
+  verifyOtpForm: false,
+  verifyEmailForm: false,
+  resetPasswordForm: false,
+  forgotPassword: false,
+  otpRemainingTime: 0,
+  otpTimerIsRunning: false,
 
-    handleGotoSignUp: () => {
-        set({
-            loginForm : false,
-            signUpForm : true,
-            verifyOtpForm : false,
-            verifyEmailForm : false,
-            resetPassword : false,
-        });
-    },
+  handleGotoSignUp: () => {
+    const { changeLoading } = useAuthStore.getState();
+    changeLoading(false);
+    set({
+      loginForm: false,
+      signUpForm: true,
+      verifyOtpForm: false,
+      verifyEmailForm: false,
+      resetPassword: false,
+    });
+  },
 
-    handleGotoLogin: () => {
-        set({
-            loginForm : true,
-            signUpForm : false,
-            verifyOtpForm : false,
-            verifyEmailForm : false,
-            resetPassword : false,
-        })
+  handleGotoLogin: () => {
+    const { changeLoading } = useAuthStore.getState();
+    changeLoading(false);
+    set({
+      loginForm: true,
+      signUpForm: false,
+      verifyOtpForm: false,
+      verifyEmailForm: false,
+      resetPassword: false,
+    });
+  },
+
+  handleGotoVerifyOtp: () => {
+    const { changeLoading } = useAuthStore.getState();
+    changeLoading(false);
+    set({
+        loginForm: false,
+        signUpForm: false,
+        verifyOtpForm: true,
+        verifyEmailForm: false,
+        resetPassword: false,
+      });
+  },
+
+  updateTimer: () => {
+    const { otpRemainingTime, otpTimerIsRunning } = get();
+    if (otpRemainingTime > 0 && otpTimerIsRunning) {
+      set((state) => ({
+        otpRemainingTime: state.otpRemainingTime - 1,
+      }));
+    } else {
+      set({ otpTimerIsRunning: false });
     }
-}))
+  },
+
+  stopTimer: () => {
+    set({ otpTimerIsRunning: false });
+  },
+
+  startTimer: () => {
+    set({ otpTimerIsRunning : true });
+    set({ otpRemainingTime : 120 });
+  }
+}));

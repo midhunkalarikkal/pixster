@@ -12,9 +12,10 @@ import { Upload } from "@aws-sdk/lib-storage";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
-import { accountCreatedEmailTemplateFirst, accountCreatedEmailTemplateLast, generateOTP, otpEmailTemplateFirst, otpEmailTemplateLast } from "../utils/helper.js";
+import { generateOTP } from "../utils/helper.js";
 import Otp from "../models/otp.model.js";
 import nodemailer from "nodemailer";
+import { accountCreatedEmailTemplateFirst, accountCreatedEmailTemplateLast, otpEmailTemplateFirst, otpEmailTemplateLast } from "../utils/constants.js";
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -92,7 +93,7 @@ export const signup = async (req, res) => {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
       subject: "Your Talkzy OTP Code - Verify Your Account",
-      text: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
+      html: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
     };
  
     await transporter.sendMail(mailOptionsOtpSent);
@@ -122,7 +123,7 @@ export const verifyOtp = async (req, res) => {
       return res.status(404).json({ message : "Otp verification failed" });
     }
 
-    const updatedUser = await User.findOneAndUpdate(userId, {
+    const updatedUser = await User.findOneAndUpdate({_id : userId}, {
       isEmailVerifed : true
     })
 
@@ -143,7 +144,7 @@ export const verifyOtp = async (req, res) => {
     await transporter.sendMail(mailOptionsAccountCreated);
 
     return res.status(200).json({
-     message : "Your account verified."
+     message : "Email verified successfully"
     });
 
   } catch (error) {
@@ -173,6 +174,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if(!user.isEmailVerifed) {
+      return res.status(400).json({ message : "Email not verified", verifyEmail : true })
+    }
+
     if(user.profilePic){
       const signedUrl = await generateSignedUrl(user.profilePic);
       user.profilePic = signedUrl;
@@ -192,6 +197,50 @@ export const login = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if(!email) {
+      return res.status(400).json({ message : "Invalid request" });
+    }
+
+    const otp = generateOTP();
+
+    console.log("otp : ",otp);
+
+    const newOtp = new Otp({
+      otp,
+      email
+    });
+
+    await newOtp.save();
+ 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.OFFICIAL_EMAIL,
+        pass: process.env.OFFICIALEMAIL_PASS,
+      },
+    });
+ 
+    const mailOptionsOtpSent = {
+      from: process.env.OFFICIAL_EMAIL,
+      to: email,
+      subject: "Your Talkzy OTP Code - Verify Your Account",
+      html: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
+    };
+ 
+    await transporter.sendMail(mailOptionsOtpSent);
+    
+    return res.status(201).json({
+      message : "Otp sent successfully to you email.",
+    });
+    
+  }catch (error) {
+    return req.status(500).json({ message: "Internal server error." });
+  }
+}
 
 export const logout = (req, res) => {
   try {

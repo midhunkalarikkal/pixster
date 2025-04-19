@@ -1,9 +1,11 @@
 import LoginForm from "../components/forms/loginForm";
 import SignUpForm from "../components/forms/signUpForm";
-import { formBottomText, formTitle } from "../constants";
 import { useAuthFormStore } from '../store/useAuthFormStore';
 import AuthImagePattern from "../components/AuthImagePattern";
+import OtpVerifyForm from "../components/forms/otpVerifyForm";
+import { formBottomText, formTitle } from "../utils/constants";
 import ResetPasswordForm from "../components/forms/ResetPasswordForm";
+import EmailVerificationForm from "../components/forms/emailVerificationForm";
 
 const AuthPage = () => {
 
@@ -45,8 +47,8 @@ const AuthPage = () => {
           
           {loginForm && ( <LoginForm /> )}
           {signUpForm && ( <SignUpForm /> )}
-          {verifyOtpForm && ( <verifyOtpForm /> )}
-          {verifyEmailForm && ( <verifyEmailForm /> )}
+          {verifyEmailForm && ( <EmailVerificationForm /> )}
+          {verifyOtpForm && ( <OtpVerifyForm /> )}
           {resetPasswordForm && ( <ResetPasswordForm /> )}
 
           <div className="text-center">
@@ -58,12 +60,15 @@ const AuthPage = () => {
                   handleGotoSignUp();
                 }}>Sign Up</button>
               ) : signUpForm ? (
-                <button className="underline-offset-1" onClick={(e) => {
+                <button className="underline ml-2" onClick={(e) => {
                   e.preventDefault();
                   handleGotoLogin();
                 }}>Login</button>
               ) : (
-                <button className="underline-offset-1">Cancel</button>
+                <button className="underline ml-2"onClick={(e) => {
+                  e.preventDefault();
+                  handleGotoLogin();
+                }}>Cancel</button>
               )}
             </p>
           </div>

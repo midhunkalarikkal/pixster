@@ -1,18 +1,16 @@
-import { useEffect, lazy, Suspense } from "react";
-import HomePage from "./pages/HomePage";
 import Layout from "./pages/Layout";
+import HomePage from "./pages/HomePage";
 import { ToastContainer } from "react-toastify";
+import { useEffect, lazy, Suspense } from "react";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { Navigate, Route, Routes } from "react-router-dom";
-import AuthPage from "./pages/AuthPage";
 // import ScreenSizeIndicator from 'screen-size-indicator';
 
 
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
-const LoginPage = lazy(() => import("./pages/LoginPage"));
-const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
@@ -65,15 +63,7 @@ const Hello = () => {
             <Route path="createPost" element={<CreatePost />} />
           </Route>
           <Route
-            path="/signup"
-            element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-          />
-          <Route
             path="/login"
-            element={!authUser ? <LoginPage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/auth"
             element={!authUser ? <AuthPage /> : <Navigate to="/" />}
           />
         </Routes>

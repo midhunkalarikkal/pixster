@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import PropTypes from "prop-types";
-import { pairedMessages } from "../constants";
 import { useEffect, useRef } from "react";
+import { pairedMessages } from "../utils/constants";
 
 const AuthImagePattern = ({ title, subtitle }) => {
   const sendMessageRefs = useRef([]);

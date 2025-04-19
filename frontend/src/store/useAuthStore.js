@@ -6,21 +6,20 @@ import { useSearchStore } from "./useSearchStore";
 import { useProfileStore } from "./useProfileStore";
 import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useAuthFormStore } from "./useAuthFormStore";
 
 const BASE_URL = "http://localhost:5001";
 
 export const useAuthStore = create(persist((set, get) => ({
   authUser: null,
-  isSigningUp: false,
-  isLoggingIng: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
   onLineUsers: [],
   socket: null,
-  signUpPage: true,
-  otpPage: false,
-  isOtpVerifying: false,
   loading : false,
+  authEmail: null,
+
+  changeLoading: (data) => { set({ loading : data }) },
 
   checkAuth: async () => {
     try {
@@ -36,52 +35,65 @@ export const useAuthStore = create(persist((set, get) => ({
   },
 
   signup: async (data) => {
+    const { handleGotoVerifyOtp, startTimer } = useAuthFormStore.getState();
+    set({ loading: true });
+    set({ authEmail : data.email });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      // set({ authUser: res.data });
-      set({ signUpPage : false });
-      set({ otpPage : true });
+      handleGotoVerifyOtp();
+      startTimer();
       toast.success(res.data.message);
-      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ isSigningUp: false });
+      set({ loading: false });
     }
   },
 
-  verifyOtp: async (data, navigate) => {
-    set({ isOtpVerifying : true });
+  verifyOtp: async (data) => {
+    const { handleGotoLogin, stopTimer } = useAuthFormStore.getState();
+    set({ loading: true });
     try {
       const res = await axiosInstance.post("/auth/verifyOtp", data);
+      set({ authEmail : null });
+      handleGotoLogin();
+      stopTimer();
       toast.success(res.data.message);
-      navigate('/login');
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ isOtpVerifying : false });
+      set({ loading: false });
     }
-  },
-
-  cancelOtpVerifying : () => {
-    set({ signUpPage : true });
-    set({ otpPage : false });
   },
 
   login: async (data) => {
-    set({ isLogginIng: true });
     set({ loading: true });
+    set({ authEmail : data.email });
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
+      set({ authEmail : null });
       toast.success("Logged in successfullt.");
       get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ isLogginIng: false });
       set({ loading: false });
     }
+  },
+
+  resendOtp: async (data) => {
+    data = data || {};
+    const { authEmail } = get();
+    if(authEmail) {
+      data.email = authEmail
+    }
+    try {
+      const res = await axiosInstance.post("/auth/resendOtp", data);
+      return res.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } 
   },
 
   logout: async () => {

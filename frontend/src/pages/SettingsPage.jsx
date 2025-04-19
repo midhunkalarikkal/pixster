@@ -1,7 +1,7 @@
 import { Send } from "lucide-react";
 import { useThemeStore } from "../store/useThemeStore";
-import { PREVIEW_MESSAGES, THEMES } from "../constants";
 import ProfileSettings from "../components/ProfileSettings";
+import { PREVIEW_MESSAGES, THEMES } from "../utils/constants";
 
 const SettingsPage = () => {
 
