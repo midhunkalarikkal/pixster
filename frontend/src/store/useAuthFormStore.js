@@ -18,5 +18,15 @@ export const useAuthFormStore = create((set) => ({
             verifyEmailForm : false,
             resetPassword : false,
         });
+    },
+
+    handleGotoLogin: () => {
+        set({
+            loginForm : true,
+            signUpForm : false,
+            verifyOtpForm : false,
+            verifyEmailForm : false,
+            resetPassword : false,
+        })
     }
 }))

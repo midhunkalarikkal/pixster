@@ -29,7 +29,7 @@ const InputWithLabel = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className="input input-bordered w-full pl-10"
+          className="input input-bordered w-full"
         />
         {isPasswordField && setShowPassword && (
           <button

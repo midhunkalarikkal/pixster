@@ -1,8 +1,8 @@
-import { formBottomText, formTitle } from "../constants";
 import LoginForm from "../components/forms/loginForm";
+import SignUpForm from "../components/forms/signUpForm";
+import { formBottomText, formTitle } from "../constants";
 import { useAuthFormStore } from '../store/useAuthFormStore';
 import AuthImagePattern from "../components/AuthImagePattern";
-import SignUpForm from "../components/forms/signUpForm";
 import ResetPasswordForm from "../components/forms/ResetPasswordForm";
 
 const AuthPage = () => {
@@ -14,6 +14,7 @@ const AuthPage = () => {
     verifyEmailForm,
     resetPasswordForm,
     handleGotoSignUp,
+    handleGotoLogin,
   } = useAuthFormStore()
 
   const activeForm =
@@ -57,7 +58,10 @@ const AuthPage = () => {
                   handleGotoSignUp();
                 }}>Sign Up</button>
               ) : signUpForm ? (
-                <button className="underline-offset-1">Login</button>
+                <button className="underline-offset-1" onClick={(e) => {
+                  e.preventDefault();
+                  handleGotoLogin();
+                }}>Login</button>
               ) : (
                 <button className="underline-offset-1">Cancel</button>
               )}
