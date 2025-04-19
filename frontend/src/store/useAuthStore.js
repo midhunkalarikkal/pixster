@@ -20,6 +20,7 @@ export const useAuthStore = create(persist((set, get) => ({
   signUpPage: true,
   otpPage: false,
   isOtpVerifying: false,
+  loading : false,
 
   checkAuth: async () => {
     try {
@@ -49,13 +50,12 @@ export const useAuthStore = create(persist((set, get) => ({
     }
   },
 
-  verifyOtp: async (data) => {
+  verifyOtp: async (data, navigate) => {
     set({ isOtpVerifying : true });
     try {
       const res = await axiosInstance.post("/auth/verifyOtp", data);
-      set({ authUser: res.data });
       toast.success(res.data.message);
-      get().connectSocket();
+      navigate('/login');
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -70,6 +70,7 @@ export const useAuthStore = create(persist((set, get) => ({
 
   login: async (data) => {
     set({ isLogginIng: true });
+    set({ loading: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
@@ -79,6 +80,7 @@ export const useAuthStore = create(persist((set, get) => ({
       toast.error(error.response.data.message);
     } finally {
       set({ isLogginIng: false });
+      set({ loading: false });
     }
   },
 

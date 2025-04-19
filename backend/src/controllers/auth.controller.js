@@ -12,9 +12,11 @@ import { Upload } from "@aws-sdk/lib-storage";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
-import dotenv from 'dotenv';
-import { generateOTP } from "../utils/helper.js";
+import { accountCreatedEmailTemplateFirst, accountCreatedEmailTemplateLast, generateOTP, otpEmailTemplateFirst, otpEmailTemplateLast } from "../utils/helper.js";
 import Otp from "../models/otp.model.js";
+import nodemailer from "nodemailer";
+
+import dotenv from 'dotenv';
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -65,9 +67,9 @@ export const signup = async (req, res) => {
     await newUser.save();
     console.log("User successfully registered");
 
-    await generateToken(newUser._id, email, res);
+    generateToken(newUser._id, email, res);
 
-    const otp = await generateOTP();
+    const otp = generateOTP();
 
     console.log("otp : ",otp);
 
@@ -86,25 +88,17 @@ export const signup = async (req, res) => {
       },
     });
  
-    const mailOptions = {
+    const mailOptionsOtpSent = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP is: ${otp}`,
+      subject: "Your Talkzy OTP Code - Verify Your Account",
+      text: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
     };
  
-    await transporter.sendMail(mailOptions);
-    console.log("OTP sent to email");
-
+    await transporter.sendMail(mailOptionsOtpSent);
+    
     return res.status(201).json({
-      // _id: newUser._id,
-      // fullName: newUser.fullName,
-      // userName: newUser.userName,
-      // email: newUser.email,
-      // profilePic: newUser.profilePic,
-      // about: newUser.about,
-      // createdAt: newUser.createdAt,
-      message : "Otp sent successfully.",
+      message : "Otp sent successfully to you email.",
     });
 
   } catch (error) {
@@ -116,18 +110,41 @@ export const signup = async (req, res) => {
 export const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
-    const token = res.cookies.jwt;
+    const token = req.cookies.jwt;
 
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    const userEmail = decoded.email;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const email = decoded.email;
+    const userId = decoded.userId;
 
-    const verify = await Otp.findOne({
-      email: email
-    });
+    const verify = await Otp.findOne({ otp, email });
 
     if(!verify) {
       return res.status(404).json({ message : "Otp verification failed" });
     }
+
+    const updatedUser = await User.findOneAndUpdate(userId, {
+      isEmailVerifed : true
+    })
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.OFFICIAL_EMAIL,
+        pass: process.env.OFFICIALEMAIL_PASS,
+      },
+    });
+    const mailOptionsAccountCreated = {
+      from: process.env.OFFICIAL_EMAIL,
+      to: email,
+      subject: "🎉 Welcome to Talkzy – Account Created Successfully",
+      html: ` ${accountCreatedEmailTemplateFirst} ${updatedUser.fullName} ${accountCreatedEmailTemplateLast}`,
+    };
+
+    await transporter.sendMail(mailOptionsAccountCreated);
+
+    return res.status(200).json({
+     message : "Your account verified."
+    });
 
   } catch (error) {
     console.error("Signup error:", error);

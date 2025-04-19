@@ -51,6 +51,11 @@ export const userSchema = new mongoose.Schema(
         postsCount : {
             type : Number,
             default : 0,
+        },
+        isEmailVerifed : {
+            type : Boolean,
+            required : true,
+            default : false,
         }
     },{
         timestamps : true

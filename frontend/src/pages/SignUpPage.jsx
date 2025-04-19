@@ -9,10 +9,12 @@ import {
   validateUsername,
 } from "../utils/validator";
 import AuthImagePattern from "../components/AuthImagePattern";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
+
   const [showPassword, setShowPassword] = useState();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -65,9 +67,7 @@ const SignUpPage = () => {
   const handleOtpSubmit = (e) => {
     e.preventDefault();
     if(formData.otp.length === 6) {
-      verifyOtp({
-        otp: formData.otp
-      })
+      verifyOtp({otp: formData.otp }, navigate)
     } else {
       toast.error("Invalid otp");
       return;
@@ -248,13 +248,12 @@ const SignUpPage = () => {
                   <Lock className="size-5 text-base-content/40" />
                 </div>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="0-0-0-0-0-0"
-                  value={formData.password}
-                  onInput={(e) => checkInput(e, "password")}
+                  value={formData.otp}
                   onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
+                    setFormData({ ...formData, otp: e.target.value })
                   }
                 />
               </div>

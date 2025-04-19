@@ -1,0 +1,73 @@
+import { formTitle } from "../constants";
+import LoginForm from "../components/forms/loginForm";
+import { useAuthFormStore } from '../store/useAuthFormStore';
+import AuthImagePattern from "../components/AuthImagePattern";
+import SignUpForm from "../components/forms/signUpForm";
+import ResetPasswordForm from "../components/forms/ResetPasswordForm";
+
+const AuthPage = () => {
+
+  const {
+    loginForm,
+    signUpForm,
+    verifyOtpForm,
+    verifyEmailForm,
+    resetPasswordForm,
+    // forgotPassword,
+    // otpRemainingTime,
+    // otpTimerIsRunning,
+  } = useAuthFormStore()
+
+  const activeForm =
+  loginForm
+    ? "login"
+    : signUpForm
+    ? "signup"
+    : verifyOtpForm
+    ? "otp"
+    : verifyEmailForm
+    ? "email"
+    : resetPasswordForm
+    ? "reset"
+    : "";
+
+  return (
+    <div className="h-screen grid lg:grid-cols-2">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center mb-8">
+            <div className="flex flex-col items-center gap-2 group">
+              <h3 className="text-2xl font-bold italic">Talkzy</h3>
+              <p className="text-base-content/60">
+                {formTitle[activeForm]}
+              </p>
+            </div>
+          </div>
+          
+          {loginForm && ( <LoginForm /> )}
+          {signUpForm && ( <SignUpForm /> )}
+          {verifyOtpForm && ( <verifyOtpForm /> )}
+          {verifyEmailForm && ( <verifyEmailForm /> )}
+          {resetPasswordForm && ( <ResetPasswordForm /> )}
+
+          <div className="text-center">
+            <p className="text-base-content/60">
+            {
+              
+            }
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <AuthImagePattern
+        title={"Welcome to Talzy"}
+        subtitle={
+          "Sign in to continue your conversations and catch up with your messages."
+        }
+      />
+    </div>
+  );
+};
+
+export default AuthPage;

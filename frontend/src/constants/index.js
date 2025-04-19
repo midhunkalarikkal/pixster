@@ -61,3 +61,11 @@ export const THEMES = [
     { id: 1, content: "Hey How are you?", isSent: false },
     { id: 2, content: "Hi iam doing great", isSent: true },
   ];
+
+  export const formTitle = {
+    login: "Login to your account",
+    signup: "Create your account",
+    otp: "Verify OTP",
+    email: "Verify Email",
+    reset: "Reset Password",
+  };

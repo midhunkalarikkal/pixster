@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { Navigate, Route, Routes } from "react-router-dom";
+import AuthPage from "./pages/AuthPage";
 // import ScreenSizeIndicator from 'screen-size-indicator';
 
 
@@ -70,6 +71,10 @@ const Hello = () => {
           <Route
             path="/login"
             element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/auth"
+            element={!authUser ? <AuthPage /> : <Navigate to="/" />}
           />
         </Routes>
       </Suspense>
