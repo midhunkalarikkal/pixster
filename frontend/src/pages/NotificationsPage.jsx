@@ -3,8 +3,11 @@ import { useSearchStore } from "../store/useSearchStore";
 import NotificationBar from "../components/NotificationBar";
 import Suggestions from "../components/sidebars/Suggestions";
 import { useNotificationStore } from "../store/useNotificationStores";
+import { useNavigate } from "react-router-dom";
 
 const NotificationsPage = () => {
+
+  const navigate = useNavigate();
   const { getSearchSelectedUser } = useSearchStore();
   const { notifications, notificationsLoading, getNotifications } =
     useNotificationStore();
@@ -12,7 +15,7 @@ const NotificationsPage = () => {
   const handleViewUser = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
-    getSearchSelectedUser(id);
+    getSearchSelectedUser(id, navigate);
   };
 
   useEffect(() => {
