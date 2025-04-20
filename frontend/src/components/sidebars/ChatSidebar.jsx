@@ -51,8 +51,8 @@ const ChatSidebar = () => {
 
   return (
     <aside
-      className={`h-full w-full sm:w-6/12 md:w-4/12 bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
-        selectedUser ? "hidden lg:block" : "block"
+      className={`h-full w-full md:w-4/12 bg-base-100 flex flex-col transition-all duration-200 px-2 sticky ${
+        selectedUser ? "hidden md:block" : "block"
       }`}
     >
       <AuthUserTab />
