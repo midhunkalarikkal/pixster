@@ -21,8 +21,6 @@ export const useAuthStore = create(persist((set, get) => ({
 
   changeLoading: (data) => { set({ loading : data }) },
 
-  setAuthEmailNull: () => ( set({ authEmail : null })),
-
   checkAuth: async () => {
     const { authUser } = get();
     try {
@@ -55,14 +53,20 @@ export const useAuthStore = create(persist((set, get) => ({
   },
 
   verifyOtp: async (data) => {
-    const { handleGotoLogin, stopTimer } = useAuthFormStore.getState();
+    const { stopTimer, forgotPassword, handleGotoResetPassword, handleGotoLogin } = useAuthFormStore.getState();
     set({ loading: true });
     try {
       const res = await axiosInstance.post("/auth/verifyOtp", data);
-      set({ authEmail : null });
-      handleGotoLogin();
       stopTimer();
       toast.success(res.data.message);
+      if(forgotPassword) {
+        console.log("going to reset password")
+        handleGotoResetPassword();
+      } else {
+        console.log("going to login")
+        handleGotoLogin();
+        set({ authEmail : null });
+      }
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -92,12 +96,29 @@ export const useAuthStore = create(persist((set, get) => ({
     if(authEmail) {
       data.email = authEmail
     }
+    set({ loading: true });
     try {
       const res = await axiosInstance.post("/auth/resendOtp", data);
+      console.log("res : ",res);
       return res.data;
     } catch (error) {
       toast.error(error.response.data.message);
-    } 
+    } finally {
+      set({ loading : false });
+    }
+  },
+
+  updatePassword: async (data) => {
+    set({ loading : true });
+    try {
+      const res = await axiosInstance.post('/auth/resetPassword', data);
+      console.log("res : ",res);
+      return res.data;
+    }catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ loading : false })
+    }
   },
 
   logout: async () => {

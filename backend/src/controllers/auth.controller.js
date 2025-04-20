@@ -15,8 +15,7 @@ import {
   validateUsername,
 } from "../utils/validator.js";
 import { 
-  accountCreatedEmailTemplateFirst, 
-  accountCreatedEmailTemplateLast, 
+  emailVerifiedTemplateFirst, 
   otpEmailTemplateFirst, 
   otpEmailTemplateLast 
 } from "../utils/constants.js";
@@ -110,6 +109,8 @@ export const signup = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
+
+    console.log("req.body : ",req.body);
     const { otp } = req.body;
     const token = req.cookies.jwt;
 
@@ -143,10 +144,12 @@ export const verifyOtp = async (req, res) => {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
       subject: "🎉 Welcome to Pixster – Account Created Successfully",
-      html: ` ${accountCreatedEmailTemplateFirst} ${updatedUser.fullName} ${accountCreatedEmailTemplateLast}`,
+      html: ` ${emailVerifiedTemplateFirst} ${updatedUser.fullName} ${emailVerifiedTemplateFirst}`,
     };
 
     await transporter.sendMail(mailOptionsAccountCreated);
+
+    generateToken(updatedUser._id, updatedUser.email, res);
 
     return res.status(200).json({
      message : "Email verified successfully"
@@ -205,10 +208,20 @@ export const login = async (req, res) => {
 
 export const resendOtp = async (req, res) => {
   try {
+    console.log("Resend Otp");
+    console.log("req.body : ",req.body);
     const { email } = req.body;
+
     if(!email) {
       return res.status(400).json({ message : "Invalid request" });
     }
+
+    const user = await User.findOne({ email : email });
+    if(!user) {
+      return res.status(404).json({ message : "User not found" });
+    }
+
+    generateToken(user._id, user.email, res);
 
     const otp = generateOTP();
 
@@ -241,6 +254,35 @@ export const resendOtp = async (req, res) => {
     });
     
   }catch (error) {
+    console.log("error : ",error);
+    return req.status(500).json({ message: "Internal server error." });
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    if(!password) {
+      return res.status(404).json({ message : "Invalid request" });
+    }
+
+    const token = req.cookies.jwt;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const user = await User.findById({ _id : userId });
+    if(!user) {
+      return res.status(404).json({ message : "No user found" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ success : true, message : "Password reseted successfully" });
+  }catch (error) {
+    console.log("error : ",error);
     return req.status(500).json({ message: "Internal server error." });
   }
 }

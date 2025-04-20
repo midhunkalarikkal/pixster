@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import InputWithLabel from "./InputWithLabel";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useAuthFormStore } from "../../store/useAuthFormStore";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +13,7 @@ const LoginForm = () => {
   });
 
   const { login, loading } = useAuthStore();
+  const { handleGoToEmailVerification } = useAuthFormStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,6 +48,11 @@ const LoginForm = () => {
         showPassword={showPassword}
         setShowPassword={setShowPassword}
       />
+
+      <button className="" onClick={(e) => {
+        e.preventDefault();
+        handleGoToEmailVerification();
+      }}>Forgot Password ?</button>
 
       <button
         type="submit"

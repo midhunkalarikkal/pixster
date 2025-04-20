@@ -2,7 +2,7 @@ import multer from 'multer';
 import express from 'express';
 import cloudinaryConfig from '../lib/cloudinary.js';
 import { protectRoute } from '../middleware/auth.middleware.js';
-import { checkAuth, login, logout, removeProfile, resendOtp, signup, updateProfile, verifyOtp } from '../controllers/auth.controller.js';
+import { checkAuth, login, logout, removeProfile, resendOtp, resetPassword, signup, updateProfile, verifyOtp } from '../controllers/auth.controller.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -14,6 +14,8 @@ router.post('/signup', signup);
 router.post('/verifyOtp', verifyOtp);
 
 router.post('/resendOtp', resendOtp);
+
+router.post('/resetPassword', resetPassword);
 
 router.post('/login',login);
 

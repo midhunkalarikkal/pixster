@@ -14,7 +14,7 @@ const OtpVerifyForm = () => {
   });
 
   const { otpRemainingTime, otpTimerIsRunning, updateTimer } = useAuthFormStore();
-  const { verifyOtp, loading, resendOtp, setAuthEmailNull } = useAuthStore();
+  const { verifyOtp, loading, resendOtp } = useAuthStore();
 
   useEffect(() => {
     if (otpTimerIsRunning) {
@@ -41,7 +41,6 @@ const OtpVerifyForm = () => {
       const res = await resendOtp();
       if(res.success) {
         toast.success(res.message);
-        setAuthEmailNull();
       }
     }  finally {
       setResendLoading(false);

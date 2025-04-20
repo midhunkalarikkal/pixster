@@ -19,7 +19,7 @@ export const useAuthFormStore = create((set, get) => ({
       signUpForm: true,
       verifyOtpForm: false,
       verifyEmailForm: false,
-      resetPassword: false,
+      resetPasswordForm: false,
     });
   },
 
@@ -31,7 +31,7 @@ export const useAuthFormStore = create((set, get) => ({
       signUpForm: false,
       verifyOtpForm: false,
       verifyEmailForm: false,
-      resetPassword: false,
+      resetPasswordForm: false,
     });
   },
 
@@ -43,7 +43,32 @@ export const useAuthFormStore = create((set, get) => ({
         signUpForm: false,
         verifyOtpForm: true,
         verifyEmailForm: false,
-        resetPassword: false,
+        resetPasswordForm: false,
+      });
+  },
+
+  handleGoToEmailVerification: () => {
+    const { changeLoading } = useAuthStore.getState();
+    changeLoading(false);
+    set({
+        loginForm: false,
+        signUpForm: false,
+        verifyOtpForm: false,
+        verifyEmailForm: true,
+        forgotPassword: true,
+        resetPasswordForm: false,
+      });
+  },
+
+  handleGotoResetPassword: () => {
+    const { changeLoading } = useAuthStore.getState();
+    changeLoading(false);
+    set({
+        loginForm: false,
+        signUpForm: false,
+        verifyOtpForm: false,
+        verifyEmailForm: false,
+        resetPasswordForm: true,
       });
   },
 
