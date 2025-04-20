@@ -19,12 +19,25 @@ export const getUsersForSidebar = async (req, res) => {
       }
     },
     {
-      $project: { "_id" : 0, "toUserId" : 1 }
+      $project: { 
+        otherUserId : {
+          $cond : {
+            if: { $eq : [ "$fromUserId", currentUserId] },
+            then: "$toUserId",
+            else: "$fromUserId"
+          }
+        }
+       }
+    },
+    {
+      $group : {
+        _id : "$otherUserId"
+      }
     },
     {
       $lookup : {
         from: "users",
-        localField: "toUserId",
+        localField: "_id",
         foreignField: "_id",
         as: "userData"
       }
