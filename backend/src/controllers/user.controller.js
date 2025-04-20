@@ -148,7 +148,6 @@ export const homeScrollerData = async (req, res) => {
       .status(200)
       .json({ message: "Home scroll data fetched.", posts: updatedPostData });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -187,7 +186,6 @@ export const searchUsers = async (req, res) => {
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -226,7 +224,6 @@ export const fetchSearchedUserProfile = async (req, res) => {
       revConnectionData,
     });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -259,7 +256,6 @@ export const fetchUserPosts = async (req, res) => {
 
     return res.status(200).json({ userPosts });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -296,14 +292,12 @@ export const fetchUserSavedPosts = async (req, res) => {
 
     return res.status(200).json({ userSavedPosts });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchRequestedAccounts = async (req, res) => {
   try {
-    console.log("fetching");
     const fromUserId = req.user?._id;
     if (!fromUserId) {
       return res.status(400).json({ message: "User not found." });
@@ -336,14 +330,12 @@ export const fetchRequestedAccounts = async (req, res) => {
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchIncomingRequestedAccounts = async (req, res) => {
   try {
-    console.log("fetching");
     const fromUserId = req.user?._id;
     if (!fromUserId) {
       return res.status(400).json({ message: "User not found." });
@@ -376,7 +368,6 @@ export const fetchIncomingRequestedAccounts = async (req, res) => {
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -419,7 +410,6 @@ export const fetchFollowingAccounts = async (req, res) => {
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -464,14 +454,12 @@ export const fetchFollowersAccounts = async (req, res) => {
       .status(200)
       .json({ message: "Users fetched successfully", users: updatedUsers });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchNotifications = async (req, res) => {
   try {
-    console.log("Fetching notifications");
     const currentUser = req.user?._id;
     if (!currentUser) {
       return res.status(400).json({ message: "User not found." });
@@ -511,14 +499,12 @@ export const fetchNotifications = async (req, res) => {
       notifications: updatedNotifications,
     });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const fetchSuggestions = async (req, res) => {
   try {
-    console.log("Suggestion controller");
     const currentUserId = req.user?._id;
     if (!currentUserId) {
       return res.status(400).json({ message: "User not found." });

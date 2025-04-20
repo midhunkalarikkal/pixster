@@ -60,10 +60,8 @@ export const useAuthStore = create(persist((set, get) => ({
       stopTimer();
       toast.success(res.data.message);
       if(forgotPassword) {
-        console.log("going to reset password")
         handleGotoResetPassword();
       } else {
-        console.log("going to login")
         handleGotoLogin();
         set({ authEmail : null });
       }
@@ -99,7 +97,6 @@ export const useAuthStore = create(persist((set, get) => ({
     set({ loading: true });
     try {
       const res = await axiosInstance.post("/auth/resendOtp", data);
-      console.log("res : ",res);
       return res.data;
     } catch (error) {
       toast.error(error.response.data.message);
@@ -112,7 +109,6 @@ export const useAuthStore = create(persist((set, get) => ({
     set({ loading : true });
     try {
       const res = await axiosInstance.post('/auth/resetPassword', data);
-      console.log("res : ",res);
       return res.data;
     }catch (error) {
       toast.error(error.response.data.message);

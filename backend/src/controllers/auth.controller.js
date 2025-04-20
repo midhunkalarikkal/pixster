@@ -68,17 +68,12 @@ export const signup = async (req, res) => {
     });
 
     await newUser.save();
-    console.log("User successfully registered");
 
     generateToken(newUser._id, email, res);
 
     const otp = generateOTP();
 
-    console.log("otp : ",otp);
-
     const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
-
-    console.log("redis otp storing : ",redisOtpStoring);
  
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -102,15 +97,12 @@ export const signup = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Signup error:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const verifyOtp = async (req, res) => {
   try {
-
-    console.log("req.body : ",req.body);
     const { otp } = req.body;
     const token = req.cookies.jwt;
 
@@ -156,7 +148,6 @@ export const verifyOtp = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Signup error:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 }
@@ -208,8 +199,6 @@ export const login = async (req, res) => {
 
 export const resendOtp = async (req, res) => {
   try {
-    console.log("Resend Otp");
-    console.log("req.body : ",req.body);
     const { email } = req.body;
 
     if(!email) {
@@ -225,11 +214,7 @@ export const resendOtp = async (req, res) => {
 
     const otp = generateOTP();
 
-    console.log("otp : ",otp);
-
     const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
-
-    console.log("redis otp storing : ",redisOtpStoring);
  
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -254,7 +239,6 @@ export const resendOtp = async (req, res) => {
     });
     
   }catch (error) {
-    console.log("error : ",error);
     return req.status(500).json({ message: "Internal server error." });
   }
 }
@@ -282,7 +266,6 @@ export const resetPassword = async (req, res) => {
 
     return res.status(200).json({ success : true, message : "Password reseted successfully" });
   }catch (error) {
-    console.log("error : ",error);
     return req.status(500).json({ message: "Internal server error." });
   }
 }
@@ -298,9 +281,6 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    console.log("updating profile image");
-    console.log("req.file : ", req.file);
-
     const file = req.file;
     const userId = req.user._id;
 
@@ -322,7 +302,6 @@ export const updateProfile = async (req, res) => {
       try{
         await s3Client.send(new DeleteObjectCommand(deleteParams));
       }catch (error) {
-        console.log("error : ",error);
         throw new Error("Profile image updating error.");
       }
     }
@@ -357,15 +336,12 @@ export const updateProfile = async (req, res) => {
 
     return res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const removeProfile = async (req, res) => {
   try {
-    console.log("removing profile image");
-
     const userId = req.user._id;
 
     const user = await User.findById(userId);
@@ -402,7 +378,6 @@ export const removeProfile = async (req, res) => {
 
     return res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

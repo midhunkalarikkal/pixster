@@ -7,7 +7,6 @@ import { generateSignedUrl } from "../utils/aws.config.js";
 
 export const requestConnection = async (req, res) => {
   try {
-    console.log("Send connection request start");
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
@@ -120,7 +119,6 @@ export const requestConnection = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -204,14 +202,12 @@ export const acceptConnection = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const rejectConnection = async (req, res) => {
   try {
-    console.log("reject connection")
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
@@ -275,7 +271,6 @@ export const rejectConnection = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -363,20 +358,15 @@ export const cancelConnection = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const unfollowConnection = async (req, res) => {
   try {
-    console.log("Unfollow connection");
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
-    console.log("fromUserId : ", fromUserId);
-    console.log("toUserId : ", toUserId);
-    console.log("status : ", status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -401,7 +391,6 @@ export const unfollowConnection = async (req, res) => {
       toUserId,
     });
 
-    console.log("connection : ", connectionData);
 
     if (connectionData.status === "unfollowed") {
       return res
@@ -418,18 +407,10 @@ export const unfollowConnection = async (req, res) => {
 
     const revConnectionData = await Connection.findOne( { fromUserId: toUserId, toUserId: fromUserId }, { _id: 0, status: 1 } );
 
-    console.log("userData : ",userData)
-
-    // const unfollowConnectionData = {
-    //   connectionData: revConnectionData,
-    //   revConnectionData: connectionData,
-    // }
-
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("unfollowConnection");
     }
-
 
     return res
       .status(200)
@@ -441,7 +422,6 @@ export const unfollowConnection = async (req, res) => {
       });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

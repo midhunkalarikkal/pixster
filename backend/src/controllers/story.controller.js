@@ -55,7 +55,6 @@ export const uploadStory = async (req, res) => {
         story: updatedStory,
       });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -132,7 +131,6 @@ export const getStories = async (req, res) => {
     return res.status(200).json({ myStory, stories: Stories })
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

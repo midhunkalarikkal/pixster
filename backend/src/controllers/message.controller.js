@@ -7,7 +7,6 @@ import { generateSignedUrl } from "../utils/aws.config.js";
 
 export const getUsersForSidebar = async (req, res) => {
   try {
-    console.log("list users");
     const currentUserId = req.user._id;
 
     const users = await Connection.aggregate([

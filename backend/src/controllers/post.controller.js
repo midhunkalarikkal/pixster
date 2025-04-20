@@ -69,7 +69,6 @@ export const uploadPost = async (req, res) => {
       .status(201)
       .json({ success: true, message: "Post uploaded successfully" });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -97,7 +96,6 @@ export const deletePost = async (req, res) => {
       try {
         await s3Client.send(new DeleteObjectCommand(deleteParams));
       } catch (error) {
-        console.log("error catch block : ", error);
         throw new Error("post image deleting error.");
       }
     }
@@ -106,14 +104,12 @@ export const deletePost = async (req, res) => {
 
     return res.status(200).json({ message: "Post deleted successfully." });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const updatePost = async (req, res) => {
   try {
-    console.log("updating post");
     const currentUser = req.user?._id;
     const { postId } = req.params;
 
@@ -178,14 +174,12 @@ export const updatePost = async (req, res) => {
       message: "Post updated successfully.",
     });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const likeOrDislikePost = async (req, res) => {
   try {
-    console.log("post liking or disliking");
     const currentUserId = req.user?._id;
     const { postId } = req.params;
 
@@ -215,7 +209,6 @@ export const likeOrDislikePost = async (req, res) => {
     let newNotification;
 
     if (existLike) {
-      console.log("post dislikign");
       await PostLike.findByIdAndDelete(existLike._id);
 
       const updatedPost = await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
@@ -233,7 +226,6 @@ export const likeOrDislikePost = async (req, res) => {
           disliked: true,
         });
     } else {
-      console.log("post liking");
       const newLike = new PostLike({
         userId: currentUserId,
         postId: postId,
@@ -280,14 +272,12 @@ export const likeOrDislikePost = async (req, res) => {
         });
     }
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const savePost = async (req, res) => {
   try {
-    console.log("post saving");
     const currentUserId = req.user?._id;
     const { postId } = req.params;
 
@@ -329,7 +319,6 @@ export const savePost = async (req, res) => {
         .json({ message: "Post saved.", saved: true, removed: false });
     }
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -463,14 +452,12 @@ export const addComment = async (req, res) => {
       comment: newComment,
     });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const getComments = async (req, res) => {
   try {
-    console.log("getComments");
     const currentUserId = req.user?._id;
     const { postId } = req.params;
 
@@ -624,7 +611,6 @@ export const getComments = async (req, res) => {
 
     return res.status(200).json({ aggregatedComments });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -655,7 +641,6 @@ export const deleteComment = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Comment deleted successfully" });
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -728,7 +713,6 @@ export const likeOrDislikeComment = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 }
