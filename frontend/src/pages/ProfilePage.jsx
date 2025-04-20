@@ -55,6 +55,10 @@ const ProfilePage = () => {
     }
   }, [searchSelectedUser, selectedUserId, getSearchSelectedUser]);
 
+  console.log("Profile component");
+  console.log("authUserId : ",authUser?._id);
+  console.log("userDataId : ",userData?._id);
+
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">

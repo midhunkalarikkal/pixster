@@ -19,25 +19,27 @@ export const uploadPost = async (req, res) => {
   try {
     const currentUser = req.user?._id;
 
-    const { caption } = req.body;
+    const { caption, type } = req.body;
     const file = req.file;
 
     if (!currentUser) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    if (!file) {
-      return res.status(400).json({ message: "Image not found." });
-    }
-
+    
     if (!caption) {
       return res.status(400).json({ message: "Caption not found." });
     }
-
-    if (caption.length < 1 || caption.length > 200) {
+    
+    if (caption.length < 1 || caption.length > 500) {
       return res.status(400).json({ message: "Pos captionlength error." });
     }
-
+    
+    if(type === "Post") {
+      if (!file) {
+        return res.status(400).json({ message: "Image not found." });
+      }
+    
     const randomString = await generateRandomString();
 
     const params = {
@@ -60,9 +62,19 @@ export const uploadPost = async (req, res) => {
       userId: currentUser,
       media: s3UploadResponse.Location,
       content: caption,
+      type: type
     });
 
     await newPost.save();
+  } else {
+    const newPost = new Post({
+      userId: currentUser,
+      content: caption,
+      type: type
+    });
+
+    await newPost.save();
+  }
     await User.findByIdAndUpdate(currentUser, { $inc: { postsCount: 1 } });
 
     return res

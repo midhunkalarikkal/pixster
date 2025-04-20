@@ -13,6 +13,12 @@ const MobileBottomBar = () => {
   const { logout, authUser } = useAuthStore();
   const { getSearchSelectedUser } = useSearchStore();
 
+  const handleProfileClick = async (userId ,e) => {
+    e.preventDefault();
+    await getSearchSelectedUser(userId);
+    navigate("/profile");
+  };
+
   return (
     <footer className="bg-base-100 w-full z-40 backdrop-blur-lg md:hidden fixed bottom-0 h-[6%]">
       {authUser && (
@@ -35,7 +41,7 @@ const MobileBottomBar = () => {
 
           <button
             className={`btn bg-base-100 border-0`}
-            onClick={() => getSearchSelectedUser(authUser._id, navigate)}
+            onClick={(e) => handleProfileClick(authUser._id, e)}
           >
             <img src={authUser.profilePic || '/user_avatar.jpg'} className="size-6 rounded-full"/>
           </button>

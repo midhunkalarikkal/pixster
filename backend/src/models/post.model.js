@@ -13,7 +13,7 @@ const postModel = new mongoose.Schema({
         type : String,
         required : true,
         minLength : 1,
-        maxLength : 250,
+        maxLength : 500,
     },
     likes : {
         type : Number,
@@ -23,6 +23,10 @@ const postModel = new mongoose.Schema({
     commentsCount: {
         type : Number,
         default : 0,
+    },
+    type : {
+        type : String,
+        enum : ["Post", "Thread"],
     }
 }, {
     timestamps: true

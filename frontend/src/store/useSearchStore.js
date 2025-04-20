@@ -30,15 +30,15 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  getSearchSelectedUser: async (userId, navigate) => {
+  getSearchSelectedUser: async (userId) => {
     set({ selectedUserId: userId });
     set({ searchSelectedUserLoading: true });
     try {
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       set({ searchSelectedUser: res.data });
-      if(navigate) navigate("/profile");
     } catch (error) {
       toast.error(error.response.data.message);
+      set({ searchSelectedUser: null });
     } finally {
       set({ searchSelectedUserLoading: false });
     }

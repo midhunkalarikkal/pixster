@@ -27,8 +27,10 @@ const Suggestions = () => {
     }
   };
 
-  const handleUserTabClick = (userId) => {
-    getSearchSelectedUser(userId, navigate);
+  const handleUserTabClick = async (userId) => {
+    console.log("navigating")
+    await getSearchSelectedUser(userId);
+    navigate('/profile');
   };
   
   return (

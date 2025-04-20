@@ -6,6 +6,10 @@ import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
+  console.log("authUserId : ",authUserId);
+  console.log("userDataId : ",userDataId);
+
+  console.log("Profile posts")
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);
   const [userPostsLoading, setUserPostsLoading] = useState(false);
@@ -17,12 +21,15 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (isOwnProfile) {
+      setUserPosts([]);
+      setUserSavedPosts([]);
+  
+      if (authUserId === userDataId) {
         setUserPostsLoading(true);
         const posts = await getUserPosts({ userId: authUserId });
         setUserPosts(posts);
         setUserPostsLoading(false);
-
+  
         setUserSavedPostsLoading(true);
         const savedPosts = await getUserSavedPosts();
         setUserSavedPosts(savedPosts);
@@ -34,7 +41,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
         setUserPostsLoading(false);
       }
     };
-
+  
     fetchData();
   }, [authUserId, userDataId, status]);
 

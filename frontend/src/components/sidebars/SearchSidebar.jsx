@@ -19,6 +19,14 @@ const SearchSidebar = () => {
     return () => clearTimeout(timer);
   }, [searchQuery, getSearchUsers]);
 
+  const handleUserTabClick = async (userId,e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("navigating")
+    await getSearchSelectedUser(userId);
+    navigate('/profile');
+  };
+
   return (
     <aside
       className={`h-full w-full md:w-4/12 flex flex-col transition-all duration-200 px-2`}
@@ -44,7 +52,7 @@ const SearchSidebar = () => {
           searchedUsers.map((user) => (
             <button
                key={user._id}
-               onClick={() => getSearchSelectedUser(user._id, navigate)}
+               onClick={(e) => handleUserTabClick(user._id, e)}
                className={` w-full p-2 flex gap-3 items-center
                hover:bg-base-300 transition-colors border-b border-base-300`}
              >

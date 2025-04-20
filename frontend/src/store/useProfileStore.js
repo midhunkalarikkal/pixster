@@ -38,6 +38,7 @@ export const useProfileStore = create((set) => ({
   setIncomingRequestedProfiles: (profiles) => set({ incomingrequestedProfiles: profiles }),
 
   getUserPosts: async (data) => {
+    console.log("getUserPost : ",data.userId);
     try{
       const res = await axiosInstance.get(`/user/getUserPosts/${data.userId}`);
       return res.data.userPosts;

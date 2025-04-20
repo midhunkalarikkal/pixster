@@ -4,9 +4,11 @@ import { formatDistanceToNow } from "date-fns";
 import { usePostStore } from "../store/usePostStore";
 import { useSearchStore } from "../store/useSearchStore";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HomePostsScroller = ({ post }) => {
 
+  const navigate = useNavigate();
   const [postLiked, setPostLiked] = useState(false);
   const [postLikeCount, setPostLikeCount] = useState(0);
   const [postSaved, setPostSaved] = useState(false);
@@ -53,8 +55,9 @@ const HomePostsScroller = ({ post }) => {
     }
   }
 
-  const handleUserTabClick = (userId) => {
-    getSearchSelectedUser(userId);
+  const handleUserTabClick = async (userId) => {
+    await getSearchSelectedUser(userId);
+    navigate('/profile')
   };
 
   return (
@@ -79,12 +82,16 @@ const HomePostsScroller = ({ post }) => {
       </div>
 
       {/* Post media */}
-      <div className="md:h-[28rem] lg:h-[32rem] w-full overflow-hidden bg-black">
+      <div className={`md:h-[28rem] lg:h-[32rem] w-full overflow-hidden bg-black ${post?.userPostDetails?.type === "Thread" && 'hidden'}`}>
         <img
           src={post?.userPostDetails?.media}
           alt="Post media"
           className="object-cover w-full h-full hover:object-contain"
         />
+      </div>
+
+      <div className={`h-auto p-6 border-[1px] border-base-300 rounded-md w-full overflow-hidden bg-black ${post?.userPostDetails?.type === "Post" && 'hidden'}`}>
+        <p>{post?.userPostDetails?.content}</p>
       </div>
 
       {/* Post footer */}
@@ -115,7 +122,7 @@ const HomePostsScroller = ({ post }) => {
               <Send className="size-6"/>
             </span>
           </div>
-          <Bookmark className={`cursor-pointer size-6 ${postSaved && 'fill-blue-400 text-blue-400'}`}
+          <Bookmark className={`cursor-pointer size-6 ${postSaved && 'fill-blue-400 text-blue-400'} ${post?.userPostDetails?.type === "Thread" && 'hidden'}`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -123,7 +130,7 @@ const HomePostsScroller = ({ post }) => {
             }}
           />
         </div>
-        <p className="text-sm">
+        <p className={`text-sm ${post?.userPostDetails?.type === "Thread" && 'hidden'}`}>
           {post?.userPostDetails?.content}
         </p>
         <p className="text-xs text-gray-500">
@@ -141,8 +148,9 @@ HomePostsScroller.propTypes = {
     userName: PropTypes.string.isRequired,
     userPostDetails: PropTypes.shape({
       _id: PropTypes.string.isRequired,
-      media: PropTypes.string.isRequired,
+      media: PropTypes.string,
       content: PropTypes.string.isRequired,
+      type: PropTypes.string,
       createdAt: PropTypes.string.isRequired,
       likes: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       likedByCurrentUser: PropTypes.bool.isRequired,

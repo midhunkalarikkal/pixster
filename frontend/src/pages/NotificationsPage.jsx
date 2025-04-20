@@ -15,7 +15,8 @@ const NotificationsPage = () => {
   const handleViewUser = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
-    getSearchSelectedUser(id, navigate);
+    getSearchSelectedUser(id);
+    navigate('/profile');
   };
 
   useEffect(() => {

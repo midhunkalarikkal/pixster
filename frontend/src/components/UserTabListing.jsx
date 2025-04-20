@@ -7,9 +7,11 @@ import { memo, useEffect, useState } from "react";
 import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
+import { useNavigate } from "react-router-dom";
 
 const UserTabListing = ({ authUserId, userDataId }) => {
   
+  const navigate = useNavigate();
   let [reqdProfiles, setReqProfiles] = useState([]);
 
   const { setListPage, listPage } = useProfileStore();
@@ -56,10 +58,11 @@ const UserTabListing = ({ authUserId, userDataId }) => {
     toast.info("working on it");
   };
 
-  const handleUserTabClick = (userId) => {
-    getSearchSelectedUser(userId);
+  const handleUserTabClick = async (userId) => {
+    await getSearchSelectedUser(userId);
     setTab(0);
     setListPage(false);
+    navigate('/profile');
   };
 
 

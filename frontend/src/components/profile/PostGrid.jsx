@@ -64,7 +64,6 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              
             }}
           >
             {deleting ? (

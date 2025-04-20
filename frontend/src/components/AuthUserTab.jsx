@@ -8,11 +8,19 @@ const AuthUserTab = () => {
   const { authUser } = useAuthStore();
   const { getSearchSelectedUser } = useSearchStore();
 
+  const handleUserTabClick = async (userId,e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("navigating")
+    await getSearchSelectedUser(userId);
+    navigate('/profile');
+  };
+
   return (
     <div className="w-full py-5">
       <div className="flex items-center">
         <button
-          onClick={() => getSearchSelectedUser(authUser?._id, navigate)}
+          onClick={(e) => handleUserTabClick(authUser?._id, e)}
           className={`
               w-full p-2 flex gap-3 items-center
               hover:bg-base-300 transition-colors

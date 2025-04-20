@@ -231,6 +231,7 @@ export const fetchSearchedUserProfile = async (req, res) => {
 export const fetchUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("UserId : ",userId);
     if (!userId) {
       return res.status(404).json({ message: "Invalid request" });
     }
@@ -240,7 +241,7 @@ export const fetchUserPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let userPosts = await Post.find({ userId: userId }).lean();
+    let userPosts = await Post.find({ userId: userId, type: "Post" }).lean();
     if (userPosts.length > 0) {
       userPosts = await Promise.all(
         userPosts.map(async (post) => {
@@ -253,6 +254,8 @@ export const fetchUserPosts = async (req, res) => {
         })
       );
     }
+
+    // console.log("userPosts : ",userPosts);
 
     return res.status(200).json({ userPosts });
   } catch (error) {
@@ -663,6 +666,11 @@ export const fetchMediaGrid = async (req, res) => {
       },
       {
         $unwind: "$posts",
+      },
+      {
+        $match : {
+          "posts.type" : "Post"
+        }
       },
       {
         $project: {

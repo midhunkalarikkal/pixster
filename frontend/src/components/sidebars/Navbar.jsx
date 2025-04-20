@@ -12,9 +12,12 @@ import {
 } from "lucide-react";
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const { logout, authUser } = useAuthStore();
   const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
+
+  const handleProfileClick = async () => {
+    await getSearchSelectedUser(authUser._id);
+  };
 
   return (
     <aside className="bg-base-100 border-r border-base-300 md:w-1/12 lg:w-2/12 z-40 backdrop-blur-lg h-full p-4 hidden md:block sticky">
@@ -37,7 +40,7 @@ const Navbar = () => {
 
             <button
               className={`flex btn bg-base-100 border-0`}
-              onClick={() => getSearchSelectedUser(authUser._id, navigate)}
+              onClick={handleProfileClick}
             >
               <img src={authUser.profilePic || '/user_avatar.jpg'} className="size-6 rounded-full"/>
               <span className="hidden lg:block">Profile</span>

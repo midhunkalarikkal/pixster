@@ -83,8 +83,8 @@ export const validateCaption = (caption) => {
         return "Caption must have atleat 1 characters";
       }
     
-      if (caption.length > 200) {
-        return "Caption cannot be longer than 200 characters";
+      if (caption.length > 500) {
+        return "Caption cannot be longer than 500 characters";
       }
     
       return null;
