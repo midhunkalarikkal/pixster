@@ -1,24 +1,26 @@
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import nodemailer from "nodemailer";
+import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
+import { Upload } from "@aws-sdk/lib-storage";
 import { generateToken } from "../lib/utils.js";
+import { generateOTP } from "../utils/helper.js";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 import {
   validateEmail,
   validateFullName,
   validatePassword,
   validateUsername,
 } from "../utils/validator.js";
-import { Upload } from "@aws-sdk/lib-storage";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
-
-import { generateOTP } from "../utils/helper.js";
-import Otp from "../models/otp.model.js";
-import nodemailer from "nodemailer";
-import { accountCreatedEmailTemplateFirst, accountCreatedEmailTemplateLast, otpEmailTemplateFirst, otpEmailTemplateLast } from "../utils/constants.js";
-
+import { 
+  accountCreatedEmailTemplateFirst, 
+  accountCreatedEmailTemplateLast, 
+  otpEmailTemplateFirst, 
+  otpEmailTemplateLast 
+} from "../utils/constants.js";
 import dotenv from 'dotenv';
-import { redis } from "../lib/redis.js";
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -136,7 +138,7 @@ export const verifyOtp = async (req, res) => {
         pass: process.env.OFFICIALEMAIL_PASS,
       },
     });
-    
+
     const mailOptionsAccountCreated = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
