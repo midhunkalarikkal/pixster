@@ -91,7 +91,6 @@ export const getMessages = async (req, res) => {
 
     return res.status(200).json(messages);
   } catch (error) {
-    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -100,9 +99,6 @@ export const sendMessage = async (req, res) => {
   try {
     const { text } = req.body;
     const file = req.file;
-
-    console.log("req.body : ",req.body);
-    console.log("req.file : ",req.file);
 
     const { id: recieverId } = req.params;
     const currentUserId = req.user._id;
@@ -148,7 +144,6 @@ export const sendMessage = async (req, res) => {
 
     return res.status(201).json(newMessage);
   } catch (error) {
-    console.log("Error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
