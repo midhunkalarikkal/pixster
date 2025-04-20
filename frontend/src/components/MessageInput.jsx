@@ -1,13 +1,14 @@
-import { useRef, useState } from "react"
-import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
 import { toast } from 'react-toastify';
+import { useRef, useState } from "react";
+import { Image, Send, X } from "lucide-react";
+import { useChatStore } from "../store/useChatStore";
 
 const MessageInput = () => {
     const [text, setText] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
     const { sendMessage } = useChatStore();
+    const [file, setFile] = useState(null);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -15,6 +16,8 @@ const MessageInput = () => {
             toast.error("Please select an image file");
             return;
         }
+
+        setFile(file);
 
         const reader  = new FileReader();
         reader.onloadend = () => {
@@ -24,20 +27,24 @@ const MessageInput = () => {
     };
 
     const removeImage = () => {
-        setImagePreview(null);
-        if(fileInputRef.current) fileInputRef.current.value = "";
+      setImagePreview(null);
+      setFile(null);
+      if(fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const handleSendMessage = async(e) => {
         e.preventDefault();
         if(!text.trim() && !imagePreview) return;
+
+        const formData = new FormData();
+    formData.append("messageImage", file);
+    formData.append("text", text.trim());
+
         try{
-            await sendMessage({
-                text: text.trim(),
-                image: imagePreview,
-            });
+            await sendMessage(formData);
             setText("");
-            setImagePreview("");
+            setImagePreview(null);
+            setFile(null);  
         }catch{
             toast.error("failed to send message.");
         }

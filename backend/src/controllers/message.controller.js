@@ -1,9 +1,9 @@
-import User from "../models/user.model.js";
-import cloudinary from "../lib/cloudinary.js";
+import { Upload } from "@aws-sdk/lib-storage";
 import Message from "../models/message.model.js";
-import { getReceiverSocketId, io } from "../lib/socket.js";
 import Connection from "../models/connection.model.js";
-import { generateSignedUrl } from "../utils/aws.config.js";
+import { generateRandomString } from "../utils/helper.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
+import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 export const getUsersForSidebar = async (req, res) => {
   try {
@@ -67,29 +67,66 @@ export const getMessages = async (req, res) => {
     const { id: userToChatId } = req.params;
     const currentUserId = req.user._id;
 
-    const messages = await Message.find({
+    let messages = await Message.find({
       $or: [
         { senderId: currentUserId, recieverId: userToChatId },
         { senderId: userToChatId, recieverId: currentUserId },
       ],
-    });
+    }).lean();
+    
+    if(messages.length > 0) {
+      messages = await Promise.all(
+        messages.map(async (message) => {
+          if(!message.image) return message;
 
-    res.status(200).json(messages);
+          const signedUrl = await generateSignedUrl(message.image);
+          
+          return {
+            ...message,
+            image : signedUrl
+          }
+        })
+      )
+    }
+
+    return res.status(200).json(messages);
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 export const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text } = req.body;
+    const file = req.file;
+
+    console.log("req.body : ",req.body);
+    console.log("req.file : ",req.file);
+
     const { id: recieverId } = req.params;
     const currentUserId = req.user._id;
 
     let imageUrl;
-    if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+    if (file) {
+      const randomString = await generateRandomString();
+
+      const params = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: `pixsterUsersMessageImages/${
+          currentUserId + randomString + file.originalname
+        }`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      const upload = new Upload({
+        client: s3Client,
+        params: params,
+      });
+
+      const s3UploadResponse = await upload.done();
+      imageUrl = s3UploadResponse.Location;
     }
 
     const newMessage = new Message({
@@ -100,13 +137,18 @@ export const sendMessage = async (req, res) => {
     });
     await newMessage.save();
 
+    if(newMessage.image) {
+      newMessage.image = await generateSignedUrl(newMessage.image);
+    }
+
     const receiverSocketId = getReceiverSocketId(recieverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res.status(201).json(newMessage);
+    return res.status(201).json(newMessage);
   } catch (error) {
+    console.log("Error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

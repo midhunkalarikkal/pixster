@@ -183,7 +183,7 @@ export const login = async (req, res) => {
     }
 
     generateToken(user._id, email, res);
-    res.status(200).json({
+    return res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       userName: user.userName,
