@@ -42,7 +42,7 @@ export const uploadPost = async (req, res) => {
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `talkzyUsersPostsImages/${
+      Key: `pixsterUsersPostsImages/${
         currentUser + randomString + file.originalname
       }`,
       Body: file.buffer,
@@ -151,7 +151,7 @@ export const updatePost = async (req, res) => {
 
       const params = {
         Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: `talkzyUsersPostsImages/${
+        Key: `pixsterUsersPostsImages/${
           currentUser + randomString + file.originalname
         }`,
         Body: file.buffer,

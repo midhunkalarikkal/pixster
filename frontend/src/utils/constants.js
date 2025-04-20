@@ -7,7 +7,7 @@ export const THEMES = [
   export const pairedMessages = [
     {
         sender: {
-            text: "Hey, the Talkzy chat app is live on Vercel! Check it out.",
+            text: "Hey, the Pixster chat app is live on Vercel! Check it out.",
             timestamp: new Date("2023-10-27T10:00:00Z"),
         },
         receiver: {
@@ -72,7 +72,7 @@ export const THEMES = [
 
   export const formBottomText = {
     login: "Don't have an account?",
-    signup: "Already a Talkzy user?",
+    signup: "Already a Pixster user?",
     otp: "Back to login",
     email: "Back to login",
     reset: "Back to login",

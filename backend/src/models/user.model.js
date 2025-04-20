@@ -37,7 +37,7 @@ export const userSchema = new mongoose.Schema(
             type: String,
             minLength: 5,
             maxLength: 150,
-            default : "This about is from Talkzy, you can update.",
+            default : "This about is from Pixster, you can update.",
             trim : true,
         },
         followersCount : {

@@ -26,8 +26,8 @@ const Navbar = () => {
               to="/"
               className="flex items-center gap-2.5 hover:opacity-80 transition-all ml-4 my-6"
             >
-              <h3 className="text-2xl font-bold italic hidden lg:block">Talkzy</h3>
-              <h3 className="text-2xl font-bold italic block lg:hidden">T</h3>
+              <h3 className="text-2xl font-bold italic hidden lg:block">Pixster</h3>
+              <h3 className="text-2xl font-bold italic block lg:hidden">P</h3>
             </Link>
 
             <Link to={"/"} className={`flex btn bg-base-100 border-0`}>

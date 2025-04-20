@@ -24,7 +24,7 @@ export const uploadStory = async (req, res) => {
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `talkzyUsersStoryImages/${
+      Key: `pixsterUsersStoryImages/${
         currentUser + randomString + file.originalname
       }`,
       Body: file.buffer,

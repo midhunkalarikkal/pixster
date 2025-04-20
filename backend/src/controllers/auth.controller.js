@@ -92,7 +92,7 @@ export const signup = async (req, res) => {
     const mailOptionsOtpSent = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
-      subject: "Your Talkzy OTP Code - Verify Your Account",
+      subject: "Your Pixster OTP Code - Verify Your Account",
       html: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
     };
  
@@ -137,7 +137,7 @@ export const verifyOtp = async (req, res) => {
     const mailOptionsAccountCreated = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
-      subject: "🎉 Welcome to Talkzy – Account Created Successfully",
+      subject: "🎉 Welcome to Pixster – Account Created Successfully",
       html: ` ${accountCreatedEmailTemplateFirst} ${updatedUser.fullName} ${accountCreatedEmailTemplateLast}`,
     };
 
@@ -227,7 +227,7 @@ export const resendOtp = async (req, res) => {
     const mailOptionsOtpSent = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
-      subject: "Your Talkzy OTP Code - Verify Your Account",
+      subject: "Your Pixster OTP Code - Verify Your Account",
       html: `${otpEmailTemplateFirst} ${otp} ${otpEmailTemplateLast}`,
     };
  
@@ -284,7 +284,7 @@ export const updateProfile = async (req, res) => {
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `talkzyUsersProfileImages/${userId}.${file.originalname
+      Key: `pixsterUsersProfileImages/${userId}.${file.originalname
         .split(".")
         .pop()}`,
       Body: file.buffer,

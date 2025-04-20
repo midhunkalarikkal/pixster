@@ -14,7 +14,7 @@ const MobileTopBar = () => {
           <div className="w-6/12">
             <Link to={"/"} className={`btn bg-base-100 border-0`}>
               <h3 className="text-xl font-bold italic">
-                Talkzy
+                Pixster
               </h3>
             </Link>
           </div>
