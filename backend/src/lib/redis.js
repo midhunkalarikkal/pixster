@@ -1,12 +1,6 @@
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis";
 
-import dotenv from 'dotenv';
-dotenv.config();
-
-export const redisClient = createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379",
-})
-
-redisClient.on("error", (err) => console.error("Redis Client Error", err));
-
-await redisClient.connect();
+export const redis = new Redis({
+  url: "https://stirred-ghoul-15128.upstash.io",
+  token: "ATsYAAIjcDE2NGIzOTI0NjMyNDg0YzM2OTlhZjg0YWFhMmExNzU3NnAxMA",
+});

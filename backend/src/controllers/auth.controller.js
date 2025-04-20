@@ -18,6 +18,7 @@ import nodemailer from "nodemailer";
 import { accountCreatedEmailTemplateFirst, accountCreatedEmailTemplateLast, otpEmailTemplateFirst, otpEmailTemplateLast } from "../utils/constants.js";
 
 import dotenv from 'dotenv';
+import { redis } from "../lib/redis.js";
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -74,12 +75,9 @@ export const signup = async (req, res) => {
 
     console.log("otp : ",otp);
 
-    const newOtp = new Otp({
-      otp,
-      email
-    });
+    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
 
-    await newOtp.save();
+    console.log("redis otp storing : ",redisOtpStoring);
  
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -117,10 +115,14 @@ export const verifyOtp = async (req, res) => {
     const email = decoded.email;
     const userId = decoded.userId;
 
-    const verify = await Otp.findOne({ otp, email });
+    const storedOtp = await redis.get(`otp:${email}`);
 
-    if(!verify) {
-      return res.status(404).json({ message : "Otp verification failed" });
+    if(!storedOtp) {
+      return res.status(404).json({ message : "Something went wrong, please try again" });
+    }
+
+    if(Number(otp) !== storedOtp) {
+      return res.status(400).json({ message : "Incorrect Otp" });
     }
 
     const updatedUser = await User.findOneAndUpdate({_id : userId}, {
@@ -134,6 +136,7 @@ export const verifyOtp = async (req, res) => {
         pass: process.env.OFFICIALEMAIL_PASS,
       },
     });
+    
     const mailOptionsAccountCreated = {
       from: process.env.OFFICIAL_EMAIL,
       to: email,
@@ -209,12 +212,9 @@ export const resendOtp = async (req, res) => {
 
     console.log("otp : ",otp);
 
-    const newOtp = new Otp({
-      otp,
-      email
-    });
+    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
 
-    await newOtp.save();
+    console.log("redis otp storing : ",redisOtpStoring);
  
     const transporter = nodemailer.createTransport({
       service: "gmail",
