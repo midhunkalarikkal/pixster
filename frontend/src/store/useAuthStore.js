@@ -21,8 +21,12 @@ export const useAuthStore = create(persist((set, get) => ({
 
   changeLoading: (data) => { set({ loading : data }) },
 
+  setAuthEmailNull: () => ( set({ authEmail : null })),
+
   checkAuth: async () => {
+    const { authUser } = get();
     try {
+      if(!authUser) return;
       await axiosInstance.get("/auth/check");
       // const res = await axiosInstance.get("/auth/check");
       // set({ authUser: res.data });
@@ -259,6 +263,7 @@ export const useAuthStore = create(persist((set, get) => ({
   partialize: (state) => (
     { 
       authUser: state.authUser,
+      authEmail: state.authEmail,
      }
   ),
   storage: createJSONStorage(() => localStorage),

@@ -7,13 +7,14 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useAuthFormStore } from "../../store/useAuthFormStore";
 
 const OtpVerifyForm = () => {
+  
   const [resentLoading, setResendLoading] = useState(false);
   const [formData, setFormData] = useState({
     otp: "",
   });
 
   const { otpRemainingTime, otpTimerIsRunning, updateTimer } = useAuthFormStore();
-  const { verifyOtp, loading, resendOtp } = useAuthStore();
+  const { verifyOtp, loading, resendOtp, setAuthEmailNull } = useAuthStore();
 
   useEffect(() => {
     if (otpTimerIsRunning) {
@@ -40,6 +41,7 @@ const OtpVerifyForm = () => {
       const res = await resendOtp();
       if(res.success) {
         toast.success(res.message);
+        setAuthEmailNull();
       }
     }  finally {
       setResendLoading(false);

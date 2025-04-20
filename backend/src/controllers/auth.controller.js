@@ -236,6 +236,7 @@ export const resendOtp = async (req, res) => {
     await transporter.sendMail(mailOptionsOtpSent);
     
     return res.status(201).json({
+      success : true,
       message : "Otp sent successfully to you email.",
     });
     
