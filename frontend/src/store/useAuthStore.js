@@ -8,7 +8,7 @@ import { useAuthFormStore } from "./useAuthFormStore";
 import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-const BASE_URL = import.meta.env.MODE==="development" ? "http://localhost:5001" : "/";
+const BASE_URL = import.meta.env.MODE==="development" ? "http://localhost:5001" : "https://talkzy-ybcb.onrender.com";
 
 export const useAuthStore = create(persist((set, get) => ({
   authUser: null,
