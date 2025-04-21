@@ -4,11 +4,11 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useSearchStore } from "./useSearchStore";
 import { useProfileStore } from "./useProfileStore";
+import { useAuthFormStore } from "./useAuthFormStore";
 import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { useAuthFormStore } from "./useAuthFormStore";
 
-const BASE_URL = "http://localhost:5001";
+const BASE_URL = import.meta.env.MODE==="development" ? "http://localhost:5001" : "/";
 
 export const useAuthStore = create(persist((set, get) => ({
   authUser: null,
