@@ -1,11 +1,11 @@
-import LoginForm from "../components/forms/loginForm";
-import SignUpForm from "../components/forms/signUpForm";
+import LoginForm from '../components/forms/LoginForm';
+import SignUpForm from '../components/forms/SignUpForm';
 import { useAuthFormStore } from '../store/useAuthFormStore';
-import AuthImagePattern from "../components/AuthImagePattern";
-import OtpVerifyForm from "../components/forms/otpVerifyForm";
+import OtpVerifyForm from '../components/forms/OtpVerifyForm';
+import AuthImagePattern from '../components/AuthImagePattern';
 import { formBottomText, formTitle } from "../utils/constants";
-import ResetPasswordForm from "../components/forms/ResetPasswordForm";
-import EmailVerificationForm from "../components/forms/emailVerificationForm";
+import ResetPasswordForm from '../components/forms/ResetPasswordForm';
+import EmailVerificationForm from '../components/forms/EmailVerificationForm';
 
 const AuthPage = () => {
 
