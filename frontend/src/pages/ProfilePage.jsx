@@ -56,6 +56,13 @@ const ProfilePage = () => {
     }
   }, [selectedUserId, getSearchSelectedUser]);
 
+  const handlePostDelete = () => {
+    setUserData({
+      ...userData,
+      postsCount: userData.postsCount - 1
+    })
+  }
+
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
@@ -117,7 +124,7 @@ const ProfilePage = () => {
                     <p className="text-md md:text-lg font-semibold">
                       {userData?.postsCount}
                     </p>
-                    <p className="text-xs md:text-sm text-zinc-400">Posts</p>
+                    <p className="text-xs md:text-sm text-zinc-400">Posts & Threads</p>
                   </div>
 
                   {userData && authUser?._id !== userData?._id ? (
@@ -251,6 +258,7 @@ const ProfilePage = () => {
                 authUserId={authUser?._id}
                 userDataId={userData?._id}
                 status={connectionData && connectionData.status}
+                updatepostCount={handlePostDelete}
               />
             )}
 

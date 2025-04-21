@@ -6,7 +6,7 @@ import { useProfileStore } from "../../store/useProfileStore";
 import ThreadsSkeleton from "../skeletons/ThreadsSkeleton";
 import ThreadGrid from "./ThreadGrid";
 
-const ProfileSecondData = ({ authUserId, userDataId, status }) => {
+const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) => {
 
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);
@@ -52,10 +52,12 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
   const handlePostDelete = (id) => {
     setUserPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+    updatepostCount()
   };
 
   const handleThreadDelete = (id) => {
     setUserThreads((prevThreads) => prevThreads.filter((thread) => thread._id !== id));
+    updatepostCount()
   }
 
   const handleRemoveFromSaved = (id) => {
@@ -184,6 +186,7 @@ ProfileSecondData.propTypes = {
   authUserId: PropTypes.string.isRequired,
   userDataId: PropTypes.string.isRequired,
   status: PropTypes.string,
+  updatepostCount: PropTypes.func,
 };
 
 export default memo(ProfileSecondData);

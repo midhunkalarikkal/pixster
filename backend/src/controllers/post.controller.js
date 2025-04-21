@@ -87,11 +87,11 @@ export const uploadPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const currentUser = req.user?._id;
+    const currentUserId = req.user?._id;
     const { postId } = req.params;
 
-    if (!currentUser) {
-      return res.status(400).json({ message: "User not found." });
+    if (!currentUserId || !postId) {
+      return res.status(400).json({ message: "Invalid request." });
     }
 
     const post = await Post.findById(postId);
@@ -113,6 +113,14 @@ export const deletePost = async (req, res) => {
     }
 
     await Post.findByIdAndDelete(postId);
+    
+    await Comment.deleteMany({ postId });
+
+    await User.findByIdAndUpdate(
+      currentUserId,
+      { $inc : { postsCount : -1 } },
+      { new : true }
+    )
 
     return res.status(200).json({ message: `${post.type} deleted successfully.` });
   } catch (error) {
