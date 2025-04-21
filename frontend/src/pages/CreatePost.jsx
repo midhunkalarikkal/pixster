@@ -29,7 +29,6 @@ const CreatePost = () => {
     setCaptionError(error);
   };
   
-  console.log("postForUpdating : ",postForUpdating);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;

@@ -10,6 +10,8 @@ export const useHomeStore = create((set) => ({
   myStory: null,
   usersStories: null,
 
+  setMyStory: (data) => set({ myStory : data }),
+
   getHomePostScrollerData: async () => {
     set({ homeScrollerDataLoading: true });
     try {
@@ -48,4 +50,14 @@ export const useHomeStore = create((set) => ({
       toast.error(error.response.data.message);
     }
   },
+
+  deleteMyStory: async () => {
+    try {
+      const res = await axiosInstance.delete('/story/deleteMyStory');
+      toast.success(res.data.message);
+      return res.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  }
 }));

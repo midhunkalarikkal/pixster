@@ -134,3 +134,22 @@ export const getStories = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const deleteMyStory = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    if(!currentUserId) {
+      return res.status(404).json({ message : "Invalid request" });
+    }
+    
+    const deleteMyStory = await Story.findOneAndDelete({ userId : currentUserId });
+    if(deleteMyStory) {
+      return res.status(200).json({ success: true, message : "Storydeleted" });
+    } else {
+      return res.status(400).json({ message : "Story dletion failed" });
+    }
+  }catch (error) {
+    console.log("error : ",error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

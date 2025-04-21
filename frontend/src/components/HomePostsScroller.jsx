@@ -61,7 +61,7 @@ const HomePostsScroller = ({ post }) => {
   };
 
   return (
-    <div className="flex flex-col md:w-11/12 lg:w-9/12 xl:w-7/12">
+    <div className="flex flex-col w-full md:w-11/12 lg:w-9/12 xl:w-7/12 p-1">
       {/* Post header */}
       <div className="flex justify-between p-2 items-center">
         <div className="flex space-x-2 items-center">
@@ -90,6 +90,7 @@ const HomePostsScroller = ({ post }) => {
         />
       </div>
 
+      {/* Thread */}
       <div className={`h-auto p-6 border-[1px] border-base-300 rounded-md w-full overflow-hidden bg-black ${post?.userPostDetails?.type === "Post" && 'hidden'}`}>
         <p>{post?.userPostDetails?.content}</p>
       </div>
