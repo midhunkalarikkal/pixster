@@ -254,8 +254,6 @@ export const fetchUserPosts = async (req, res) => {
       );
     }
 
-    // console.log("userPosts : ",userPosts);
-
     return res.status(200).json({ userPosts });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
@@ -694,6 +692,27 @@ export const fetchMediaGrid = async (req, res) => {
 
     return res.status(200).json({ mediaPosts });
 
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+export const fetchMyThreads = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(404).json({ message: "Invalid request" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let userThreads = await Post.find({ userId: userId, type: "Thread" }).lean();
+    
+    return res.status(200).json({ userThreads });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

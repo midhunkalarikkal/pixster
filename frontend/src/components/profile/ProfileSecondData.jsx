@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { memo, useEffect, useState } from "react";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { useProfileStore } from "../../store/useProfileStore";
+import ThreadsSkeleton from "../skeletons/ThreadsSkeleton";
+import ThreadGrid from "./ThreadGrid";
 
 const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
@@ -11,8 +13,10 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
   const [userPostsLoading, setUserPostsLoading] = useState(false);
   const [userSavedPosts, setUserSavedPosts] = useState([]);
   const [userSavedPostsLoading, setUserSavedPostsLoading] = useState(false);
+  const [userThreads, setUserThreads] = useState([]);
+  const [userThreadsLoading, setUserThreadsLoading] = useState(false);
 
-  const { getUserPosts, getUserSavedPosts } = useProfileStore();
+  const { getUserPosts, getUserSavedPosts, getUserThreads } = useProfileStore();
   const isOwnProfile = authUserId === userDataId;
 
   useEffect(() => {
@@ -30,6 +34,12 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
         const savedPosts = await getUserSavedPosts();
         setUserSavedPosts(savedPosts);
         setUserSavedPostsLoading(false);
+
+        setUserThreadsLoading(true);
+        const threads = await getUserThreads({ userId : authUserId });
+        console.log("threads :",threads);
+        setUserThreads(threads);
+        setUserThreadsLoading(false);
       } else if (status === "accepted") {
         setUserPostsLoading(true);
         const posts = await getUserPosts({ userId: userDataId });
@@ -44,6 +54,10 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
   const handlePostDelete = (id) => {
     setUserPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
   };
+
+  const handleThreadDelete = (id) => {
+    setUserThreads((prevThreads) => prevThreads.filter((thread) => thread._id !== id));
+  }
 
   const handleRemoveFromSaved = (id) => {
     setUserSavedPosts((prevSavedPost) =>
@@ -66,6 +80,14 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
               >
                 <span className="text-xs md:text-sm">POSTS</span>
               </button>
+              <button
+                className={`flex flex-col items-center w-full ${
+                  tab !== 5 && "text-zinc-400"
+                }`}
+                onClick={() => setTab(5)}
+              >
+                <span className="text-xs md:text-sm">THREADS</span>
+              </button>
             </div>
           </div>
         ) : null
@@ -82,7 +104,15 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
             </button>
             <button
               className={`flex flex-col items-center w-full ${
-                tab !== 4 && "text-zinc-400"
+                tab !== 5 && "text-zinc-400"
+              }`}
+              onClick={() => setTab(5)}
+            >
+              <span className="text-xs md:text-sm">THREADS</span>
+            </button>
+            <button
+              className={`flex flex-col items-center w-full ${
+                tab !== 1 && "text-zinc-400"
               }`}
               onClick={() => setTab(1)}
             >
@@ -109,6 +139,26 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
                 {isOwnProfile
                   ? "You haven't uploaded any post yet."
                   : "This user hasn't uploaded any posts yet."}
+              </p>
+            )
+          ) : null)}
+
+        {tab === 5 &&
+          (isOwnProfile || status === "accepted" ? (
+            userThreadsLoading ? (
+              <ThreadsSkeleton />
+            ) : userThreads && userThreads.length > 0 ? (
+              <ThreadGrid
+                threads={userThreads}
+                authUserId={authUserId}
+                userDataId={userDataId}
+                onDelete={isOwnProfile ? handleThreadDelete : undefined}
+              />
+            ) : (
+              <p>
+                {isOwnProfile
+                  ? "You haven't uploaded any thread yet."
+                  : "This user hasn't uploaded any threads yet."}
               </p>
             )
           ) : null)}

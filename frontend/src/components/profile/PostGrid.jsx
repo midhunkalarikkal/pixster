@@ -6,15 +6,16 @@ import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { usePostStore } from "../../store/usePostStore";
 import { useProfileStore } from "../../store/useProfileStore";
 import { Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
+import ConfirmationDialog from "../ConfirmationDialog";
 
 const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) => {
 
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deleting, setDeleting] = useState(false);
+  const [deletingIds, setDeletingIds] = useState(new Set());
+
   const navigate = useNavigate();
 
-  const { deletePost } = useProfileStore();
-  const { setPostForUpdating } = useProfileStore();
+  const { deletePost, setPostForUpdating } = useProfileStore();
   const { saveRemovePost } = usePostStore();
 
   const removeFromSaved = async (postId) => {
@@ -30,14 +31,14 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
       toast.error("Something went wrong.");
       return;
     }
-    setDeleting(true);
+    setDeletingIds(new Set(deletingIds.add(id)));
 
     const res = await deletePost(id);
     if (res && res.status === 200) {
       toast.success("Post deleted successfully.");
       setDeleteTarget(null);
       onDelete(id);
-      setDeleting(false);
+      setDeletingIds(new Set([...deletingIds].filter((i) => i !== id)));
     }
   };
 
@@ -61,12 +62,8 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
           <div
             key={post._id}
             className="relative overflow-hidden group hover:cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
           >
-            {deleting ? (
+            {deletingIds.has(post._id) ? (
               <div className="h-96 w-full flex justify-center items-center">
                 <span className="loading loading-bars loading-md"></span>
               </div>
@@ -131,31 +128,17 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
         ))}
       </div>
 
-      {deleteTarget && (
-        <dialog
-          id="delete_modal"
-          className="modal modal-bottom sm:modal-middle"
-          open
-        >
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Confirm Deletion</h3>
-            <p className="py-4">Are you sure you want to delete this post?</p>
-            <div className="modal-action">
-              <form method="dialog" className="flex gap-2">
-                <button className="btn" onClick={() => setDeleteTarget(null)}>
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error"
-                  onClick={() => confirmDelete(deleteTarget)}
-                >
-                  Delete
-                </button>
-              </form>
-            </div>
-          </div>
-        </dialog>
-      )}
+      <ConfirmationDialog
+        isOpen={!!deleteTarget}
+        title="Confirm Deletion"
+        content="Are you sure you want to delete this Post?"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            confirmDelete(deleteTarget);
+          }
+        }}
+      />
     </div>
   );
 };

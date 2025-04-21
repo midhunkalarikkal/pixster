@@ -138,4 +138,15 @@ export const useProfileStore = create((set) => ({
     }
   },
 
+  getUserThreads: async (data) => {
+    try {
+      console.log("fetching threads")
+      const res = await axiosInstance.get(`/user/getUserThreads/${data.userId}`);
+      console.log("res : ",res);
+      return res.data.userThreads;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  }
+
 }));

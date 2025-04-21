@@ -1,7 +1,7 @@
 import multer from 'multer';
 import express from 'express';
 import { protectRoute } from '../middleware/auth.middleware.js';
-import { fetchFollowersAccounts, fetchFollowingAccounts, fetchIncomingRequestedAccounts, fetchMediaGrid, fetchNotifications, fetchRequestedAccounts, fetchSearchedUserProfile, fetchSuggestions, fetchUserPosts, fetchUserSavedPosts, homeScrollerData, searchUsers } from '../controllers/user.controller.js';
+import { fetchFollowersAccounts, fetchFollowingAccounts, fetchIncomingRequestedAccounts, fetchMediaGrid, fetchMyThreads, fetchNotifications, fetchRequestedAccounts, fetchSearchedUserProfile, fetchSuggestions, fetchUserPosts, fetchUserSavedPosts, homeScrollerData, searchUsers } from '../controllers/user.controller.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -19,6 +19,7 @@ router.get('/fetchNotifications', protectRoute, fetchNotifications);
 router.get('/getSuggestions', protectRoute, fetchSuggestions);
 router.get('/getUserPosts/:userId', protectRoute, fetchUserPosts);
 router.get('/getUserSavedPosts', protectRoute, fetchUserSavedPosts);
-router.get('/getMediaGrid', protectRoute, fetchMediaGrid)
+router.get('/getMediaGrid', protectRoute, fetchMediaGrid);
+router.get('/getUserThreads/:userId', protectRoute, fetchMyThreads);
 
 export default router;
