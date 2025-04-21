@@ -11,6 +11,7 @@ import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 
 const ProfilePage = () => {
+
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
@@ -50,14 +51,10 @@ const ProfilePage = () => {
   }, [searchSelectedUser]);
 
   useEffect(() => {
-    if (!searchSelectedUser && selectedUserId) {
+    if (selectedUserId) {
       getSearchSelectedUser(selectedUserId);
     }
-  }, [searchSelectedUser, selectedUserId, getSearchSelectedUser]);
-
-  console.log("Profile component");
-  console.log("authUserId : ",authUser?._id);
-  console.log("userDataId : ",userData?._id);
+  }, [selectedUserId, getSearchSelectedUser]);
 
   if (searchSelectedUserLoading) {
     return (
@@ -256,6 +253,7 @@ const ProfilePage = () => {
                 status={connectionData && connectionData.status}
               />
             )}
+
           </div>
         </div>
       </div>

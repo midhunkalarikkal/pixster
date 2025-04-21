@@ -6,10 +6,6 @@ import { useProfileStore } from "../../store/useProfileStore";
 
 const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
-  console.log("authUserId : ",authUserId);
-  console.log("userDataId : ",userDataId);
-
-  console.log("Profile posts")
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);
   const [userPostsLoading, setUserPostsLoading] = useState(false);

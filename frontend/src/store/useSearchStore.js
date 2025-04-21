@@ -30,14 +30,22 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  getSearchSelectedUser: async (userId) => {
-    set({ selectedUserId: userId });
+  getSearchSelectedUser: async (userId, navigate) => {
     set({ searchSelectedUserLoading: true });
+    
     try {
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
-      set({ searchSelectedUser: res.data });
+      if(res.status === 200) {
+        set({ selectedUserId: userId });
+        set({ searchSelectedUser: res.data });
+        if(navigate) navigate('/profile');
+      }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
       set({ searchSelectedUser: null });
     } finally {
       set({ searchSelectedUserLoading: false });
@@ -99,6 +107,8 @@ export const useSearchStore = create(persist((set) => ({
       toast.error(error.response.data.message);
     }
   },
+
+  
 
   // Connection calls
 

@@ -73,7 +73,7 @@ const PostGrid = ({ posts, onDelete, onRemove, saved, authUserId, userDataId }) 
             ) : (
               <>
                 <img
-                  className="h-44 md:h-72 lg:h-96 w-auto object-cover transition-opacity duration-300 group-hover:opacity-70"
+                  className="h-64 md:h-72 lg:h-96 w-auto object-cover transition-opacity duration-300 group-hover:opacity-70"
                   src={post.media || "/user_avatar.jpg"}
                   alt={`Post by user`}
                 />

@@ -231,7 +231,6 @@ export const fetchSearchedUserProfile = async (req, res) => {
 export const fetchUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("UserId : ",userId);
     if (!userId) {
       return res.status(404).json({ message: "Invalid request" });
     }

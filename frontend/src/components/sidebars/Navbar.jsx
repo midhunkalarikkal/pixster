@@ -12,11 +12,14 @@ import {
 } from "lucide-react";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { logout, authUser } = useAuthStore();
   const { setSearchSelectedUserNull, getSearchSelectedUser } = useSearchStore();
 
-  const handleProfileClick = async () => {
-    await getSearchSelectedUser(authUser._id);
+  const handleUserTabClick = async (userId,e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await getSearchSelectedUser(userId, navigate);
   };
 
   return (
@@ -40,7 +43,7 @@ const Navbar = () => {
 
             <button
               className={`flex btn bg-base-100 border-0`}
-              onClick={handleProfileClick}
+              onClick={(e) => handleUserTabClick(authUser._id, e)}
             >
               <img src={authUser.profilePic || '/user_avatar.jpg'} className="size-6 rounded-full"/>
               <span className="hidden lg:block">Profile</span>

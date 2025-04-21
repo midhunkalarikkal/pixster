@@ -11,9 +11,7 @@ const AuthUserTab = () => {
   const handleUserTabClick = async (userId,e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("navigating")
-    await getSearchSelectedUser(userId);
-    navigate('/profile');
+    await getSearchSelectedUser(userId, navigate);
   };
 
   return (
