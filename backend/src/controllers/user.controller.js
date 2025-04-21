@@ -1,11 +1,11 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import Saved from "../models/saved.model.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 import { generateSignedUrl } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
-import Saved from "../models/saved.model.js";
 dotenv.config();
 
 export const homeScrollerData = async (req, res) => {

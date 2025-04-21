@@ -114,7 +114,7 @@ export const deletePost = async (req, res) => {
 
     await Post.findByIdAndDelete(postId);
 
-    return res.status(200).json({ message: "Post deleted successfully." });
+    return res.status(200).json({ message: `${post.type} deleted successfully.` });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -183,7 +183,7 @@ export const updatePost = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Post updated successfully.",
+      message: `${post.type} updated successfully.`,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });

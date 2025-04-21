@@ -4,12 +4,15 @@ import { toast } from "react-toastify";
 import { useProfileStore } from "../../store/useProfileStore";
 import { Edit, Heart, MessageCircleMore, Trash } from "lucide-react";
 import ConfirmationDialog from "../ConfirmationDialog";
+import { useNavigate } from "react-router-dom";
 
 const ThreadGrid = ({ threads, authUserId, userDataId, onDelete }) => {
+
+  const navigate = useNavigate();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deletingIds, setDeletingIds] = useState(new Set());
 
-  const { deletePost } = useProfileStore();
+  const { deletePost, setPostForUpdating } = useProfileStore();
 
   const confirmDelete = async (id) => {
     if (!id) {
@@ -25,6 +28,15 @@ const ThreadGrid = ({ threads, authUserId, userDataId, onDelete }) => {
       onDelete(id);
       setDeletingIds(new Set([...deletingIds].filter((i) => i !== id)));
     }
+  };
+
+  const getUpdateThread = (thread) => {
+    if (!thread) {
+      toast.error("Something wnet wrong.");
+      return;
+    }
+    setPostForUpdating(thread);
+    navigate("/createPost");
   };
 
   return (
@@ -73,6 +85,7 @@ const ThreadGrid = ({ threads, authUserId, userDataId, onDelete }) => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          getUpdateThread(thread)
                         }}
                       >
                         <Edit className="size-5 md:size-6" />

@@ -1,16 +1,19 @@
 import { toast } from "react-toastify";
 import { ImagePlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { validateCaption } from "../utils/validator";
 import { useProfileStore } from "../store/useProfileStore";
 
 const CreatePost = () => {
+
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);
   const [captionError, setCaptionError] = useState(null);
   const [isPost, setIsPost] = useState(true);
+  const navigate = useNavigate();
 
   const { uploadPost, postForUpdating, updatePost, setPostForUpdating } =
     useProfileStore();
@@ -61,7 +64,6 @@ const CreatePost = () => {
     const formData = new FormData();
     formData.append("caption", caption);
     formData.append("type", isPost ? "Post" : "Thread");
-    // if (image) formData.append("postImage", image);
 
     if (isPost && image) {
       formData.append("postImage", image);
@@ -76,12 +78,13 @@ const CreatePost = () => {
       }
 
       if (response?.data?.success) {
-        toast.success(postForUpdating ? "Post updated!" : "Post created!");
+        toast.success(response.data.message);
         setCaption("");
         setImage(null);
         setImagePreview("");
         setCaptionError(null);
         setPostForUpdating(null);
+        navigate('/profile');
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -97,7 +100,7 @@ const CreatePost = () => {
       <div className="w-10/12 flex flex-col justify-center items-center px-4 py-8 h-screen">
         <span className="loading loading-bars loading-lg"></span>
         <p className="font-semibold">
-          Post {postForUpdating ? "updating" : "uploading"}, please wait...
+          {postForUpdating && postForUpdating.type} {postForUpdating ? "updating" : "uploading"}, please wait...
         </p>
       </div>
     );
@@ -107,7 +110,7 @@ const CreatePost = () => {
       <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
         <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
           <h2 className="flex flex-col text-lg md:text-xl font-semibold mb-4">
-            {postForUpdating ? "Update Post" : `Create New ${isPost ? "Post" : "Thread"}`}
+            {postForUpdating ? `Update ${postForUpdating && postForUpdating.type}` : `Create New ${isPost ? "Post" : "Thread"}`}
             <input
               type="checkbox"
               checked={!isPost}
@@ -115,7 +118,9 @@ const CreatePost = () => {
               className={`toggle toggle-md rounded-md mt-4 transition duration-300 ${postForUpdating && 'hidden'}`}
             />
           </h2>
-          <p className="text-sm">You can post only the caption and it will be treated as a thread</p>
+          {!uploading && !postForUpdating && (
+            <p className="text-sm">You can post only the caption and it will be treated as a thread</p>
+          )}
           <form onSubmit={handlePostSubmit} className="space-y-4">
             {/* Image Upload Field */}
             <div className={`form-control ${!isPost && 'hidden'}`}>
@@ -168,7 +173,7 @@ const CreatePost = () => {
               className={`btn btn-neutral w-full btn-sm lg:btn-md ${postForUpdating ? "md:w-1/2" : "md:w-full"}`}
               >
               <ImagePlus className="mr-2" size={20} />
-              {postForUpdating ? "Update Post" : "Post"}
+              {postForUpdating ? `Update ${postForUpdating.type}` : "Post"}
             </button>
             {postForUpdating && (
 
