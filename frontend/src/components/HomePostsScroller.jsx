@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import { usePostStore } from "../store/usePostStore";
 import { useSearchStore } from "../store/useSearchStore";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const HomePostsScroller = ({ post }) => {
 
@@ -12,6 +12,7 @@ const HomePostsScroller = ({ post }) => {
   const [postLiked, setPostLiked] = useState(false);
   const [postLikeCount, setPostLikeCount] = useState(0);
   const [postSaved, setPostSaved] = useState(false);
+  const [postCommentsCount, setPostCommentsCount] = useState(0)
 
   const { getSearchSelectedUser } = useSearchStore();
   const { likeOrDislikePost, saveRemovePost, setCommentUploaderOpen, setSelectedPostId } = usePostStore();
@@ -21,6 +22,7 @@ const HomePostsScroller = ({ post }) => {
       setPostLikeCount(post?.userPostDetails?.likes);
       setPostLiked(post?.userPostDetails?.likedByCurrentUser);
       setPostSaved(post?.userPostDetails?.savedByCurrentUser);
+      setPostCommentsCount(post?.userPostDetails?.commentsCount);
     }
   },[post])
 
@@ -117,7 +119,7 @@ const HomePostsScroller = ({ post }) => {
                   handleOpenCommentUploader(post?.userPostDetails?._id, e)
                 }}
               />
-              <p>{post?.userPostDetails?.commentsCount}</p>
+              <p>{postCommentsCount}</p>
             </span>
             <span className="flex items-center space-x-1">
               <Send className="size-6"/>
