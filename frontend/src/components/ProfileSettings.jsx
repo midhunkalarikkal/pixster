@@ -1,12 +1,21 @@
-import { useState } from "react";
-import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, Text, User } from "lucide-react";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { useProfileStore } from "../store/useProfileStore";
+import { Camera, Loader2, Mail, Text, User } from "lucide-react";
 
 const ProfileSettings = () => {
-  const { authUser, isUpdatingProfile, updateProfileImage, removeProfileImage } = useAuthStore();
 
   const [selectedImage, setSelectedImage] = useState(null);
+  const [about, setAbout] = useState("");
+  const [aboutUpdating, setAboutUpdating] = useState(false);
+
+  const { authUser, isUpdatingProfile, updateProfileImage, removeProfileImage } = useAuthStore();
+  const { updateAbout } = useProfileStore();
+
+  useEffect(() => {
+    setAbout(authUser?.about)
+  },[])
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -25,6 +34,23 @@ const ProfileSettings = () => {
       return;
     }
     removeProfileImage();
+  }
+
+  const handleUpdateAbout = async () => {
+    if(authUser.about === about) {
+      toast.error("You didnt changed your about");
+      return;
+    } else if(about.length < 1 || about.length > 200) {
+      toast.info("Please ensure the length less than 200");
+      return;
+    }
+    setAboutUpdating(true);
+    const res = await updateAbout({about});
+    if(res.success) {
+      toast.success(res.message);
+      setAbout(res.about);
+      setAboutUpdating(false);
+    }
   }
 
   return (
@@ -120,12 +146,19 @@ const ProfileSettings = () => {
                   <Text className="size-4" />
                   About
                 </div>
-                <input
+                {aboutUpdating ? (
+                  <div className="flex justify-center items-center space-x-2">
+                    <Loader2 className="h-5 w-5 animate-spin"/>
+                    <p>Updating...</p>
+                  </div>
+                ) : (
+                  <input
                   type="text"
                   className="px-4 py-1.5 md:py-2.5 bg-base-200 rounded-lg border w-full text-sm md:text-md"
-                  value={authUser?.about}
-                  readOnly
-                />
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  />
+                )}
               </div>
             </div>
 
@@ -133,6 +166,10 @@ const ProfileSettings = () => {
               <h2 className="text-lg font-medium  mb-4">Account Controls</h2>
               <div className="space-y-3 text-sm">
                 <span className="flex items-center justify-between py-1 border-b border-zinc-700"></span>
+                <div className="flex items-center justify-between py-2">
+                  <span>Update About</span>
+                  <button className="btn btn-sm rounded-lg" onClick={handleUpdateAbout}>Update</button>
+                </div>
                 <div className="flex items-center justify-between py-2">
                   <span>Remove profile Image</span>
                   <button className="btn btn-sm rounded-lg" onClick={handleRemoveProfileImage}>Remove</button>

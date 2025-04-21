@@ -21,6 +21,14 @@ export const useAuthStore = create(persist((set, get) => ({
 
   changeLoading: (data) => { set({ loading : data }) },
 
+  changeAbout: (data) => {
+    const { authUser } = get();
+    set({ authUser : {
+      ...authUser,
+      about : data
+    }})
+  },
+
   checkAuth: async () => {
     const { authUser } = get();
     try {

@@ -717,3 +717,32 @@ export const fetchMyThreads = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const updateAbout = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const { about } = req.body;
+
+    if(!currentUserId || !about) {
+      return res.status(404).json({ message : "Invalid request" });
+    }
+
+    if(about.length < 1 || about.length > 200) {
+      return res.status(400).json({ message : "Invalid about" });
+    }
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      currentUserId,
+      { about },
+      { new : true }
+    );
+
+    if(updatedUser) {
+      return res.status(200).json({ success : true, message : "about updated", about : updatedUser.about });
+    } else {
+      return res.status(400).json({ message : "About updating error" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

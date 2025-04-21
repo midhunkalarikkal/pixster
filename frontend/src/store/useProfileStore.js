@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const useProfileStore = create((set) => ({
 
@@ -142,6 +143,17 @@ export const useProfileStore = create((set) => ({
     try {
       const res = await axiosInstance.get(`/user/getUserThreads/${data.userId}`);
       return res.data.userThreads;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  },
+
+  updateAbout: async (data) => {
+    const { changeAbout } = useAuthStore.getState();
+    try {
+      const res = await axiosInstance.put('/user/updateAbout', data);
+      changeAbout(res.data.about);
+      return res.data;
     } catch (error) {
       toast.error(error.response.data.message);
     }

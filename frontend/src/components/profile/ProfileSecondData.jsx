@@ -37,7 +37,6 @@ const ProfileSecondData = ({ authUserId, userDataId, status }) => {
 
         setUserThreadsLoading(true);
         const threads = await getUserThreads({ userId : authUserId });
-        console.log("threads :",threads);
         setUserThreads(threads);
         setUserThreadsLoading(false);
       } else if (status === "accepted") {
