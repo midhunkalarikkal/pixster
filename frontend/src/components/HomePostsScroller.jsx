@@ -57,7 +57,7 @@ const HomePostsScroller = ({ post }) => {
 
   const handleUserTabClick = async (userId) => {
     await getSearchSelectedUser(userId);
-    navigate('/profile')
+    navigate('/profile');
   };
 
   return (
