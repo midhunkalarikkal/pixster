@@ -33,6 +33,7 @@ export const useHomeStore = create((set) => ({
       set({ storyUploading: true });
       const res = await axiosInstance.post("/story/uploadStory", data);
       set({ myStory: res.data.story });
+      set({ storyUploaderOpen : false });
       toast.success(res.data.message);
     } catch (error) {
       toast.error(error.response.data.message);
