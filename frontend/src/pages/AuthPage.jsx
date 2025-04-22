@@ -76,9 +76,9 @@ const AuthPage = () => {
       </div>
 
       <AuthImagePattern
-        title={"Welcome to Talzy"}
+        title={"Welcome to Pixster"}
         subtitle={
-          "Sign in to continue your conversations and catch up with your messages."
+          "Sign in to continue sharing stories, catching up on posts, and chatting in real-time."
         }
       />
     </div>

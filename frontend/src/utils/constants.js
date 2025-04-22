@@ -7,7 +7,7 @@ export const THEMES = [
   export const pairedMessages = [
     {
         sender: {
-            text: "Hey, the Pixster chat app is live on Vercel! Check it out.",
+            text: "Hey, the Pixster social app is live on Render! Check it out.",
             timestamp: new Date("2023-10-27T10:00:00Z"),
         },
         receiver: {
