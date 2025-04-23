@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useSearchStore } from "./useSearchStore";
-import { useProfileStore } from "./useProfileStore";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -194,8 +193,6 @@ export const useAuthStore = create(
         set({ socket: socket });
 
         socket.on("requestAccepted", (data) => {
-          const { requestedProfiles } = useProfileStore.getState();
-          const { setRequestedProfiles } = useProfileStore.getState();
           const { setSearchSelectedUserAcceptConnectionData } =
             useSearchStore.getState();
 
@@ -203,13 +200,6 @@ export const useAuthStore = create(
             data.connectionData,
             data.revConnectionData
           );
-
-          if (requestedProfiles) {
-            const updatedRequestedProfiles = requestedProfiles.filter(
-              (profile) => profile._id !== data.fromUserId
-            );
-            setRequestedProfiles(updatedRequestedProfiles);
-          }
         });
 
         socket.on("unfollowConnection", () => {

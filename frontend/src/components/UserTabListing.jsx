@@ -20,6 +20,7 @@ const UserTabListing = ({ authUserId, userDataId }) => {
   const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
   const {
     requestedProfiles,
+    setRequestedProfiles,
     requestedProfilesLoading,
     incomingrequestedProfiles,
     setIncomingRequestedProfiles,
@@ -55,13 +56,24 @@ const UserTabListing = ({ authUserId, userDataId }) => {
       setIncomingRequestedProfiles(updatedProfileList);
     }
 
+    const handlePopRequestedProfile = (data) => {
+      if (requestedProfiles) {
+        const updatedRequestedProfiles = requestedProfiles.filter(
+          (profile) => profile._id !== data.fromUserId
+        );
+        setRequestedProfiles(updatedRequestedProfiles);
+      }
+    }
+
     socket?.on("followRequest", handlePushIncomingRequestedProfile);
     socket?.on("requestCancel", handlePopIncomingRequestedProfile);
+    socket?.on("requestAccepted",handlePopRequestedProfile);
     return () => { 
       socket?.off("followRequest", handlePushIncomingRequestedProfile);
       socket?.off("requestCancel", handlePopIncomingRequestedProfile); 
+      socket?.off("requestAccepted", handlePopRequestedProfile);
     }
-  },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles]);
+  },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles, setRequestedProfiles, requestedProfiles]);
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
