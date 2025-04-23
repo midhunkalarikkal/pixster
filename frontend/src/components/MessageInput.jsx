@@ -1,58 +1,91 @@
-import { toast } from 'react-toastify';
+import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 import { useRef, useState } from "react";
 import { Image, Send, X } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
-const MessageInput = () => {
-    const [text, setText] = useState("");
-    const [imagePreview, setImagePreview] = useState(null);
-    const fileInputRef = useRef(null);
-    const { sendMessage } = useChatStore();
-    const [file, setFile] = useState(null);
+const MessageInput = ({ setIsTyping, isTyping, setMessageSenderId }) => {
+  const [text, setText] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+  const { sendMessage, selectedUser } = useChatStore();
+  const [file, setFile] = useState(null);
+  const typingTimeoutRef = useRef(null);
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if(!file.type.startsWith('image/')) {
-            toast.error("Please select an image file");
-            return;
-        }
+  const { authUser, socket } = useAuthStore();
 
-        setFile(file);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
 
-        const reader  = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
+    setFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
     };
+    reader.readAsDataURL(file);
+  };
 
-    const removeImage = () => {
-      setImagePreview(null);
-      setFile(null);
-      if(fileInputRef.current) fileInputRef.current.value = "";
-    };
+  const removeImage = () => {
+    setImagePreview(null);
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-    const handleSendMessage = async(e) => {
-        e.preventDefault();
-        if(!text.trim() && !imagePreview) return;
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!text.trim() && !imagePreview) return;
 
-        const formData = new FormData();
+    const formData = new FormData();
     formData.append("messageImage", file);
     formData.append("text", text.trim());
 
-        try{
-            await sendMessage(formData);
-            setText("");
-            setImagePreview(null);
-            setFile(null);  
-        }catch{
-            toast.error("failed to send message.");
-        }
+    try {
+      await sendMessage(formData);
+      setText("");
+      setImagePreview(null);
+      setFile(null);
+    } catch {
+      toast.error("failed to send message.");
     }
+  };
+
+  const handleTyping = (e) => {
+    setText(e.target.value);
+
+    if (!isTyping) {
+      setIsTyping(true);
+      if (socket) {
+        setMessageSenderId(authUser._id);
+        socket.emit("typing", {
+          fromUserId: authUser._id,
+          toUserId: selectedUser._id,
+        });
+      }
+    }
+
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      if (socket) {
+        setMessageSenderId(authUser._id);
+        socket.emit("stopTyping", {
+          fromUserId: authUser._id,
+          toUserId: selectedUser._id,
+        });
+      }
+    }, 1000);
+  };
 
   return (
     <div className="p-4 w-full">
-         {imagePreview && (
+      {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
             <img
@@ -73,13 +106,13 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-      <div className="flex-1 flex gap-2">
+        <div className="flex-1 flex gap-2">
           <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
             placeholder="Type a message..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={handleTyping}
           />
           <input
             type="file"
@@ -107,7 +140,13 @@ const MessageInput = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default MessageInput
+MessageInput.propTypes = {
+  setIsTyping: PropTypes.func,
+  isTyping: PropTypes.bool,
+  setMessageSenderId: PropTypes.func,
+};
+
+export default MessageInput;

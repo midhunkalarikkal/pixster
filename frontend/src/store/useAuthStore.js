@@ -6,292 +6,303 @@ import { useSearchStore } from "./useSearchStore";
 import { useProfileStore } from "./useProfileStore";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { useNotificationStore } from "./useNotificationStores";
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage } from "zustand/middleware";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5001" : "https://talkzy-ybcb.onrender.com";
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:5001"
+    : "https://pixster.onrender.com";
 
-export const useAuthStore = create(persist((set, get) => ({
-  authUser: null,
-  isUpdatingProfile: false,
-  isCheckingAuth: true,
-  onLineUsers: [],
-  socket: null,
-  loading : false,
-  authEmail: null,
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      authUser: null,
+      isUpdatingProfile: false,
+      isCheckingAuth: true,
+      onlineUsers: [],
+      socket: null,
+      loading: false,
+      authEmail: null,
 
-  changeLoading: (data) => { set({ loading : data }) },
-
-  changeAbout: (data) => {
-    const { authUser } = get();
-    set({ authUser : {
-      ...authUser,
-      about : data
-    }})
-  },
-
-  checkAuth: async () => {
-    const { authUser } = get();
-    try {
-      if(!authUser) return;
-      await axiosInstance.get("/auth/check");
-      // const res = await axiosInstance.get("/auth/check");
-      // set({ authUser: res.data });
-      get().connectSocket();
-    } catch {
-      set({ authUser: null });
-    } finally {
-      set({ isCheckingAuth: false });
-    }
-  },
-
-  signup: async (data) => {
-    const { handleGotoVerifyOtp, startTimer } = useAuthFormStore.getState();
-    set({ loading: true });
-    set({ authEmail : data.email });
-    try {
-      const res = await axiosInstance.post("/auth/signup", data);
-      handleGotoVerifyOtp();
-      startTimer();
-      toast.success(res.data.message);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  verifyOtp: async (data) => {
-    const { stopTimer, forgotPassword, handleGotoResetPassword, handleGotoLogin } = useAuthFormStore.getState();
-    set({ loading: true });
-    try {
-      const res = await axiosInstance.post("/auth/verifyOtp", data);
-      stopTimer();
-      toast.success(res.data.message);
-      if(forgotPassword) {
-        handleGotoResetPassword();
-      } else {
-        handleGotoLogin();
-        set({ authEmail : null });
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  login: async (data) => {
-    set({ loading: true });
-    set({ authEmail : data.email });
-    try {
-      const res = await axiosInstance.post("/auth/login", data);
-      set({ authUser: res.data });
-      set({ authEmail : null });
-      toast.success("Logged in successfullt.");
-      get().connectSocket();
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  resendOtp: async (data) => {
-    data = data || {};
-    const { authEmail } = get();
-    if(authEmail) {
-      data.email = authEmail
-    }
-    set({ loading: true });
-    try {
-      const res = await axiosInstance.post("/auth/resendOtp", data);
-      return res.data;
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ loading : false });
-    }
-  },
-
-  updatePassword: async (data) => {
-    set({ loading : true });
-    try {
-      const res = await axiosInstance.post('/auth/resetPassword', data);
-      return res.data;
-    }catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ loading : false })
-    }
-  },
-
-  logout: async () => {
-    try {
-      await axiosInstance.post("/auth/logout");
-      set({ authUser: null });
-      toast.success("Logged out successfully.");
-      get().disconnectSocket();
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  },
-
-  updateProfileImage: async (data) => {
-    set({ isUpdatingProfile: true });
-    try {
-      const res = await axiosInstance.put("/auth/update-profile", data);
-      set({ authUser: res.data });
-      toast.success("Profile image updated successfully");
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isUpdatingProfile: false });
-    }
-  },
-
-  removeProfileImage: async () => {
-    set({ isUpdatingProfile: true });
-    try {
-      const res = await axiosInstance.put("/auth/remove-profile");
-      set({ authUser: res.data });
-      toast.success("Profile image removed successfully");
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isUpdatingProfile: false });
-    }
-  },
-
-  connectSocket: () => {
-    const { authUser } = get();
-    if (!authUser || get().socket?.connected) return;
-
-    const socket = io(BASE_URL, {
-      query: {
-        userId: authUser._id,
+      changeLoading: (data) => {
+        set({ loading: data });
       },
-    });
-    socket.connect();
 
-    set({ socket: socket });
+      changeAbout: (data) => {
+        const { authUser } = get();
+        set({
+          authUser: {
+            ...authUser,
+            about: data,
+          },
+        });
+      },
 
-    socket.on("getOnlineUsers", (userIds) => {
-      set({ onlineUsers: userIds });
-    });
+      checkAuth: async () => {
+        const { authUser } = get();
+        try {
+          if (!authUser) return;
+          await axiosInstance.get("/auth/check");
+          // const res = await axiosInstance.get("/auth/check");
+          // set({ authUser: res.data });
+          get().connectSocket();
+        } catch {
+          set({ authUser: null });
+        } finally {
+          set({ isCheckingAuth: false });
+        }
+      },
 
-    socket.on("followRequest", (data) => {
+      signup: async (data) => {
+        const { handleGotoVerifyOtp, startTimer } = useAuthFormStore.getState();
+        set({ loading: true });
+        set({ authEmail: data.email });
+        try {
+          const res = await axiosInstance.post("/auth/signup", data);
+          handleGotoVerifyOtp();
+          startTimer();
+          toast.success(res.data.message);
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-      const { notifications, setNotifications } = useNotificationStore.getState();
-      const { setRevConnection, incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
+      verifyOtp: async (data) => {
+        const {
+          stopTimer,
+          forgotPassword,
+          handleGotoResetPassword,
+          handleGotoLogin,
+        } = useAuthFormStore.getState();
+        set({ loading: true });
+        try {
+          const res = await axiosInstance.post("/auth/verifyOtp", data);
+          stopTimer();
+          toast.success(res.data.message);
+          if (forgotPassword) {
+            handleGotoResetPassword();
+          } else {
+            handleGotoLogin();
+            set({ authEmail: null });
+          }
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-      const newNotifications = [
-        data.notification,
-        ...notifications,
-      ];
+      login: async (data) => {
+        set({ loading: true });
+        set({ authEmail: data.email });
+        try {
+          const res = await axiosInstance.post("/auth/login", data);
+          set({ authUser: res.data });
+          set({ authEmail: null });
+          toast.success("Logged in successfully.");
+          get().connectSocket();
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-      const updatedProfilesList = [
-        ...(incomingrequestedProfiles || []),
-        data.userData,
-      ]
+      resendOtp: async (data) => {
+        data = data || {};
+        const { authEmail } = get();
+        if (authEmail) {
+          data.email = authEmail;
+        }
+        set({ loading: true });
+        try {
+          const res = await axiosInstance.post("/auth/resendOtp", data);
+          return res.data;
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-      setRevConnection(data.revConnectionData);
-      setNotifications(newNotifications);
-      setIncomingRequestedProfiles(updatedProfilesList);
-    });
-    
+      updatePassword: async (data) => {
+        set({ loading: true });
+        try {
+          const res = await axiosInstance.post("/auth/resetPassword", data);
+          return res.data;
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-    socket.on("requestCancel", (data) => {
-      const { setRevConnection, incomingrequestedProfiles, setIncomingRequestedProfiles } = useProfileStore.getState();
+      logout: async () => {
+        try {
+          await axiosInstance.post("/auth/logout");
+          set({ authUser: null });
+          toast.success("Logged out successfully.");
+          get().disconnectSocket();
+        } catch (error) {
+          toast.error(error.response.data.message);
+        }
+      },
 
-      const updatedProfileList = incomingrequestedProfiles.filter((profile) => profile._id !== data.fromUserId );
+      updateProfileImage: async (data) => {
+        set({ isUpdatingProfile: true });
+        try {
+          const res = await axiosInstance.put("/auth/update-profile", data);
+          set({ authUser: res.data });
+          toast.success("Profile image updated successfully");
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ isUpdatingProfile: false });
+        }
+      },
 
-      setIncomingRequestedProfiles(updatedProfileList);
-      setRevConnection(data.revConnection);
-    });
+      removeProfileImage: async () => {
+        set({ isUpdatingProfile: true });
+        try {
+          const res = await axiosInstance.put("/auth/remove-profile");
+          set({ authUser: res.data });
+          toast.success("Profile image removed successfully");
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally {
+          set({ isUpdatingProfile: false });
+        }
+      },
 
+      connectSocket: () => {
+        const { authUser } = get();
+        if (!authUser || get().socket?.connected) return;
 
-    socket.on("requestAccepted", (data) => {
-      const { requestedProfiles } = useProfileStore.getState();
-      const { setRequestedProfiles } = useProfileStore.getState();
-      const { setSearchSelectedUserAcceptConnectionData } = useSearchStore.getState();
+        const socket = io(BASE_URL, {
+          query: {
+            userId: authUser._id,
+          },
+        });
+        socket.connect();
 
-      setSearchSelectedUserAcceptConnectionData(
-        data.connectionData,
-        data.revConnectionData
-      );
+        set({ socket: socket });
 
-      if (requestedProfiles) {
-        const updatedRequestedProfiles = requestedProfiles.filter(
-          (profile) => profile._id !== data.fromUserId
-        );
-        setRequestedProfiles(updatedRequestedProfiles);
-      }
-    });
+        socket.on("getOnlineUsers", (userIds) => {
+          set({ onlineUsers: userIds });
+        });
 
-    socket.on("unfollowConnection", () => {
-      const { setSearchSelectedUserUnfollowConnectionData } =
-        useSearchStore.getState();
-      setSearchSelectedUserUnfollowConnectionData();
-    });
+        socket.on("followRequest", (data) => {
+          const { notifications, setNotifications } =
+            useNotificationStore.getState();
+          const {
+            setRevConnection,
+            incomingrequestedProfiles,
+            setIncomingRequestedProfiles,
+          } = useProfileStore.getState();
 
-    socket.on("requestReject", (data) => {
-      const { setSearchSelectedUserRejectConnectionData } =
-        useSearchStore.getState();
-        setSearchSelectedUserRejectConnectionData(data.connectionData, data.revConnectionData);
-    });
+          const newNotifications = [data.notification, ...notifications];
 
-    socket.on("postLikeSocket", (data) => {
-      const { notifications, setNotifications } = useNotificationStore.getState();
+          const updatedProfilesList = [
+            ...(incomingrequestedProfiles || []),
+            data.userData,
+          ];
 
-      const newNotifications = [
-        ...notifications,
-        data.notification,
-      ];
+          setRevConnection(data.revConnectionData);
+          setNotifications(newNotifications);
+          setIncomingRequestedProfiles(updatedProfilesList);
+        });
 
-      setNotifications(newNotifications);
+        socket.on("requestCancel", (data) => {
+          const {
+            setRevConnection,
+            incomingrequestedProfiles,
+            setIncomingRequestedProfiles,
+          } = useProfileStore.getState();
 
-    });
+          const updatedProfileList = incomingrequestedProfiles.filter(
+            (profile) => profile._id !== data.fromUserId
+          );
 
-    socket.on("commentedOnPost", (data) => {
-      const { notifications, setNotifications } = useNotificationStore.getState();
+          setIncomingRequestedProfiles(updatedProfileList);
+          setRevConnection(data.revConnection);
+        });
 
-      const newNotifications = [
-        ...notifications,
-        data.notification,
-      ];
+        socket.on("requestAccepted", (data) => {
+          const { requestedProfiles } = useProfileStore.getState();
+          const { setRequestedProfiles } = useProfileStore.getState();
+          const { setSearchSelectedUserAcceptConnectionData } =
+            useSearchStore.getState();
 
-      setNotifications(newNotifications);
+          setSearchSelectedUserAcceptConnectionData(
+            data.connectionData,
+            data.revConnectionData
+          );
 
-    });
+          if (requestedProfiles) {
+            const updatedRequestedProfiles = requestedProfiles.filter(
+              (profile) => profile._id !== data.fromUserId
+            );
+            setRequestedProfiles(updatedRequestedProfiles);
+          }
+        });
 
-    socket.on("commentLiked", (data) => {
-      const { notifications, setNotifications } = useNotificationStore.getState();
+        socket.on("unfollowConnection", () => {
+          const { setSearchSelectedUserUnfollowConnectionData } =
+            useSearchStore.getState();
+          setSearchSelectedUserUnfollowConnectionData();
+        });
 
-      const newNotifications = [
-        ...notifications,
-        data.notification,
-      ];
+        socket.on("requestReject", (data) => {
+          const { setSearchSelectedUserRejectConnectionData } =
+            useSearchStore.getState();
+          setSearchSelectedUserRejectConnectionData(
+            data.connectionData,
+            data.revConnectionData
+          );
+        });
 
-      setNotifications(newNotifications);
+        socket.on("postLikeSocket", (data) => {
+          const { notifications, setNotifications } =
+            useNotificationStore.getState();
 
-    });
+          const newNotifications = [...notifications, data.notification];
 
-  },
+          setNotifications(newNotifications);
+        });
 
-  disconnectSocket: () => {
-    if (get().socket?.connected) get().socket.disconnect();
-  },
-}),
+        socket.on("commentedOnPost", (data) => {
+          const { notifications, setNotifications } =
+            useNotificationStore.getState();
 
-{
-  name: 'auth-store',
-  partialize: (state) => (
-    { 
-      authUser: state.authUser,
-      authEmail: state.authEmail,
-     }
-  ),
-  storage: createJSONStorage(() => localStorage),
-}
+          const newNotifications = [...notifications, data.notification];
 
-));
+          setNotifications(newNotifications);
+        });
+
+        socket.on("commentLiked", (data) => {
+          const { notifications, setNotifications } =
+            useNotificationStore.getState();
+
+          const newNotifications = [...notifications, data.notification];
+
+          setNotifications(newNotifications);
+        });
+      },
+
+      disconnectSocket: () => {
+        if (get().socket?.connected) get().socket.disconnect();
+      },
+    }),
+
+    {
+      name: "auth-store",
+      partialize: (state) => ({
+        authUser: state.authUser,
+        authEmail: state.authEmail,
+      }),
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
