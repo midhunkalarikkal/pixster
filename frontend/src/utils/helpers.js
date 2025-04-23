@@ -1,3 +1,9 @@
+const rsaAlgo = import.meta.env.VITE_RSA_ALGO;
+const modulusLength = import.meta.env.VITE_MODULUS_LENGTH;
+const publicExponent = JSON.parse(import.meta.env.VITE_PUBLIC_EXPONENT);
+const hashAlgo = import.meta.env.VITE_HASH_ALGO;
+
+// Used in otp verification form for showing the time
 export const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -26,4 +32,34 @@ export const formatDate = (date) => {
       const year = messageDate.getFullYear().toString().slice(2);
       return `${day}/${month}/${year}`;
     }
+  };
+
+  export const generateKeys = async () => {
+    const keyPair = await window.crypto.subtle.generateKey(
+      {
+        name: rsaAlgo,
+        modulusLength: modulusLength,
+        publicExponent: new Uint8Array(publicExponent),
+        hash: hashAlgo,
+      },
+      true,
+      ["encrypt","decrypt"],
+    );
+    return keyPair;
+  }
+
+  export const exportKeys = async (publicKey, privateKey) => {
+    const exportedPublicKey = await window.crypto.subtle.exportKey(
+      "jwk",
+      publicKey
+    );
+    const exportedPrivateKey = await window.crypto.subtle.exportKey(
+      "jwk",
+      privateKey
+    );
+  
+    return {
+      publicKey: exportedPublicKey,
+      privateKey: exportedPrivateKey,
+    };
   };

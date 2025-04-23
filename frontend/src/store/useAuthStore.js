@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { exportKeys, generateKeys } from "../utils/helpers";
 
 const BASE_URL =
   import.meta.env.MODE === "development"
@@ -81,13 +82,20 @@ export const useAuthStore = create(
         set({ loading: true });
         set({ authEmail: data.email });
         try {
-          const res = await axiosInstance.post("/auth/login", data);
+          const {publicKey, privateKey} = await generateKeys();
+          const keyData = await exportKeys(publicKey, privateKey);
+          const res = await axiosInstance.post("/auth/login", {
+              ...data,
+            publicKey: keyData.publicKey,
+            privateKey: keyData.privateKey,
+          });
           set({ authUser: res.data });
           set({ authEmail: null });
           toast.success("Logged in successfully.");
           get().connectSocket();
         } catch (error) {
-          toast.error(error.response.data.message);
+          console.log("error : ",error);
+          toast.error(error?.response?.data?.message);
         } finally {
           set({ loading: false });
         }
