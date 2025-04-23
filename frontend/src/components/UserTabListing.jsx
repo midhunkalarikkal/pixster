@@ -8,18 +8,21 @@ import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 const UserTabListing = ({ authUserId, userDataId }) => {
   
   const navigate = useNavigate();
   let [reqdProfiles, setReqProfiles] = useState([]);
 
+  const { socket } = useAuthStore();
   const { setListPage, listPage } = useProfileStore();
   const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
   const {
     requestedProfiles,
     requestedProfilesLoading,
     incomingrequestedProfiles,
+    setIncomingRequestedProfiles,
     incomingrequestedProfilesLoading,
     followingProfiles,
     followingProfilesLoading,
@@ -34,6 +37,18 @@ const UserTabListing = ({ authUserId, userDataId }) => {
     if (!requestedProfiles) return;
     setReqProfiles(requestedProfiles);
   }, [requestedProfiles]);
+
+  useEffect(() => {
+    const handleUpdateIncomingRequestedProfile = (data) => {
+      const updatedProfilesList = [
+        ...(incomingrequestedProfiles || []),
+        data.userData,
+      ];
+      setIncomingRequestedProfiles(updatedProfilesList);
+    }
+    socket?.on("followRequest", handleUpdateIncomingRequestedProfile);
+    return () => socket?.off("followRequest", handleUpdateIncomingRequestedProfile);
+  },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles]);
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();

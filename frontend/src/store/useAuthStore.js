@@ -196,17 +196,9 @@ export const useAuthStore = create(
         socket.on("followRequest", (data) => {
           const {
             setRevConnection,
-            incomingrequestedProfiles,
-            setIncomingRequestedProfiles,
           } = useProfileStore.getState();
 
-          const updatedProfilesList = [
-            ...(incomingrequestedProfiles || []),
-            data.userData,
-          ];
-
           setRevConnection(data.revConnectionData);
-          setIncomingRequestedProfiles(updatedProfilesList);
         });
 
         socket.on("requestCancel", (data) => {
