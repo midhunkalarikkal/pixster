@@ -121,16 +121,15 @@ const MessageInput = ({ setIsTyping, isTyping, setMessageSenderId }) => {
             ref={fileInputRef}
             onChange={handleImageChange}
           />
-
+        </div>
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
+            className={`flex btn btn-circle btn-sm
                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
           </button>
-        </div>
         <button
           type="submit"
           className="btn btn-sm btn-circle"
