@@ -194,15 +194,11 @@ export const useAuthStore = create(
         set({ socket: socket });
 
         socket.on("followRequest", (data) => {
-          const { notifications, setNotifications } =
-            useNotificationStore.getState();
           const {
             setRevConnection,
             incomingrequestedProfiles,
             setIncomingRequestedProfiles,
           } = useProfileStore.getState();
-
-          const newNotifications = [data.notification, ...notifications];
 
           const updatedProfilesList = [
             ...(incomingrequestedProfiles || []),
@@ -210,7 +206,6 @@ export const useAuthStore = create(
           ];
 
           setRevConnection(data.revConnectionData);
-          setNotifications(newNotifications);
           setIncomingRequestedProfiles(updatedProfilesList);
         });
 

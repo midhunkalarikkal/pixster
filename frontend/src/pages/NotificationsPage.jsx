@@ -1,20 +1,19 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 import { useSearchStore } from "../store/useSearchStore";
 import NotificationBar from "../components/NotificationBar";
 import Suggestions from "../components/sidebars/Suggestions";
 import { useNotificationStore } from "../store/useNotificationStores";
-import { useNavigate } from "react-router-dom";
 
 const NotificationsPage = () => {
 
   const navigate = useNavigate();
+  const { socket } = useAuthStore();
   const { getSearchSelectedUser } = useSearchStore();
-  const { notifications, notificationsLoading, getNotifications } =
-    useNotificationStore();
+  const { notifications, notificationsLoading, getNotifications, setNotifications } = useNotificationStore();
 
-  const handleViewUser = (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleViewUser = (id) => {
     getSearchSelectedUser(id);
     navigate('/profile');
   };
@@ -22,6 +21,16 @@ const NotificationsPage = () => {
   useEffect(() => {
     getNotifications();
   }, []);
+  
+  
+  useEffect(() => {
+    const handlePushNewNotification = (data) => {
+        const newNotifications = [data.notification, ...notifications];
+        setNotifications(newNotifications);
+    }
+    socket?.on("followRequest", handlePushNewNotification);
+    return () => socket?.off("followRequest", handlePushNewNotification);
+  }, [socket, setNotifications, notifications]);
 
   return (
     <div className="w-full md:w-11/12 lg:w-10/12 flex h-[88%] md:h-full mt-10 md:mt-0">
@@ -37,7 +46,11 @@ const NotificationsPage = () => {
                 key={notification._id}
                 user={notification.fromUserId}
                 message={notification.message}
-                onClick={(id, e) => handleViewUser(id, e)}
+                onClick={(id, e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleViewUser(id)
+                }}
                 time={notification.createdAt}
               />
             ))}
