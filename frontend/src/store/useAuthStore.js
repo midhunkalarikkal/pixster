@@ -192,11 +192,11 @@ export const useAuthStore = create(
 
         set({ socket: socket });
 
-        socket.on("unfollowConnection", () => {
-          const { setSearchSelectedUserUnfollowConnectionData } =
-            useSearchStore.getState();
-          setSearchSelectedUserUnfollowConnectionData();
-        });
+        // socket.on("unfollowConnection", () => {
+        //   const { setSearchSelectedUserUnfollowConnectionData } =
+        //     useSearchStore.getState();
+        //   setSearchSelectedUserUnfollowConnectionData();
+        // });
 
         socket.on("requestReject", (data) => {
           const { setSearchSelectedUserRejectConnectionData } =

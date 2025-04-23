@@ -69,19 +69,30 @@ const ProfilePage = () => {
     const handleRequestAcceptUpdateData = (data) => {
       setRevConnection(data.revConnectionData);
       setConnectionData(data.connectionData);
+      if(!userData) return;
       setUserData({
         ...userData,
         followersCount : userData.followersCount + 1
       });
     }
 
+    const handleUnfollowConnectionUpdateData = () => {
+      if(!userData) return;
+      setUserData({
+        ...userData,
+        followingsCount : userData.followingsCount === 0 ? 0 : userData.followingsCount - 1
+      })
+    }
+
     socket?.on("followRequest" , handleRevConnectionShow);
     socket?.on("requestCancel", handleRevConnectionHide);
     socket?.on("requestAccepted", handleRequestAcceptUpdateData);
+    socket?.on("unfollowConnection", handleUnfollowConnectionUpdateData);
     return  () => { 
       socket?.off("followRequest" , handleRevConnectionShow); 
       socket?.off("requestCancel", handleRevConnectionHide);
       socket?.off("requestAccepted", handleRequestAcceptUpdateData);
+      socket?.off("unfollowConnection", handleUnfollowConnectionUpdateData);
     }
   },[socket, setRevConnection, userData])
 
