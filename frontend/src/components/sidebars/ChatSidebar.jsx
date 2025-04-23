@@ -1,11 +1,13 @@
 import { Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import AuthUserTab from "../AuthUserTab";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { formatDate } from "../../utils/helpers";
 import { useChatStore } from "../../store/useChatStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import SidebarSkeleton from "../skeletons/SidebarSkeleton";
-import AuthUserTab from "../AuthUserTab";
 
 const ChatSidebar = () => {
+
   const {
     getUsers,
     users,
@@ -13,51 +15,35 @@ const ChatSidebar = () => {
     setSelectedUser,
     isUsersLoading,
     getLastMessage,
+    setLastMessage,
   } = useChatStore();
 
   const { onlineUsers, setOnlineUsers, socket } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
+  const filteredUsers = useMemo(() => {
+    return showOnlineOnly
+      ? users.filter((user) => onlineUsers.includes(user._id))
+      : users;
+  }, [showOnlineOnly, users, onlineUsers]);
+
+  const handleOnlineUsers = useCallback((userIds) => {
+    setOnlineUsers(userIds);
+  }, [setOnlineUsers]);
+
   useEffect(() => {
     getUsers();
+    socket?.on("getOnlineUsers", handleOnlineUsers);
+    return () => socket?.off("getOnlineUsers", handleOnlineUsers);
+  }, [getUsers, socket, handleOnlineUsers]);
 
-    const handleOnlineUsers = (userIds) => {
-      setOnlineUsers(userIds);
-    }
-
-    socket?.on("getOnlineUsers",handleOnlineUsers);
-
-    return () => {
-      socket?.off("getOnlineUsers", handleOnlineUsers)
-    }
-
-  }, [getUsers, socket, setOnlineUsers]);
-
-
-  const filteredUsers = showOnlineOnly
-    ? users.filter((user) => onlineUsers.includes(user._id))
-    : users;
-
-  const formatDate = (date) => {
-    const now = new Date();
-    const messageDate = new Date(date);
-
-    if (
-      messageDate.getDate() === now.getDate() &&
-      messageDate.getMonth() === now.getMonth() &&
-      messageDate.getFullYear() === now.getFullYear()
-    ) {
-      return messageDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } else {
-      const day = messageDate.getDate().toString().padStart(2, "0");
-      const month = (messageDate.getMonth() + 1).toString().padStart(2, "0");
-      const year = messageDate.getFullYear().toString().slice(2);
-      return `${day}/${month}/${year}`;
-    }
-  };
+  useEffect(() => {
+    const setNewMessage = (message) => {
+      setLastMessage(message.senderId, message.text ?  message.text : "Image", message.createdAt );
+    };
+    socket?.on("newMessage", setNewMessage);
+    return () => socket?.off("newMessage", setNewMessage);
+  }, [socket, setLastMessage]);
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -123,7 +109,7 @@ const ChatSidebar = () => {
               </div>
               <div className="flex text-sm lg:text-md text-stone-500">
                 {getLastMessage(user._id) ? (
-                  <p className="font-normal truncate">
+                  <p className="font-normal truncate text-base-content">
                     {getLastMessage(user._id)?.message}
                   </p>
                 ) : onlineUsers.includes(user._id) ? (
