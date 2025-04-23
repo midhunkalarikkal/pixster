@@ -1,7 +1,7 @@
 import { Users } from "lucide-react";
 
 const SidebarSkeleton = () => {
-  const skeletonContacts = Array(8).fill(null);
+  const skeletonContacts = Array(15).fill(null);
 
   return (
     <aside
@@ -23,9 +23,9 @@ const SidebarSkeleton = () => {
               <div className="skeleton size-12 rounded-full" />
             </div>
 
-            <div className="hidden lg:block text-left min-w-0 flex-1">
-              <div className="skeleton h-4 w-32 mb-2" />
-              <div className="skeleton h-3 w-16" />
+            <div className="text-left min-w-0 flex-1">
+              <div className="skeleton h-4 w-8/12 mb-2" />
+              <div className="skeleton h-3 w-4/12" />
             </div>
           </div>
         ))}
