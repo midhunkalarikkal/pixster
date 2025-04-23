@@ -66,13 +66,24 @@ const ProfilePage = () => {
       setRevConnection(data.revConnectionData);
     }
 
+    const handleRequestAcceptUpdateData = (data) => {
+      setRevConnection(data.revConnectionData);
+      setConnectionData(data.connectionData);
+      setUserData({
+        ...userData,
+        followersCount : userData.followersCount + 1
+      });
+    }
+
     socket?.on("followRequest" , handleRevConnectionShow);
     socket?.on("requestCancel", handleRevConnectionHide);
+    socket?.on("requestAccepted", handleRequestAcceptUpdateData);
     return  () => { 
       socket?.off("followRequest" , handleRevConnectionShow); 
       socket?.off("requestCancel", handleRevConnectionHide);
+      socket?.off("requestAccepted", handleRequestAcceptUpdateData);
     }
-  },[socket, setRevConnection])
+  },[socket, setRevConnection, userData])
 
   const handlePostDelete = () => {
     setUserData({

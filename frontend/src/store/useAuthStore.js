@@ -192,16 +192,6 @@ export const useAuthStore = create(
 
         set({ socket: socket });
 
-        socket.on("requestAccepted", (data) => {
-          const { setSearchSelectedUserAcceptConnectionData } =
-            useSearchStore.getState();
-
-          setSearchSelectedUserAcceptConnectionData(
-            data.connectionData,
-            data.revConnectionData
-          );
-        });
-
         socket.on("unfollowConnection", () => {
           const { setSearchSelectedUserUnfollowConnectionData } =
             useSearchStore.getState();

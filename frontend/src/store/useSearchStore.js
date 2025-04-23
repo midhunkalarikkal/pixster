@@ -56,23 +56,6 @@ export const useSearchStore = create(persist((set) => ({
     set({ searchSelectedUser: null });
   },
 
-  setSearchSelectedUserAcceptConnectionData: (newConnectionData, newRevConnectionData) => {
-    set((state) => ({
-      searchSelectedUser: state.searchSelectedUser ?
-       {
-        ...state.searchSelectedUser,
-        connectionData: newConnectionData,
-        revConnectionData: newRevConnectionData,
-        userData: state.searchSelectedUser.userData ?
-        {
-          ...state.searchSelectedUser.userData,
-          followersCount: (state.searchSelectedUser.userData.followersCount ||  0) + 1,
-        }
-        : state.searchSelectedUser.userData
-      } : state.searchSelectedUser ,
-    }));
-  },
-
   setSearchSelectedUserRejectConnectionData: (newConnectionData, newRevConnectionData) => {
     set((state) => ({
       searchSelectedUser: state.searchSelectedUser ?

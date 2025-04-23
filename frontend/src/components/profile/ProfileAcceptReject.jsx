@@ -1,6 +1,6 @@
+import { memo } from "react";
 import PropTypes from "prop-types";
 import { useSearchStore } from "../../store/useSearchStore";
-import { memo } from "react";
 
 const ProfileAcceptReject = ({ userId, userName }) => {
   const {
