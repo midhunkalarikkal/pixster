@@ -193,20 +193,6 @@ export const useAuthStore = create(
 
         set({ socket: socket });
 
-        socket.on("requestCancel", (data) => {
-          console.log("socketData : ",data);
-          const {
-            incomingrequestedProfiles,
-            setIncomingRequestedProfiles,
-          } = useProfileStore.getState();
-
-          const updatedProfileList = incomingrequestedProfiles.filter(
-            (profile) => profile._id !== data.fromUserId
-          );
-
-          setIncomingRequestedProfiles(updatedProfileList);
-        });
-
         socket.on("requestAccepted", (data) => {
           const { requestedProfiles } = useProfileStore.getState();
           const { setRequestedProfiles } = useProfileStore.getState();

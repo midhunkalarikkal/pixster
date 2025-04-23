@@ -3,12 +3,12 @@ import { X } from "lucide-react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import ListMessage from "./profile/ListMessage";
+import { useNavigate } from "react-router-dom";
 import { memo, useEffect, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
 
 const UserTabListing = ({ authUserId, userDataId }) => {
   
@@ -39,15 +39,28 @@ const UserTabListing = ({ authUserId, userDataId }) => {
   }, [requestedProfiles]);
 
   useEffect(() => {
-    const handleUpdateIncomingRequestedProfile = (data) => {
+    const handlePushIncomingRequestedProfile = (data) => {
       const updatedProfilesList = [
         ...(incomingrequestedProfiles || []),
         data.userData,
       ];
       setIncomingRequestedProfiles(updatedProfilesList);
     }
-    socket?.on("followRequest", handleUpdateIncomingRequestedProfile);
-    return () => socket?.off("followRequest", handleUpdateIncomingRequestedProfile);
+
+    const handlePopIncomingRequestedProfile = (data) => {
+      const updatedProfileList = incomingrequestedProfiles.filter(
+        (profile) => profile._id !== data.fromUserId
+      );
+
+      setIncomingRequestedProfiles(updatedProfileList);
+    }
+
+    socket?.on("followRequest", handlePushIncomingRequestedProfile);
+    socket?.on("requestCancel", handlePopIncomingRequestedProfile);
+    return () => { 
+      socket?.off("followRequest", handlePushIncomingRequestedProfile);
+      socket?.off("requestCancel", handlePopIncomingRequestedProfile); 
+    }
   },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles]);
 
   const handleCancelRequest = (user, e) => {
