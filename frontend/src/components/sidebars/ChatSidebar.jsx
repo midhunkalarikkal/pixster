@@ -43,7 +43,7 @@ const ChatSidebar = () => {
     };
     socket?.on("newMessage", setNewMessage);
     return () => socket?.off("newMessage", setNewMessage);
-  }, [socket, setLastMessage]);
+  }, [socket]);
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
