@@ -16,10 +16,11 @@ const ProfilePage = () => {
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
 
-  const { authUser } = useAuthStore();
+  const { authUser, socket } = useAuthStore();
 
   const {
     revConnection,
+    setRevConnection,
     getRequestedProfiles,
     getIncomingRequestedProfiles,
     getFollowingsProfiles,
@@ -55,6 +56,23 @@ const ProfilePage = () => {
       getSearchSelectedUser(selectedUserId);
     }
   }, [selectedUserId, getSearchSelectedUser]);
+
+  useEffect(() => {
+    const handleRevConnectionShow = (data) => {
+      setRevConnection(data.revConnectionData);
+    }
+
+    const handleRevConnectionHide = (data) => {
+      setRevConnection(data.revConnectionData);
+    }
+
+    socket?.on("followRequest" , handleRevConnectionShow);
+    socket?.on("requestCancel", handleRevConnectionHide);
+    return  () => { 
+      socket?.off("followRequest" , handleRevConnectionShow); 
+      socket?.off("requestCancel", handleRevConnectionHide);
+    }
+  },[socket, setRevConnection])
 
   const handlePostDelete = () => {
     setUserData({

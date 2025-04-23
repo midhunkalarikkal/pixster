@@ -193,17 +193,9 @@ export const useAuthStore = create(
 
         set({ socket: socket });
 
-        socket.on("followRequest", (data) => {
-          const {
-            setRevConnection,
-          } = useProfileStore.getState();
-
-          setRevConnection(data.revConnectionData);
-        });
-
         socket.on("requestCancel", (data) => {
+          console.log("socketData : ",data);
           const {
-            setRevConnection,
             incomingrequestedProfiles,
             setIncomingRequestedProfiles,
           } = useProfileStore.getState();
@@ -213,7 +205,6 @@ export const useAuthStore = create(
           );
 
           setIncomingRequestedProfiles(updatedProfileList);
-          setRevConnection(data.revConnection);
         });
 
         socket.on("requestAccepted", (data) => {
