@@ -24,20 +24,6 @@ export const useAuthStore = create(
       loading: false,
       authEmail: null,
 
-      changeLoading: (data) => {
-        set({ loading: data });
-      },
-
-      changeAbout: (data) => {
-        const { authUser } = get();
-        set({
-          authUser: {
-            ...authUser,
-            about: data,
-          },
-        });
-      },
-
       checkAuth: async () => {
         const { authUser } = get();
         try {
@@ -176,6 +162,24 @@ export const useAuthStore = create(
         }
       },
 
+      changeLoading: (data) => {
+        set({ loading: data });
+      },
+
+      changeAbout: (data) => {
+        const { authUser } = get();
+        set({
+          authUser: {
+            ...authUser,
+            about: data,
+          },
+        });
+      },
+
+      setOnlineUsers: (userIds) => set({ onlineUsers : userIds }),
+
+      // Socket implementation
+
       connectSocket: () => {
         const { authUser } = get();
         if (!authUser || get().socket?.connected) return;
@@ -188,10 +192,6 @@ export const useAuthStore = create(
         socket.connect();
 
         set({ socket: socket });
-
-        socket.on("getOnlineUsers", (userIds) => {
-          set({ onlineUsers: userIds });
-        });
 
         socket.on("followRequest", (data) => {
           const { notifications, setNotifications } =

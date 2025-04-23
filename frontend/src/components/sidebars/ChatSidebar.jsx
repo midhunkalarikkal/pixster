@@ -15,12 +15,24 @@ const ChatSidebar = () => {
     getLastMessage,
   } = useChatStore();
 
-  const { onlineUsers } = useAuthStore();
+  const { onlineUsers, setOnlineUsers, socket } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+
+    const handleOnlineUsers = (userIds) => {
+      setOnlineUsers(userIds);
+    }
+
+    socket?.on("getOnlineUsers",handleOnlineUsers);
+
+    return () => {
+      socket?.off("getOnlineUsers", handleOnlineUsers)
+    }
+
+  }, [getUsers, socket, setOnlineUsers]);
+
 
   const filteredUsers = showOnlineOnly
     ? users.filter((user) => onlineUsers.includes(user._id))
@@ -86,11 +98,11 @@ const ChatSidebar = () => {
               ${selectedUser?._id === user._id ? "" : ""}
             `}
           >
-            <div className="relative w-2/12">
+            <div className="relative w-fit">
               <img
                 src={user.profilePic || "/user_avatar.jpg"}
                 alt={user.name}
-                className="size-8 lg:size-10 object-cover rounded-full"
+                className="size-10 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
                 <span
