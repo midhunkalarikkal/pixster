@@ -56,32 +56,6 @@ export const useSearchStore = create(persist((set) => ({
     set({ searchSelectedUser: null });
   },
 
-  setSearchSelectedUserRejectConnectionData: (newConnectionData, newRevConnectionData) => {
-    set((state) => ({
-      searchSelectedUser: state.searchSelectedUser ?
-       {
-        ...state.searchSelectedUser,
-        connectionData: newConnectionData,
-        revConnectionData: newRevConnectionData,
-      } : state.searchSelectedUser ,
-    }));
-  },
-
-  setSearchSelectedUserUnfollowConnectionData: () => {
-    set((state) => ({
-      searchSelectedUser: state.searchSelectedUser ?
-       {
-        ...state.searchSelectedUser,
-        userData: state.searchSelectedUser.userData ?
-        {
-          ...state.searchSelectedUser.userData,
-          followingsCount: (state.searchSelectedUser.userData.followingsCount ||  0) - 1,
-        }
-        : state.searchSelectedUser.userData
-      } : state.searchSelectedUser ,
-    }));
-  },
-
   fetchMediaGrid: async () => {
     try {
       const res = await axiosInstance.get('/user/getMediaGrid');

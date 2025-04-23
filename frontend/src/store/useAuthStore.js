@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
-import { useSearchStore } from "./useSearchStore";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -191,21 +190,6 @@ export const useAuthStore = create(
         socket.connect();
 
         set({ socket: socket });
-
-        // socket.on("unfollowConnection", () => {
-        //   const { setSearchSelectedUserUnfollowConnectionData } =
-        //     useSearchStore.getState();
-        //   setSearchSelectedUserUnfollowConnectionData();
-        // });
-
-        socket.on("requestReject", (data) => {
-          const { setSearchSelectedUserRejectConnectionData } =
-            useSearchStore.getState();
-          setSearchSelectedUserRejectConnectionData(
-            data.connectionData,
-            data.revConnectionData
-          );
-        });
 
         socket.on("postLikeSocket", (data) => {
           const { notifications, setNotifications } =

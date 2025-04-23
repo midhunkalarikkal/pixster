@@ -84,15 +84,22 @@ const ProfilePage = () => {
       })
     }
 
+    const handleRequestRejectUpdateData = (data) => {
+      setRevConnection(data.revConnectionData);
+      setConnectionData(data.connectionData);
+    }
+
     socket?.on("followRequest" , handleRevConnectionShow);
     socket?.on("requestCancel", handleRevConnectionHide);
     socket?.on("requestAccepted", handleRequestAcceptUpdateData);
     socket?.on("unfollowConnection", handleUnfollowConnectionUpdateData);
+    socket?.on("requestReject", handleRequestRejectUpdateData);
     return  () => { 
       socket?.off("followRequest" , handleRevConnectionShow); 
       socket?.off("requestCancel", handleRevConnectionHide);
       socket?.off("requestAccepted", handleRequestAcceptUpdateData);
       socket?.off("unfollowConnection", handleUnfollowConnectionUpdateData);
+      socket?.off("requestReject", handleRequestRejectUpdateData);
     }
   },[socket, setRevConnection, userData])
 
