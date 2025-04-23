@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useAuthFormStore } from "./useAuthFormStore";
-import { useNotificationStore } from "./useNotificationStores";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 const BASE_URL =
@@ -191,32 +190,6 @@ export const useAuthStore = create(
 
         set({ socket: socket });
 
-        socket.on("postLikeSocket", (data) => {
-          const { notifications, setNotifications } =
-            useNotificationStore.getState();
-
-          const newNotifications = [...notifications, data.notification];
-
-          setNotifications(newNotifications);
-        });
-
-        socket.on("commentedOnPost", (data) => {
-          const { notifications, setNotifications } =
-            useNotificationStore.getState();
-
-          const newNotifications = [...notifications, data.notification];
-
-          setNotifications(newNotifications);
-        });
-
-        socket.on("commentLiked", (data) => {
-          const { notifications, setNotifications } =
-            useNotificationStore.getState();
-
-          const newNotifications = [...notifications, data.notification];
-
-          setNotifications(newNotifications);
-        });
       },
 
       disconnectSocket: () => {
