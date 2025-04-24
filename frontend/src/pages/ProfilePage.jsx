@@ -78,9 +78,10 @@ const ProfilePage = () => {
 
     const handleUnfollowConnectionUpdateData = () => {
       if(!userData) return;
+      console.log("updating");
       setUserData({
         ...userData,
-        followingsCount : userData.followingsCount === 0 ? 0 : userData.followingsCount - 1
+        followersCount : userData.followersCount === 0 ? 0 : userData.followersCount - 1
       })
     }
 

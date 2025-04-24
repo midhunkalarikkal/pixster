@@ -106,10 +106,15 @@ const UserTabListing = ({ authUserId, userDataId, updateFollowersCount, updateFo
       });
   };
 
-  const handleUnfollowConnection = (user, e) => {
+  const handleUnfollowConnection = async (user, e) => {
     e.preventDefault();
     e.stopPropagation();
     toast.info("working on it");
+    // if(!user) {
+    //   toast.error("Something went wrong, please try again");
+    //   return;
+    // }
+    // const userId = await 
   };
 
   const handleRemoveConnection = async (user, e) => {
