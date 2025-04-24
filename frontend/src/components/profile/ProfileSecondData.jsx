@@ -66,7 +66,6 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
     );
   };
 
-
   return (
     <>
       {authUserId !== userDataId ? (
