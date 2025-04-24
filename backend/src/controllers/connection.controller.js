@@ -137,7 +137,7 @@ export const requestConnection = async (req, res) => {
       userData,
       revConnectionData : connectionData
     };
-
+      
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("followRequest", socketData);

@@ -120,6 +120,8 @@ const ProfilePage = () => {
     );
   }
 
+  console.log("connectionData : ",connectionData);
+
   return (
     <>
       <div
