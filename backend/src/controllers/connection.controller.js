@@ -1,5 +1,4 @@
 import User from "../models/user.model.js";
-import Post from "../models/post.model.js";
 import Connection from "../models/connection.model.js";
 import Notification from "../models/notification.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
@@ -10,6 +9,8 @@ export const requestConnection = async (req, res) => {
     const fromUserId = req.user.id;
     const { toUserId } = req.params;
     const { status } = req.query;
+
+    console.log("status : ",status);
 
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
@@ -29,7 +30,7 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const toUserData = await User.findById(toUserId, { password: 0, email: 0, createdAt: 0, updatedAt: 0 });
+    let toUserData = await User.findById(toUserId, { password: 0, email: 0, createdAt: 0, updatedAt: 0 });
     if (!toUserData) {
       return res.status(400).json({ message: "User not found." });
     }
@@ -38,19 +39,20 @@ export const requestConnection = async (req, res) => {
 
     let newNotification;
 
-    if (connectionData) {
-      if (connectionData.status === status) {
-        return res
+    if(!toUserData.public) {      
+      if (connectionData) {
+        if (connectionData.status === status) {
+          return res
           .status(400)
           .json({ message: `Connection already ${status}.` });
-      } else if (
+        } else if (
         connectionData.status === "cancelled" ||
         connectionData.status === "rejected" ||
         connectionData.status === "unfollowed"
       ) {
         connectionData.status = status;
         connectionData = await connectionData.save();
-
+        
         newNotification = new Notification({
           message: "Wants to follow you.",
           toUserId: toUserId,
@@ -74,9 +76,39 @@ export const requestConnection = async (req, res) => {
         fromUserId: fromUserId,
         notificationType: "followRequest",
       });
-
+      
       newNotification = await notification.save();
     }
+  } else {
+    if (!connectionData) {
+      connectionData = new Connection({
+        fromUserId,
+        toUserId,
+        status: "followed",
+      });
+    } else {
+      connectionData.status = "followed";
+    }
+    connectionData = await connectionData.save();
+    
+    newNotification = new Notification({
+      message: "started following you.",
+      toUserId: toUserId,
+      fromUserId: fromUserId,
+      notificationType: "followed",
+    });
+
+    newNotification = await newNotification.save();
+
+    toUserData = await User.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followersCount: 1 } },
+      {
+        new: true,
+        projection: { password: 0, email: 0, createdAt: 0, updatedAt: 0 },
+      }
+    );
+  }
 
     const revConnectionData = await Connection.findOne(
       { fromUserId: toUserId, toUserId: fromUserId },
@@ -112,13 +144,16 @@ export const requestConnection = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: `Follow request sent to ${toUserData.fullName}.`,
+      message: toUserData.public 
+                ? `You are now following ${toUserData.fullName}.` 
+                : `Follow request sent to ${toUserData.fullName}.`,
       userData: toUserData,
       connectionData,
       revConnectionData,
     });
 
   } catch (error) {
+    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -401,9 +436,40 @@ export const unfollowConnection = async (req, res) => {
     connectionData.status = status;
     connectionData = await connectionData.save();
 
-    await User.findByIdAndUpdate( fromUserId, { $inc: { followingsCount: -1 } } );
+    await User.findByIdAndUpdate( 
+      { _id : fromUserId },
+      [
+        {
+          $set : {
+            followingsCount : {
+              $cond : [
+                { $gt : ["$followingsCount", 0 ] },
+                { $subtract : [ "$followingsCount", 1 ] },
+                "$followingsCount"
+              ]
+            }
+          }
+        }
+      ]
+      );
 
-    const userData = await User.findByIdAndUpdate( toUserId, { $inc: { followersCount: -1 } }, { new: true } ).select(" -password -createdAt -email -updatedAt");
+    const userData = await User.findByIdAndUpdate( 
+      { _id : toUserId },
+      [
+        {
+          $set : {
+            followersCount : {
+              $cond : [
+                { $gt : [ "$followersCount", 0 ] },
+                { $subtract : [ "$followersCount" , 1 ] },
+                "$followersCount"
+              ]
+            }
+          }
+        }
+      ],
+      { new : true }
+      ).select(" -password -createdAt -email -updatedAt");
 
     const revConnectionData = await Connection.findOne( { fromUserId: toUserId, toUserId: fromUserId }, { _id: 0, status: 1 } );
 

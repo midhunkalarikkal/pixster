@@ -110,6 +110,8 @@ const ProfilePage = () => {
     })
   }
 
+  console.log("userData : ",userData);
+
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">
@@ -261,7 +263,7 @@ const ProfilePage = () => {
                 connectionData.status === "unfollowed" ||
                 connectionData.status === "cancelled" ? (
                   <CustomButton
-                    text={connectionStatusLoading ? "Requesting" : "Follow"}
+                    text={connectionStatusLoading ? userData.public ? "Connecting" : "Requesting" : "Follow"}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -284,7 +286,7 @@ const ProfilePage = () => {
                     }}
                   />
                 ) : (
-                  connectionData.status === "accepted" && (
+                  (connectionData.status === "accepted"  || connectionData.status === "followed") && (
                     <CustomButton
                       text={
                         connectionStatusLoading ? "Unfollowing" : "Following"

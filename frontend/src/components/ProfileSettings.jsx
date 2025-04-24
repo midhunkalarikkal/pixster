@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-// import { canPerformAction } from "../utils/helpers";
+import { canPerformAction } from "../utils/helpers";
 import { useAuthStore } from "../store/useAuthStore";
 import { useProfileStore } from "../store/useProfileStore";
 import { Camera, Loader2, LockIcon, LockOpen, Mail, Text, User } from "lucide-react";
@@ -16,13 +16,13 @@ const ProfileSettings = () => {
     isUpdatingProfile, 
     updateProfileImage, 
     removeProfileImage, 
-    // changeProfileType 
+    changeProfileType 
   } = useAuthStore();
   const { 
     updateAbout, 
-    // accountTypeChangedTime, 
-    // setAccountTypeChangedTime, 
-    // changeAccountType 
+    accountTypeChangedTime, 
+    setAccountTypeChangedTime, 
+    changeAccountType 
   } = useProfileStore();
 
   useEffect(() => {
@@ -68,8 +68,8 @@ const ProfileSettings = () => {
   const handleAccounttypeChange = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.info("This feature is currently under  development,  we'ill notify you once it's available");
-    return;
+    // toast.info("This feature is currently under  development,  we'ill notify you once it's available");
+    // return;
 
     // if (!canPerformAction(accountTypeChangedTime)) {
     //   const remainingTime = Math.ceil(
@@ -79,14 +79,13 @@ const ProfileSettings = () => {
     //   return;
     // }
 
-    // const data = await changeAccountType();
-    // if(data.success) {
-    //   setAccountTypeChangedTime(Date.now());
-    //   toast.success(data.message);
-    //   changeProfileType(data.type);
-    // }
+    const data = await changeAccountType();
+    if(data.success) {
+      setAccountTypeChangedTime(Date.now());
+      toast.success(data.message);
+      changeProfileType(data.type);
+    }
   }
-console.log("authUser : ",authUser);
 
   return (
     <>
