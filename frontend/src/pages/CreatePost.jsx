@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateCaption } from "../utils/validator";
 import { useProfileStore } from "../store/useProfileStore";
+import GeminiButton from "../components/GeminiButton";
 
 const CreatePost = () => {
-
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -31,7 +31,7 @@ const CreatePost = () => {
     const error = validateCaption(event.target.value);
     setCaptionError(error);
   };
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -52,7 +52,7 @@ const CreatePost = () => {
     setCaptionError(error);
     if (error) return;
 
-    if(isPost) {
+    if (isPost) {
       if (!postForUpdating && !image) {
         toast.info("Please select an image.");
         return;
@@ -84,7 +84,7 @@ const CreatePost = () => {
         setImagePreview("");
         setCaptionError(null);
         setPostForUpdating(null);
-        navigate('/profile');
+        navigate("/profile");
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -95,106 +95,134 @@ const CreatePost = () => {
     }
   };
 
+  const handleGenerateCaptions = (e) => {
+    e.preventDefault();
+    toast.info("This feature is under development");
+    return;
+  }
+
   if (uploading) {
     return (
       <div className="w-10/12 flex flex-col justify-center items-center px-4 py-8 h-screen">
         <span className="loading loading-bars loading-lg"></span>
         <p className="font-semibold">
-          {postForUpdating && postForUpdating.type} {postForUpdating ? "updating" : "uploading"}, please wait...
+          {postForUpdating && postForUpdating.type}{" "}
+          {postForUpdating ? "updating" : "uploading"}, please wait...
         </p>
       </div>
     );
   }
 
   return (
-      <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
-        <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
-          <h2 className="flex flex-col text-lg md:text-xl font-semibold mb-4">
-            {postForUpdating ? `Update ${postForUpdating && postForUpdating.type}` : `Create New ${isPost ? "Post" : "Thread"}`}
+    <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
+      <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
+        <h2 className="flex flex-col text-lg md:text-xl font-semibold mb-4">
+          {postForUpdating
+            ? `Update ${postForUpdating && postForUpdating.type}`
+            : `Create New ${isPost ? "Post" : "Thread"}`}
+          <input
+            type="checkbox"
+            checked={!isPost}
+            onChange={() => setIsPost((prev) => !prev)}
+            className={`toggle toggle-md rounded-md mt-4 transition duration-300 ${
+              postForUpdating && "hidden"
+            }`}
+          />
+        </h2>
+        {!uploading && !postForUpdating && (
+          <p className="text-sm">
+            You can post only the caption and it will be treated as a thread
+          </p>
+        )}
+        <form onSubmit={handlePostSubmit} className="space-y-4">
+          {/* Image Upload Field */}
+          <div className={`form-control ${!isPost && "hidden"}`}>
+            <label className="label">
+              <span className="label-text">Upload Image</span>
+            </label>
             <input
-              type="checkbox"
-              checked={!isPost}
-              onChange={() => setIsPost((prev) => !prev)}
-              className={`toggle toggle-md rounded-md mt-4 transition duration-300 ${postForUpdating && 'hidden'}`}
+              type="file"
+              className="file-input file-input-bordered w-full file-input-sm md:file-input-md"
+              onChange={handleImageChange}
+              accept="image/*"
             />
-          </h2>
-          {!uploading && !postForUpdating && (
-            <p className="text-sm">You can post only the caption and it will be treated as a thread</p>
-          )}
-          <form onSubmit={handlePostSubmit} className="space-y-4">
-            {/* Image Upload Field */}
-            <div className={`form-control ${!isPost && 'hidden'}`}>
-              <label className="label">
-                <span className="label-text">Upload Image</span>
-              </label>
-              <input
-                type="file"
-                className="file-input file-input-bordered w-full file-input-sm md:file-input-md"
-                onChange={handleImageChange}
-                accept="image/*"
-              />
-              {imagePreview && (
-                <div className="mt-2">
-                  <img
-                    src={imagePreview}
-                    alt="Image Preview"
-                    className="max-h-48 rounded-md object-cover"
-                  />
-                </div>
-              )}
-            </div>
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Image Preview"
+                  className="max-h-48 rounded-md object-cover"
+                />
+              </div>
+            )}
+          </div>
 
-            {/* Caption Field */}
-            <div className="form-control">
+          {/* Caption Field */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Caption</span>
+            </label>
+            <textarea
+              className={`textarea textarea-bordered h-24 max-h-96 ${
+                captionError ? "textarea-error" : ""
+              }`}
+              placeholder="Write your caption here, not more than 500 characters"
+              value={caption}
+              onChange={handleCaptionChange}
+            ></textarea>
+            {captionError && (
               <label className="label">
-                <span className="label-text">Caption</span>
+                <span className="label-text-alt text-error">
+                  {captionError}
+                </span>
               </label>
-              <textarea
-                className={`textarea textarea-bordered h-24 max-h-96 ${
-                  captionError ? "textarea-error" : ""
-                }`}
-                placeholder="Write your caption here, not more than 500 characters"
-                value={caption}
-                onChange={handleCaptionChange}
-              ></textarea>
-              {captionError && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {captionError}
-                  </span>
-                </label>
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Submit Button */}
-            <div className="flex flex-col md:flex-row">
+          {/* Submit Button */}
+          <div className="flex flex-col md:flex-row">
             <button
               type="submit"
-              className={`btn btn-neutral w-full btn-sm lg:btn-md ${postForUpdating ? "md:w-1/2" : "md:w-full"}`}
-              >
+              className={`btn btn-neutral w-full btn-sm lg:btn-md ${
+                postForUpdating ? "md:w-1/2" : "md:w-full"
+              }`}
+            >
               <ImagePlus className="mr-2" size={20} />
               {postForUpdating ? `Update ${postForUpdating.type}` : "Post"}
             </button>
             {postForUpdating && (
-
               <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setPostForUpdating(null);
-                setCaption("");
-                setImagePreview("")
-              }}
-              className={`btn btn-error w-full md:w-1/2 btn-sm lg:btn-md mt-2 md:mt-0 md:ml-2`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setPostForUpdating(null);
+                  setCaption("");
+                  setImagePreview("");
+                }}
+                className={`btn btn-error w-full md:w-1/2 btn-sm lg:btn-md mt-2 md:mt-0 md:ml-2`}
               >
-              <X className="mr-2" size={20} />
-              Discard updating
-            </button>
-              )}
-              </div>
-          </form>
-        </div>
+                <X className="mr-2" size={20} />
+                Discard updating
+              </button>
+            )}
+          </div>
+        </form>
+        <h2 className="text-lg md:text-xl font-semibold mt-10">
+          Ask Gemini for stunning captions for your post
+        </h2>
+        <form onSubmit={handleGenerateCaptions} className="w-full space-y-4 mt-2">
+          <input
+            className={`textarea textarea-bordered w-full ${
+              captionError ? "textarea-error" : ""
+            }`}
+            placeholder="Tell me your taste of caption"
+            value={caption}
+            onChange={handleCaptionChange}
+          />
+          <GeminiButton text={"Generate"}/>
+        </form>
       </div>
+    </div>
   );
 };
 
