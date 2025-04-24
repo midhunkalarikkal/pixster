@@ -74,7 +74,7 @@ const Stories = () => {
         {usersStories && usersStories.length > 0
           ? usersStories.map((story) => (
               <Story 
-                key={story._userId}
+                key={story.userId}
                 image={story.img}
                 userName={story.userName}
               />
