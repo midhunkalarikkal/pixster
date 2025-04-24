@@ -60,6 +60,12 @@ const ProfilePage = () => {
   useEffect(() => {
     const handleRevConnectionShow = (data) => {
       setRevConnection(data.revConnectionData);
+      if(data?.isFollowedPublicAccount) {
+        setUserData({
+          ...userData,
+          followersCount : userData.followersCount + 1
+        })
+      }
     }
 
     const handleRevConnectionHide = (data) => {

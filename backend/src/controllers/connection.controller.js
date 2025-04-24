@@ -144,7 +144,8 @@ export const requestConnection = async (req, res) => {
     const socketData = {
       notification: newNotification,
       userData,
-      revConnectionData : connectionData
+      revConnectionData : connectionData,
+      isFollowedPublicAccount : toUserData.public,
     };
       
     const receiverSocketId = getReceiverSocketId(toUserId);
