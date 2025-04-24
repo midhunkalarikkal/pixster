@@ -8,6 +8,7 @@ import FeedSkeleton from "../components/skeletons/FeedSkeleton";
 import HomePostsScroller from "../components/HomePostsScroller";
 import CommentContainer from "../components/CommentContainer.jsx";
 import HomeInfo from "../components/HomeInfo.jsx";
+import HorizontalScrollingSuggestion from "../components/HorizontalScrollingSuggestion.jsx";
 
 const HomePage = () => {
   const [homePostsData, setHomePostsData] = useState([]);
@@ -28,6 +29,8 @@ const HomePage = () => {
     fetchPostsData();
   }, []);
 
+  console.log("homePostsData : ",homePostsData);
+
   return (
     <>
       <div className="md:w-11/12 lg:w-10/12 flex relative h-[88%] md:h-full mt-14 md:mt-0">
@@ -42,9 +45,21 @@ const HomePage = () => {
               <FeedSkeleton />
             </>
           ) : homePostsData && homePostsData.length > 0 ? (
-            homePostsData.map((post) => (
-              <HomePostsScroller key={post?.userPostDetails?._id} post={post} />
-            ))
+            <>
+            <HomePostsScroller
+                key={homePostsData[0]?.userPostDetails?._id}
+                post={homePostsData[0]}
+              />
+
+            <HorizontalScrollingSuggestion />
+            
+            {homePostsData.slice(1).map((post) => (
+                <HomePostsScroller
+                  key={post?.userPostDetails?._id}
+                  post={post}
+                />
+              ))}
+            </>
           ) : (
             <HomeInfo />
           )}

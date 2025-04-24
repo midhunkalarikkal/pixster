@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { Users } from "lucide-react";
 import AuthUserTab from "../AuthUserTab";
 import UserTab from "../../components/UserTab";
+import { useNavigate } from "react-router-dom";
 import UserBarSkeleton from "../skeletons/UserBarSkeleton";
 import { useSearchStore } from "../../store/useSearchStore";
 import { useSuggestionStore } from "../../store/useSuggestionStore";
-import { useNavigate } from "react-router-dom";
 
 const Suggestions = () => {
 

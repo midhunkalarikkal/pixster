@@ -613,7 +613,7 @@ export const fetchSuggestions = async (req, res) => {
         },
       },
       { userName: 1, fullName: 1, profilePic: 1 }
-    );
+    ).lean();
 
     const updatedUsers = await Promise.all(
       users.map(async (user) => {
