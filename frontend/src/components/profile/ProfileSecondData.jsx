@@ -19,8 +19,6 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, ac
   const { getUserPosts, getUserSavedPosts, getUserThreads } = useProfileStore();
   const isOwnProfile = authUserId === userDataId;
 
-  console.log("status : ",status);
-
   useEffect(() => {
     const fetchData = async () => {
       setUserPosts([]);
@@ -42,12 +40,8 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, ac
         setUserThreads(threads);
         setUserThreadsLoading(false);
       } else if (status === "accepted" || accountType) {
-        console.log("fetching posts");
-        console.log("authUserId : ",authUserId);
-        console.log("userDataId : ",userDataId);
         setUserPostsLoading(true);
         const posts = await getUserPosts({ userId: userDataId });
-        console.log("posts : ",posts);
         setUserPosts(posts);
         setUserPostsLoading(false);
       }

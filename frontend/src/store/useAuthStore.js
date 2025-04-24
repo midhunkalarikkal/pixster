@@ -95,7 +95,6 @@ export const useAuthStore = create(
           toast.success("Logged in successfully.");
           get().connectSocket();
         } catch (error) {
-          console.log("error : ",error);
           toast.error(error?.response?.data?.message);
         } finally {
           set({ loading: false });
@@ -183,7 +182,6 @@ export const useAuthStore = create(
       },
 
       changeProfileType: (data) => {
-        console.log("data : ",data);
         const { authUser } = get();
         set({
           authUser : {

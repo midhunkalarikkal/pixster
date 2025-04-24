@@ -10,8 +10,6 @@ export const requestConnection = async (req, res) => {
     const { toUserId } = req.params;
     const { status } = req.query;
 
-    console.log("status : ",status);
-
     if (!fromUserId || !toUserId || !status) {
       return res.status(400).json({ message: "Invalid request." });
     }
@@ -507,9 +505,6 @@ export const removeConnection = async (req, res) => {
     const currentUserId = req.user?._id;
     const { fromUserId } = req.params;
     const { status } = req.query;
-    console.log("currentUserId : ",currentUserId);
-    console.log("fromUserId : ",fromUserId);
-    console.log("status : ",status);
 
     const fromUser = await User.findById(fromUserId);
     if(!fromUser) {

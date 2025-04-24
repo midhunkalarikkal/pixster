@@ -150,7 +150,6 @@ export const deleteMyStory = async (req, res) => {
       return res.status(400).json({ message: "Story dletion failed" });
     }
   } catch (error) {
-    console.log("error : ", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

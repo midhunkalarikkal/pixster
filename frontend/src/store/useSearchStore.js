@@ -154,7 +154,6 @@ export const useSearchStore = create(persist((set) => ({
     try {
       const res = await axiosInstance.post(`/connection/removeConnection/${fromUserId}?status=${status}`);
       toast.success(res.data.message);
-      console.log("res : ",res);
       return res.data.userId
     } catch (error) {
       toast.error(error.response.data.message);
