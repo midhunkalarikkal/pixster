@@ -1,10 +1,10 @@
 import PostGrid from "./PostGrid";
 import PropTypes from "prop-types";
+import ThreadGrid from "./ThreadGrid";
 import { memo, useEffect, useState } from "react";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { useProfileStore } from "../../store/useProfileStore";
 import ThreadsSkeleton from "../skeletons/ThreadsSkeleton";
-import ThreadGrid from "./ThreadGrid";
 
 const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) => {
 
@@ -18,6 +18,8 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
 
   const { getUserPosts, getUserSavedPosts, getUserThreads } = useProfileStore();
   const isOwnProfile = authUserId === userDataId;
+
+  console.log("status : ",status);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +41,13 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
         const threads = await getUserThreads({ userId : authUserId });
         setUserThreads(threads);
         setUserThreadsLoading(false);
-      } else if (status === "accepted") {
+      } else if (status === "accepted" || status === "followed") {
+        console.log("fetching posts");
+        console.log("authUserId : ",authUserId);
+        console.log("userDataId : ",userDataId);
         setUserPostsLoading(true);
         const posts = await getUserPosts({ userId: userDataId });
+        console.log("posts : ",posts);
         setUserPosts(posts);
         setUserPostsLoading(false);
       }
@@ -66,10 +72,12 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
     );
   };
 
+  console.log("userPosts : ",userPosts);
+
   return (
     <>
       {authUserId !== userDataId ? (
-        status === "accepted" ? (
+        (status === "accepted" || status === "followed") ? (
           <div className="border-t-[1px] border-base-300 flex justify-center">
             <div className="flex justify-around w-8/12 mt-4">
               <button
@@ -123,7 +131,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
       )}
       <div className="flex flex-col justify-center items-center w-full py-1 md:py-4">
         {tab === 0 &&
-          (isOwnProfile || status === "accepted" ? (
+          (isOwnProfile || status === "accepted" || status === "followed" ? (
             userPostsLoading ? (
               <PostsSkeleton />
             ) : userPosts.length > 0 ? (
