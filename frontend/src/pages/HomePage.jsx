@@ -7,6 +7,7 @@ import Suggestions from "../components/sidebars/Suggestions";
 import FeedSkeleton from "../components/skeletons/FeedSkeleton";
 import HomePostsScroller from "../components/HomePostsScroller";
 import CommentContainer from "../components/CommentContainer.jsx";
+import HomeInfo from "../components/HomeInfo.jsx";
 
 const HomePage = () => {
   const [homePostsData, setHomePostsData] = useState([]);
@@ -45,11 +46,7 @@ const HomePage = () => {
               <HomePostsScroller key={post?.userPostDetails?._id} post={post} />
             ))
           ) : (
-            <>
-              <FeedSkeleton />
-              <FeedSkeleton />
-              <FeedSkeleton />
-            </>
+            <HomeInfo />
           )}
         </div>
         <Suggestions />
