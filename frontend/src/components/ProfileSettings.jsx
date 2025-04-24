@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { canPerformAction } from "../utils/helpers";
+// import { canPerformAction } from "../utils/helpers";
 import { useAuthStore } from "../store/useAuthStore";
 import { useProfileStore } from "../store/useProfileStore";
 import { Camera, Loader2, LockIcon, LockOpen, Mail, Text, User } from "lucide-react";
@@ -11,8 +11,19 @@ const ProfileSettings = () => {
   const [about, setAbout] = useState("");
   const [aboutUpdating, setAboutUpdating] = useState(false);
 
-  const { authUser, isUpdatingProfile, updateProfileImage, removeProfileImage, changeProfileType } = useAuthStore();
-  const { updateAbout, accountTypeChangedTime, setAccountTypeChangedTime, changeAccountType } = useProfileStore();
+  const { 
+    authUser, 
+    isUpdatingProfile, 
+    updateProfileImage, 
+    removeProfileImage, 
+    // changeProfileType 
+  } = useAuthStore();
+  const { 
+    updateAbout, 
+    // accountTypeChangedTime, 
+    // setAccountTypeChangedTime, 
+    // changeAccountType 
+  } = useProfileStore();
 
   useEffect(() => {
     setAbout(authUser?.about)
@@ -57,21 +68,23 @@ const ProfileSettings = () => {
   const handleAccounttypeChange = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!canPerformAction(accountTypeChangedTime)) {
-      const remainingTime = Math.ceil(
-        (3600000 - (Date.now() - accountTypeChangedTime)) / 60000
-      );
-      toast.info(`Please wait ${remainingTime} minute(s) before trying again.`);
-      return;
-    }
+    toast.info("This feature is currently under  development,  we'ill notify you once it's available");
+    return;
 
-    const data = await changeAccountType();
-    if(data.success) {
-      setAccountTypeChangedTime(Date.now());
-      toast.success(data.message);
-      changeProfileType(data.type);
-    }
-    // toast.info("This feature is currently under  development,  we'ill notify you once it's available")
+    // if (!canPerformAction(accountTypeChangedTime)) {
+    //   const remainingTime = Math.ceil(
+    //     (3600000 - (Date.now() - accountTypeChangedTime)) / 60000
+    //   );
+    //   toast.info(`Please wait ${remainingTime} minute(s) before trying again.`);
+    //   return;
+    // }
+
+    // const data = await changeAccountType();
+    // if(data.success) {
+    //   setAccountTypeChangedTime(Date.now());
+    //   toast.success(data.message);
+    //   changeProfileType(data.type);
+    // }
   }
 console.log("authUser : ",authUser);
 
