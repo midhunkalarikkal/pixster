@@ -7,13 +7,13 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useAuthFormStore } from "../../store/useAuthFormStore";
 
 const OtpVerifyForm = () => {
-  
   const [resentLoading, setResendLoading] = useState(false);
   const [formData, setFormData] = useState({
     otp: "",
   });
 
-  const { otpRemainingTime, otpTimerIsRunning, updateTimer } = useAuthFormStore();
+  const { otpRemainingTime, otpTimerIsRunning, updateTimer } =
+    useAuthFormStore();
   const { verifyOtp, loading, resendOtp } = useAuthStore();
 
   useEffect(() => {
@@ -39,13 +39,13 @@ const OtpVerifyForm = () => {
     setResendLoading(true);
     try {
       const res = await resendOtp();
-      if(res.success) {
+      if (res.success) {
         toast.success(res.message);
       }
-    }  finally {
+    } finally {
       setResendLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -74,9 +74,9 @@ const OtpVerifyForm = () => {
           )}
         </button>
       </form>
-      <p className="mt-6 flex justify-between text-xs md:text-sm/6 text-[var(--textTwo)] px-2">
+      <p className="mt-6 flex justify-between text-xs md:text-sm/6 px-2">
         {resentLoading ? (
-          <span className="font-semibold text-[var(--mainColor)] hover:text-[var(--mainColorHover)] cursor-pointer">
+          <span className="font-semibold cursor-pointer">
             Sending
           </span>
         ) : otpTimerIsRunning ? (
@@ -85,12 +85,17 @@ const OtpVerifyForm = () => {
           </span>
         ) : (
           <span
-            className="font-semibold text-[var(--mainColor)] hover:text-[var(--mainColorHover)] cursor-pointer"
+            className="font-semibold cursor-pointer"
             onClick={handleResendOtp}
           >
             Resend OTP
           </span>
         )}
+      </p>
+      <p className="text-base-content/60 text-sm">
+        {
+          "We've sent an OTP to your email. Please check your inbox — and don’t forget to look in the spam or junk folder, just in case!"
+        }
       </p>
     </>
   );

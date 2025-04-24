@@ -13,7 +13,7 @@ const SuggestionCard = ({ user, showButton, buttonText, onButtonClick, onClickUs
       </div>
       <div className="flex flex-col justify-center items-center mt-4">
         <p className="text-sm">{user.fullName}</p>
-        <p className="text-sm text-gray-500">{user.userName}</p>
+        <p className="text-sm text-base-content/60">{user.userName}</p>
         {showButton && buttonText && onButtonClick && ( 
         <button className="btn btn-xs bg-blue-600 hover:bg-blue-500 w-full rounded-md mt-4 text-white">
             {buttonText}
