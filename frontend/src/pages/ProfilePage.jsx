@@ -177,7 +177,7 @@ const ProfilePage = () => {
                   </div>
 
                   {userData && authUser?._id !== userData?._id ? (
-                    connectionData && connectionData.status === "accepted" ? (
+                    (connectionData && connectionData.status === "accepted" || connectionData.status === "followed") ? (
                       <>
                         <UserStat
                           icon={Users}

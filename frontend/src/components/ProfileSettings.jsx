@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { canPerformAction } from "../utils/helpers";
+// import { canPerformAction } from "../utils/helpers";
 import { useAuthStore } from "../store/useAuthStore";
 import { useProfileStore } from "../store/useProfileStore";
 import { Camera, Loader2, LockIcon, LockOpen, Mail, Text, User } from "lucide-react";
@@ -20,7 +20,7 @@ const ProfileSettings = () => {
   } = useAuthStore();
   const { 
     updateAbout, 
-    accountTypeChangedTime, 
+    // accountTypeChangedTime, 
     setAccountTypeChangedTime, 
     changeAccountType 
   } = useProfileStore();
