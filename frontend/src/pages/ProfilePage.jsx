@@ -84,7 +84,6 @@ const ProfilePage = () => {
 
     const handleUnfollowConnectionUpdateData = () => {
       if(!userData) return;
-      console.log("updating");
       setUserData({
         ...userData,
         followersCount : userData.followersCount === 0 ? 0 : userData.followersCount - 1
@@ -113,7 +112,7 @@ const ProfilePage = () => {
   const handlePostDelete = () => {
     setUserData({
       ...userData,
-      postsCount: userData.postsCount - 1
+      postsCount: userData.postsCount === 0 ? 0 : userData.postsCount - 1,
     })
   }
 
@@ -127,7 +126,7 @@ const ProfilePage = () => {
   const handleRemoveFollowingPrfoile = () => {
     setUserData({
       ...userData,
-      followingsCount: userData.followingsCount - 1
+      followingsCount: userData.followingsCount === 0 ? 0 : userData.followingsCount - 1,
     })
   }
 
@@ -314,7 +313,7 @@ const ProfilePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        unFollowConnectionRequest(userData?._id, "unfollowed");
+                        unFollowConnectionRequest(userData?._id, "unfollowed", false);
                       }}
                     />
                   )

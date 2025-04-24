@@ -17,7 +17,7 @@ const UserTabListing = ({ authUserId, userDataId, updateFollowersCount, updateFo
 
   const { socket } = useAuthStore();
   const { setListPage, listPage } = useProfileStore();
-  const { getSearchSelectedUser, cancelConnectionRequest, removeConnection } = useSearchStore();
+  const { getSearchSelectedUser, cancelConnectionRequest, removeConnection, unFollowConnectionRequest } = useSearchStore();
   const {
     requestedProfiles,
     setRequestedProfiles,
@@ -109,12 +109,18 @@ const UserTabListing = ({ authUserId, userDataId, updateFollowersCount, updateFo
   const handleUnfollowConnection = async (user, e) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.info("working on it");
-    // if(!user) {
-    //   toast.error("Something went wrong, please try again");
-    //   return;
-    // }
-    // const userId = await 
+    if(!user) {
+      toast.error("Something went wrong, please try again");
+      return;
+    }
+    const userId = await unFollowConnectionRequest(user._id, "unfollowed", true)
+    if(userId) {
+      const updatedFollowingsProfiles = followingProfiles.filter(
+        (profile) => profile._id !== userId
+      )
+      setFollowingProfiles(updatedFollowingsProfiles);
+      updateFollowingsCount();
+    }
   };
 
   const handleRemoveConnection = async (user, e) => {

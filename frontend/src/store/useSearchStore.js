@@ -133,13 +133,16 @@ export const useSearchStore = create(persist((set) => ({
     }
   },
 
-  unFollowConnectionRequest: async (toUserId, status) => {
+  unFollowConnectionRequest: async (toUserId, status, tab) => {
     set({ connectionStatusLoading: true });
     try {
         const res = await axiosInstance.post(`/connection/unFollowConnectionRequest/${toUserId}?status=${status}`);
         toast.success(res.data.message);
-        set({ searchSelectedUser: res.data });
-        return res.data.userData;
+        if(!tab) {
+          set({ searchSelectedUser: res.data });
+        } else {
+          return res.data.userData._id;
+        }
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
