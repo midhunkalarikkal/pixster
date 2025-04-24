@@ -73,7 +73,7 @@ export const signup = async (req, res) => {
 
     const otp = generateOTP();
 
-    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
+    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 300 });
  
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -214,7 +214,7 @@ export const resendOtp = async (req, res) => {
 
     const otp = generateOTP();
 
-    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 90 });
+    const redisOtpStoring = await redis.set(`otp:${email}`, otp, { ex: 300 });
  
     const transporter = nodemailer.createTransport({
       service: "gmail",

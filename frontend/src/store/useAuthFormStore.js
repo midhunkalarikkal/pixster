@@ -89,6 +89,6 @@ export const useAuthFormStore = create((set, get) => ({
 
   startTimer: () => {
     set({ otpTimerIsRunning : true });
-    set({ otpRemainingTime : 90 });
+    set({ otpRemainingTime : 300 });
   }
 }));
