@@ -5,7 +5,7 @@ import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
 import { generateToken } from "../lib/utils.js";
-import { generateOTP } from "../utils/helper.js";
+import { generateOTP, generateS3Key } from "../utils/helper.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 import {
@@ -306,11 +306,15 @@ export const updateProfile = async (req, res) => {
       }
     }
 
+    const key = generateS3Key({
+      folder: 'pixsterUsersProfileImages',
+      userId: userId,
+      originalname: file.originalname,
+    });
+
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `pixsterUsersProfileImages/${userId}.${file.originalname
-        .split(".")
-        .pop()}`,
+      Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
     };

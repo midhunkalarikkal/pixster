@@ -5,11 +5,11 @@ import Saved from "../models/saved.model.js";
 import { Upload } from "@aws-sdk/lib-storage";
 import Comment from "../models/comment.model.js";
 import PostLike from "../models/postLike.model.js";
-import { getReceiverSocketId, io } from "../lib/socket.js";
+import { generateS3Key } from "../utils/helper.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import CommentLike from "../models/commentLike.model.js";
-import { generateRandomString } from "../utils/helper.js";
 import Notification from "../models/notification.model.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import { generateSignedUrl, s3Client } from "../utils/aws.config.js";
 
 import dotenv from "dotenv";
@@ -17,67 +17,66 @@ dotenv.config();
 
 export const uploadPost = async (req, res) => {
   try {
-    const currentUser = req.user?._id;
+    const currentUserId = req.user?._id;
 
     const { caption, type } = req.body;
     const file = req.file;
 
-    if (!currentUser) {
+    if (!currentUserId) {
       return res.status(400).json({ message: "User not found." });
     }
 
-    
     if (!caption) {
       return res.status(400).json({ message: "Caption not found." });
     }
-    
+
     if (caption.length < 1 || caption.length > 500) {
       return res.status(400).json({ message: "Pos captionlength error." });
     }
-    
-    if(type === "Post") {
+
+    if (type === "Post") {
       if (!file) {
         return res.status(400).json({ message: "Image not found." });
       }
-    
-    const randomString = await generateRandomString();
 
-    const trimmedFileName = file.originalname.replace(/\s+/g, '_');
+      const key = generateS3Key({
+        folder: "pixsterUsersPostsImages",
+        userId: currentUserId,
+        originalname: file.originalname,
+      });
 
-    const params = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `pixsterUsersPostsImages/${
-        currentUser + randomString + trimmedFileName
-      }`,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    };
+      const params = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
 
-    const upload = new Upload({
-      client: s3Client,
-      params: params,
-    });
+      const upload = new Upload({
+        client: s3Client,
+        params: params,
+      });
 
-    const s3UploadResponse = await upload.done();
+      const s3UploadResponse = await upload.done();
 
-    const newPost = new Post({
-      userId: currentUser,
-      media: s3UploadResponse.Location,
-      content: caption,
-      type: type
-    });
+      const newPost = new Post({
+        userId: currentUserId,
+        media: s3UploadResponse.Location,
+        content: caption,
+        type: type,
+      });
 
-    await newPost.save();
-  } else {
-    const newPost = new Post({
-      userId: currentUser,
-      content: caption,
-      type: type
-    });
+      await newPost.save();
+    } else {
+      const newPost = new Post({
+        userId: currentUserId,
+        content: caption,
+        type: type,
+      });
 
-    await newPost.save();
-  }
-    await User.findByIdAndUpdate(currentUser, { $inc: { postsCount: 1 } });
+      await newPost.save();
+    }
+    await User.findByIdAndUpdate(currentUserId, { $inc: { postsCount: 1 } });
 
     return res
       .status(201)
@@ -115,16 +114,18 @@ export const deletePost = async (req, res) => {
     }
 
     await Post.findByIdAndDelete(postId);
-    
+
     await Comment.deleteMany({ postId });
 
     await User.findByIdAndUpdate(
       currentUserId,
-      { $inc : { postsCount : -1 } },
-      { new : true }
-    )
+      { $inc: { postsCount: -1 } },
+      { new: true }
+    );
 
-    return res.status(200).json({ message: `${post.type} deleted successfully.` });
+    return res
+      .status(200)
+      .json({ message: `${post.type} deleted successfully.` });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -132,13 +133,13 @@ export const deletePost = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   try {
-    const currentUser = req.user?._id;
+    const currentUserId = req.user?._id;
     const { postId } = req.params;
 
     const { caption } = req.body;
     const file = req.file;
 
-    if (!currentUser) {
+    if (!currentUserId) {
       return res.status(400).json({ message: "User not found." });
     }
 
@@ -165,15 +166,15 @@ export const updatePost = async (req, res) => {
         }
       }
 
-      const randomString = await generateRandomString();
-
-      const trimmedFileName = file.originalname.replace(/\s+/g, '_');
+      const key = generateS3Key({
+        folder: "pixsterUsersStoryImages",
+        userId: currentUserId,
+        originalname: file.originalname,
+      });
 
       const params = {
         Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: `pixsterUsersPostsImages/${
-          currentUser + randomString + trimmedFileName
-        }`,
+        Key: key,
         Body: file.buffer,
         ContentType: file.mimetype,
       };
@@ -235,20 +236,20 @@ export const likeOrDislikePost = async (req, res) => {
     if (existLike) {
       await PostLike.findByIdAndDelete(existLike._id);
 
-      const updatedPost = await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+      const updatedPost = await Post.findByIdAndUpdate(postId, {
+        $inc: { likes: -1 },
+      });
 
-      if(updatedPost.likes < 0) {
+      if (updatedPost.likes < 0) {
         updatedPost.likes = 0;
         await updatedPost.save();
       }
 
-      return res
-        .status(200)
-        .json({
-          message: "You have disliked a post",
-          liked: false,
-          disliked: true,
-        });
+      return res.status(200).json({
+        message: "You have disliked a post",
+        liked: false,
+        disliked: true,
+      });
     } else {
       const newLike = new PostLike({
         userId: currentUserId,
@@ -287,13 +288,11 @@ export const likeOrDislikePost = async (req, res) => {
         io.to(receiverSocketId).emit("postLikeSocket", postLikeSocketData);
       }
 
-      return res
-        .status(200)
-        .json({
-          message: "You have liked a post",
-          liked: true,
-          disliked: false,
-        });
+      return res.status(200).json({
+        message: "You have liked a post",
+        liked: true,
+        disliked: false,
+      });
     }
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
@@ -323,13 +322,11 @@ export const savePost = async (req, res) => {
     if (existing) {
       await Saved.findByIdAndDelete(existing._id);
 
-      return res
-        .status(200)
-        .json({
-          message: "Post removed from your saved list.",
-          saved: false,
-          removed: true,
-        });
+      return res.status(200).json({
+        message: "Post removed from your saved list.",
+        saved: false,
+        removed: true,
+      });
     } else {
       const newSaved = new Saved({
         userId: currentUserId,
@@ -419,7 +416,7 @@ export const addComment = async (req, res) => {
 
     newComment = {
       ...newComment.toObject(),
-      user: newComment.userId
+      user: newComment.userId,
     };
     delete newComment.userId;
 
@@ -445,7 +442,7 @@ export const addComment = async (req, res) => {
         });
 
         const savedNotificationForParentCommenter =
-        await notificationToParentCommenter.save();
+          await notificationToParentCommenter.save();
         await savedNotificationForParentCommenter.populate({
           path: "fromUserId",
           select: "userName, profilePic",
@@ -592,20 +589,26 @@ export const getComments = async (req, res) => {
       },
     ]);
 
-    const likedComments = await CommentLike.find({ userId : currentUserId }).select("commentId");
-    const likedCommentsIdsSet = new Set(likedComments.map(like => like.commentId.toString()));
+    const likedComments = await CommentLike.find({
+      userId: currentUserId,
+    }).select("commentId");
+    const likedCommentsIdsSet = new Set(
+      likedComments.map((like) => like.commentId.toString())
+    );
 
     aggregatedComments = await Promise.all(
       aggregatedComments.map(async (comment) => {
-        comment.commentLikedByAuthUser = likedCommentsIdsSet.has(comment._id.toString())
-        
-        comment.replies = comment.replies.map(reply => ({
+        comment.commentLikedByAuthUser = likedCommentsIdsSet.has(
+          comment._id.toString()
+        );
+
+        comment.replies = comment.replies.map((reply) => ({
           ...reply,
-          commentLikedByAuthUser : likedCommentsIdsSet.has(reply._id.toString())
-        }))
+          commentLikedByAuthUser: likedCommentsIdsSet.has(reply._id.toString()),
+        }));
         return comment;
       })
-    ) 
+    );
 
     if (aggregatedComments.length > 0) {
       aggregatedComments = await Promise.all(
@@ -674,53 +677,53 @@ export const likeOrDislikeComment = async (req, res) => {
     const currentUserId = req.user?._id;
     const { commentId } = req.params;
 
-    if(!currentUserId || !commentId) {
-      return res.statusa(404).json({ message : "Invalid request" });
+    if (!currentUserId || !commentId) {
+      return res.statusa(404).json({ message: "Invalid request" });
     }
 
     const comment = await Comment.findById(commentId);
-    if(!comment) {
-      return res.status(404).json({ message : "Comment not found" });
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
     }
 
     const existingLike = await CommentLike.findOne({
-      commentId : comment._id,
-      userId : currentUserId,
+      commentId: comment._id,
+      userId: currentUserId,
     });
 
-    if(existingLike) {
+    if (existingLike) {
       await CommentLike.findByIdAndDelete(existingLike._id);
 
-      await Comment.findByIdAndUpdate(comment._id, { $inc : { likes : -1 } } );
+      await Comment.findByIdAndUpdate(comment._id, { $inc: { likes: -1 } });
     } else {
       const newCommentLike = await CommentLike({
         commentId,
-        userId : currentUserId,
+        userId: currentUserId,
       });
-      
+
       await newCommentLike.save();
 
-      await Comment.findByIdAndUpdate(comment._id, { $inc : { likes : 1 } } );
-      
+      await Comment.findByIdAndUpdate(comment._id, { $inc: { likes: 1 } });
+
       const newNotification = new Notification({
-        message : "liked your comment",
-        toUserId : comment.userId,
-        fromUserId : currentUserId,
-        notificationType : "commentLiked"
-      })
-      
+        message: "liked your comment",
+        toUserId: comment.userId,
+        fromUserId: currentUserId,
+        notificationType: "commentLiked",
+      });
+
       await newNotification.save();
-      
+
       await newNotification.populate({
-        path : "fromUserId",
-        select : "userName profilePic"
-      })
-      
-      if(currentUserId.toString() !== comment.userId.toString()) {
+        path: "fromUserId",
+        select: "userName profilePic",
+      });
+
+      if (currentUserId.toString() !== comment.userId.toString()) {
         const socketData = {
-          notification : newNotification
-        }
-        
+          notification: newNotification,
+        };
+
         const receiverSocketId = getReceiverSocketId(comment.userId);
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("commentLiked", socketData);
@@ -733,10 +736,9 @@ export const likeOrDislikeComment = async (req, res) => {
       liked: !existingLike,
       disliked: !!existingLike,
       isRootComment: comment.isRootComment,
-      parentCommentId: comment.parentCommentId
+      parentCommentId: comment.parentCommentId,
     });
-
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
-}
+};
