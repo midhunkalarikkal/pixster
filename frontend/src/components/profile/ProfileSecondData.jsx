@@ -6,7 +6,7 @@ import PostsSkeleton from "../skeletons/PostsSkeleton";
 import { useProfileStore } from "../../store/useProfileStore";
 import ThreadsSkeleton from "../skeletons/ThreadsSkeleton";
 
-const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) => {
+const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, accountType }) => {
 
   const [tab, setTab] = useState(0);
   const [userPosts, setUserPosts] = useState([]);
@@ -41,7 +41,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
         const threads = await getUserThreads({ userId : authUserId });
         setUserThreads(threads);
         setUserThreadsLoading(false);
-      } else if (status === "accepted" || status === "followed") {
+      } else if (status === "accepted" || accountType) {
         console.log("fetching posts");
         console.log("authUserId : ",authUserId);
         console.log("userDataId : ",userDataId);
@@ -72,12 +72,10 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
     );
   };
 
-  console.log("userPosts : ",userPosts);
-
   return (
     <>
       {authUserId !== userDataId ? (
-        (status === "accepted" || status === "followed") ? (
+        (status === "accepted" || accountType) ? (
           <div className="border-t-[1px] border-base-300 flex justify-center">
             <div className="flex justify-around w-8/12 mt-4">
               <button
@@ -131,7 +129,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
       )}
       <div className="flex flex-col justify-center items-center w-full py-1 md:py-4">
         {tab === 0 &&
-          (isOwnProfile || status === "accepted" || status === "followed" ? (
+          (isOwnProfile || status === "accepted" || accountType ? (
             userPostsLoading ? (
               <PostsSkeleton />
             ) : userPosts.length > 0 ? (
@@ -152,7 +150,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
           ) : null)}
 
         {tab === 5 &&
-          (isOwnProfile || status === "accepted" || status === "followed" ? (
+          (isOwnProfile || status === "accepted" || accountType ? (
             userThreadsLoading ? (
               <ThreadsSkeleton />
             ) : userThreads && userThreads.length > 0 ? (
@@ -194,6 +192,7 @@ ProfileSecondData.propTypes = {
   userDataId: PropTypes.string.isRequired,
   status: PropTypes.string,
   updatepostCount: PropTypes.func,
+  accountType: PropTypes.bool,
 };
 
 export default memo(ProfileSecondData);

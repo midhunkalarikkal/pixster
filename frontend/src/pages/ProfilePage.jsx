@@ -308,6 +308,7 @@ const ProfilePage = () => {
                 userDataId={userData?._id}
                 status={connectionData && connectionData.status}
                 updatepostCount={handlePostDelete}
+                accountType={userData?.public}
               />
             )}
 
