@@ -36,7 +36,7 @@ export const userSchema = new mongoose.Schema(
         about : {
             type: String,
             minLength: 5,
-            maxLength: 150,
+            maxLength: 200,
             default : "This about is from Pixster, you can update.",
             trim : true,
         },
@@ -60,6 +60,12 @@ export const userSchema = new mongoose.Schema(
         public : {
             type : Boolean,
             default : false,
+            required : true,
+        },
+        accountTypeChangedOn : {
+            type : Date,
+            default : Date.now,
+            required : true,
         }
     },{
         timestamps : true

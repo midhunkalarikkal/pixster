@@ -182,6 +182,17 @@ export const useAuthStore = create(
         });
       },
 
+      changeProfileType: (data) => {
+        console.log("data : ",data);
+        const { authUser } = get();
+        set({
+          authUser : {
+            ...authUser,
+            public: data
+          }
+        })
+      },
+      
       setOnlineUsers: (userIds) => set({ onlineUsers : userIds }),
 
       // Socket implementation

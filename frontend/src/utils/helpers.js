@@ -63,3 +63,10 @@ export const formatDate = (date) => {
       privateKey: exportedPrivateKey,
     };
   };
+
+  // Used for checking the time
+  export const canPerformAction = (lastActionTime, cooldownInMillis = 3600000) => {
+    if (!lastActionTime) return true;
+    const currentTime = Date.now();
+    return currentTime - lastActionTime >= cooldownInMillis;
+  };

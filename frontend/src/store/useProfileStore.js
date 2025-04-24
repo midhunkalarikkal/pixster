@@ -26,6 +26,8 @@ export const useProfileStore = create((set) => ({
 
   listPage: false,
 
+  accountTypeChangedTime: null,
+
   setTab: (data) => set({ tab : data }),
 
   setRevConnection: (data) => set({ revConnection : data }),
@@ -37,6 +39,8 @@ export const useProfileStore = create((set) => ({
   setRequestedProfiles: (profiles) => set({ requestedProfiles: profiles }),
 
   setIncomingRequestedProfiles: (profiles) => set({ incomingrequestedProfiles: profiles }),
+
+  setAccountTypeChangedTime : (data) => set({ accountTypeChangedTime : data }),
 
   getUserPosts: async (data) => {
     try{
@@ -157,6 +161,15 @@ export const useProfileStore = create((set) => ({
     } catch (error) {
       toast.error(error.response.data.message);
     }
+  },
+
+  changeAccountType: async () => {
+    try {
+      const res = await axiosInstance.put('/user/changeAccountType');
+      return res.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } 
   }
 
 }));
