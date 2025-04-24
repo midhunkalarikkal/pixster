@@ -387,7 +387,10 @@ export const fetchFollowingAccounts = async (req, res) => {
 
     const followingUsersIds = await Connection.find({
       fromUserId: userId,
-      status: "accepted",
+      $or : [
+        { status : "accepted" },
+        { status : "followed" }
+      ]
     }).distinct("toUserId");
 
     const users = await User.find(

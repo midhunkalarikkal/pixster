@@ -16,7 +16,7 @@ export const requestConnection = async (req, res) => {
       return res.status(400).json({ message: "Invalid request." });
     }
 
-    const userData = await User.findById(fromUserId, { _id: 1, userName: 1, fullName: 1, profilePic: 1 });
+    let userData = await User.findById(fromUserId, { _id: 1, userName: 1, fullName: 1, profilePic: 1 });
     if(!userData) {
       return res.status(400).json({ message: "User not found." });
     }
@@ -108,7 +108,18 @@ export const requestConnection = async (req, res) => {
         projection: { password: 0, email: 0, createdAt: 0, updatedAt: 0 },
       }
     );
+
+    userData = await User.findByIdAndUpdate(
+      fromUserId,
+      { $inc: { followingsCount: 1 } },
+      {
+        new: true,
+        projection: { password: 0, email: 0, createdAt: 0, updatedAt: 0 },
+      }
+    );
   }
+  
+  console.log("userData : ",userData);
 
     const revConnectionData = await Connection.findOne(
       { fromUserId: toUserId, toUserId: fromUserId },
