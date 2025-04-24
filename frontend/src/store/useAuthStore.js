@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { exportKeys, generateKeys } from "../utils/helpers";
+// import { exportKeys, generateKeys } from "../utils/helpers";
 
 const BASE_URL =
   import.meta.env.MODE === "development"
@@ -62,6 +62,13 @@ export const useAuthStore = create(
         } = useAuthFormStore.getState();
         set({ loading: true });
         try {
+          // const {publicKey, privateKey} = await generateKeys();
+          // const keyData = await exportKeys(publicKey, privateKey);
+        //   const res = await axiosInstance.post("/auth/verifyOtp",  {
+        //     ...data,
+        //   publicKey: keyData.publicKey,
+        //   privateKey: keyData.privateKey,
+        // });
           const res = await axiosInstance.post("/auth/verifyOtp", data);
           stopTimer();
           toast.success(res.data.message);
@@ -82,13 +89,7 @@ export const useAuthStore = create(
         set({ loading: true });
         set({ authEmail: data.email });
         try {
-          const {publicKey, privateKey} = await generateKeys();
-          const keyData = await exportKeys(publicKey, privateKey);
-          const res = await axiosInstance.post("/auth/login", {
-              ...data,
-            publicKey: keyData.publicKey,
-            privateKey: keyData.privateKey,
-          });
+          const res = await axiosInstance.post("/auth/login",data);
           set({ authUser: res.data });
           set({ authEmail: null });
           toast.success("Logged in successfully.");
