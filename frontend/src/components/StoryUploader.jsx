@@ -36,7 +36,7 @@ const StoryUploader = () => {
         storyUploaderOpen ? "absolute" : "hidden"
       }`}
     >
-      <div className="w-4/12 h-[600px] rounded-2xl shadow-lg border border-base-300 p-4 flex flex-col bg-base-100">
+      <div className="w-11/12 md:w-6/12 lg:w-4/12 h-[600px] rounded-2xl shadow-lg border border-base-300 p-4 flex flex-col bg-base-100">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold">Upload Your Story</h2>
           <button

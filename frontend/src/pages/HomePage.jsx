@@ -29,8 +29,6 @@ const HomePage = () => {
     fetchPostsData();
   }, []);
 
-  console.log("homePostsData : ",homePostsData);
-
   return (
     <>
       <div className="md:w-11/12 lg:w-10/12 flex relative h-[88%] md:h-full mt-14 md:mt-0">
