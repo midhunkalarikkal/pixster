@@ -35,6 +35,7 @@ export const useSearchStore = create(persist((set) => ({
     
     try {
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
+      console.log("res : ",res);
       if(res.status === 200) {
         set({ selectedUserId: userId });
         set({ searchSelectedUser: res.data });
