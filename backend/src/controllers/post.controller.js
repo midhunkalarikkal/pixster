@@ -167,10 +167,12 @@ export const updatePost = async (req, res) => {
 
       const randomString = await generateRandomString();
 
+      const trimmedFileName = file.originalname.replace(/\s+/g, '_');
+
       const params = {
         Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: `pixsterUsersPostsImages/${
-          currentUser + randomString + file.originalname
+          currentUser + randomString + trimmedFileName
         }`,
         Body: file.buffer,
         ContentType: file.mimetype,
