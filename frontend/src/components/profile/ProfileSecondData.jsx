@@ -152,7 +152,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount }) 
           ) : null)}
 
         {tab === 5 &&
-          (isOwnProfile || status === "accepted" ? (
+          (isOwnProfile || status === "accepted" || status === "followed" ? (
             userThreadsLoading ? (
               <ThreadsSkeleton />
             ) : userThreads && userThreads.length > 0 ? (
