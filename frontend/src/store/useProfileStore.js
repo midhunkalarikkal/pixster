@@ -42,6 +42,10 @@ export const useProfileStore = create((set) => ({
 
   setAccountTypeChangedTime : (data) => set({ accountTypeChangedTime : data }),
 
+  setFollowersProfiles: (profiles) => set({ followersProfiles : profiles }),
+
+  setFollowingProfiles: (profiles) => set({ followingProfiles : profiles }),
+
   getUserPosts: async (data) => {
     try{
       const res = await axiosInstance.get(`/user/getUserPosts/${data.userId}`);

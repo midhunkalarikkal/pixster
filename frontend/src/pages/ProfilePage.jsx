@@ -110,7 +110,19 @@ const ProfilePage = () => {
     })
   }
 
-  console.log("userData : ",userData);
+  const handleRemoveFollowerProfile = () => {
+    setUserData({
+      ...userData,
+      followersCount: userData.followersCount - 1
+    })
+  }
+
+  const handleRemoveFollowingPrfoile = () => {
+    setUserData({
+      ...userData,
+      followingsCount: userData.followingsCount - 1
+    })
+  }
 
   if (searchSelectedUserLoading) {
     return (
@@ -119,8 +131,6 @@ const ProfilePage = () => {
       </div>
     );
   }
-
-  console.log("connectionData : ",connectionData);
 
   return (
     <>
@@ -263,7 +273,8 @@ const ProfilePage = () => {
                 connectionData === null ||
                 connectionData.status === "rejected" ||
                 connectionData.status === "unfollowed" ||
-                connectionData.status === "cancelled" ? (
+                connectionData.status === "cancelled" ||
+                connectionData.status === "removed" ? (
                   <CustomButton
                     text={connectionStatusLoading ? userData.public ? "Connecting" : "Requesting" : "Follow"}
                     onClick={(e) => {
@@ -321,7 +332,9 @@ const ProfilePage = () => {
         <UserTabListing
           authUserId={authUser?._id}
           userDataId={userData?._id}
-          status={connectionData && connectionData.status}
+          // status={connectionData && connectionData.status}
+          updateFollowersCount={handleRemoveFollowerProfile}
+          updateFollowingsCount={handleRemoveFollowingPrfoile}
         />
       )}
     </>

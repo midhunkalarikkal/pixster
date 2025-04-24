@@ -119,8 +119,6 @@ export const requestConnection = async (req, res) => {
     );
   }
   
-  console.log("userData : ",userData);
-
     const revConnectionData = await Connection.findOne(
       { fromUserId: toUserId, toUserId: fromUserId },
       { _id: 0, status: 1 }
@@ -164,7 +162,6 @@ export const requestConnection = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("error : ",error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -502,3 +499,87 @@ export const unfollowConnection = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+export const removeConnection = async (req, res) => {
+  try {
+    const currentUserId = req.user?._id;
+    const { fromUserId } = req.params;
+    const { status } = req.query;
+    console.log("currentUserId : ",currentUserId);
+    console.log("fromUserId : ",fromUserId);
+    console.log("status : ",status);
+
+    const fromUser = await User.findById(fromUserId);
+    if(!fromUser) {
+      return res.status(404).json({ message : "No user found" });
+    }
+
+    const connection = await Connection.findOne({
+      fromUserId : fromUserId,
+      toUserId : currentUserId,
+      status : { $in : [ "followed", "accepted" ] }
+    });
+    if(!connection) {
+      return res.status(404).json({ message : "No connection found" });
+    }
+
+    if(connection.status === status) {
+      return res.status(400).json({ message : "You have already removed this connection" });
+    } else {
+      connection.status = status;
+      await connection.save();
+
+      await User.findByIdAndUpdate( 
+        { _id : fromUserId },
+        [
+          {
+            $set : {
+              followingsCount : {
+                $cond : [
+                  { $gt : ["$followingsCount", 0 ] },
+                  { $subtract : [ "$followingsCount", 1 ] },
+                  "$followingsCount"
+                ]
+              }
+            }
+          }
+        ]
+        );
+
+      await User.findByIdAndUpdate(
+        { _id : currentUserId },
+        [
+          {
+            $set : {
+              followersCount : {
+                $cond : [
+                  { $gt : [ "$followersCount", 0 ] },
+                  { $subtract : [ "$followersCount" , 1 ] },
+                  "$followersCount"
+                ]
+              }
+            }
+          }
+        ],
+      )
+    }
+
+    const socketData = {
+      userId: currentUserId,
+    }
+
+    const receiverSocketId = getReceiverSocketId(fromUser._id);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("removeConnection", socketData);
+    }
+
+    return res.status(200).json({
+      message : `Removed ${fromUser.userName}`,
+      userId : fromUser._id,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

@@ -10,14 +10,14 @@ import { useSearchStore } from "../store/useSearchStore";
 import UserBarSkeleton from "./skeletons/UserBarSkeleton";
 import { useProfileStore } from "../store/useProfileStore";
 
-const UserTabListing = ({ authUserId, userDataId }) => {
+const UserTabListing = ({ authUserId, userDataId, updateFollowersCount, updateFollowingsCount }) => {
   
   const navigate = useNavigate();
   let [reqdProfiles, setReqProfiles] = useState([]);
 
   const { socket } = useAuthStore();
   const { setListPage, listPage } = useProfileStore();
-  const { getSearchSelectedUser, cancelConnectionRequest } = useSearchStore();
+  const { getSearchSelectedUser, cancelConnectionRequest, removeConnection } = useSearchStore();
   const {
     requestedProfiles,
     setRequestedProfiles,
@@ -26,8 +26,10 @@ const UserTabListing = ({ authUserId, userDataId }) => {
     setIncomingRequestedProfiles,
     incomingrequestedProfilesLoading,
     followingProfiles,
+    setFollowingProfiles,
     followingProfilesLoading,
     followersProfiles,
+    setFollowersProfiles,
     followersProfilesLoading,
     tab,
     setTab,
@@ -65,15 +67,27 @@ const UserTabListing = ({ authUserId, userDataId }) => {
       }
     }
 
+    const handlePopProfileFromFollowings = (data) => {
+      if(followingProfiles) {
+        const updatedFollowingProfiles = followingProfiles.filter(
+          (profile) => profile._id !== data.userId
+        );
+        setFollowingProfiles(updatedFollowingProfiles);
+        updateFollowingsCount();
+      }
+    }
+
     socket?.on("followRequest", handlePushIncomingRequestedProfile);
     socket?.on("requestCancel", handlePopIncomingRequestedProfile);
     socket?.on("requestAccepted",handlePopRequestedProfile);
+    socket?.on("removeConnection", handlePopProfileFromFollowings);
     return () => { 
       socket?.off("followRequest", handlePushIncomingRequestedProfile);
       socket?.off("requestCancel", handlePopIncomingRequestedProfile); 
       socket?.off("requestAccepted", handlePopRequestedProfile);
+      socket?.off("removeConnection", handlePopProfileFromFollowings)
     }
-  },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles, setRequestedProfiles, requestedProfiles]);
+  },[socket, incomingrequestedProfiles, setIncomingRequestedProfiles, setRequestedProfiles, requestedProfiles, setFollowingProfiles, followingProfiles]);
 
   const handleCancelRequest = (user, e) => {
     e.preventDefault();
@@ -97,6 +111,23 @@ const UserTabListing = ({ authUserId, userDataId }) => {
     e.stopPropagation();
     toast.info("working on it");
   };
+
+  const handleRemoveConnection = async (user, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if(!user) {
+      toast.error("Something went wrong please try again");
+      return;
+    }
+    const userId = await removeConnection(user?._id, "removed");
+    if(userId) {
+      const updatedFollowersProfiles = followersProfiles.filter((profile) => 
+        profile._id !== userId
+      );
+      setFollowersProfiles(updatedFollowersProfiles);
+      updateFollowersCount();
+    }
+  }
 
   const handleUserTabClick = async (userId) => {
     await getSearchSelectedUser(userId);
@@ -147,7 +178,7 @@ const UserTabListing = ({ authUserId, userDataId }) => {
                   user={user}
                   buttonText="Remove"
                   showButton={authUserId === userDataId}
-                  onButtonClick={handleUnfollowConnection}
+                  onButtonClick={handleRemoveConnection}
                   onClickUser={handleUserTabClick}
                 />
               ))
@@ -216,6 +247,8 @@ const UserTabListing = ({ authUserId, userDataId }) => {
 UserTabListing.propTypes = {
   authUserId: PropTypes.string.isRequired,
   userDataId: PropTypes.string.isRequired,
+  updateFollowersCount: PropTypes.func,
+  updateFollowingsCount: PropTypes.func,
 };
 
 export default memo(UserTabListing);
