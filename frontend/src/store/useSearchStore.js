@@ -32,7 +32,6 @@ export const useSearchStore = create(persist((set) => ({
 
   getSearchSelectedUser: async (userId, navigate) => {
     set({ searchSelectedUserLoading: true });
-    
     try {
       const res = await axiosInstance.get(`/user/fetchSearchedUserProfile/${userId}`);
       if(res.status === 200) {
