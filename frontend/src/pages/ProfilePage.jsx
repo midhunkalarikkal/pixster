@@ -10,8 +10,10 @@ import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
 import { useProfileSocketEvents } from "../utils/hooks/useProfileSocketEvents.js";
+import { handlePostDelete, handleRemoveFollowerProfile, handleRemoveFollowingPrfoile } from "../utils/profilePageMethods.js";
 
 const ProfilePage = () => {
+
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
@@ -56,28 +58,6 @@ const ProfilePage = () => {
   }, [selectedUserId, getSearchSelectedUser]);
 
   useProfileSocketEvents(socket, userData, setUserData, setRevConnection, setConnectionData);
-
-  const handlePostDelete = () => {
-    setUserData({
-      ...userData,
-      postsCount: userData.postsCount === 0 ? 0 : userData.postsCount - 1,
-    });
-  };
-
-  const handleRemoveFollowerProfile = () => {
-    setUserData({
-      ...userData,
-      followersCount: userData.followersCount - 1,
-    });
-  };
-
-  const handleRemoveFollowingPrfoile = () => {
-    setUserData({
-      ...userData,
-      followingsCount:
-        userData.followingsCount === 0 ? 0 : userData.followingsCount - 1,
-    });
-  };
 
   if (searchSelectedUserLoading) {
     return (
@@ -294,7 +274,7 @@ const ProfilePage = () => {
                 authUserId={authUser?._id}
                 userDataId={userData?._id}
                 status={connectionData && connectionData.status}
-                updatepostCount={handlePostDelete}
+                updatepostCount={() => handlePostDelete(setUserData)}
                 accountType={userData?.public}
               />
             )}
@@ -305,8 +285,8 @@ const ProfilePage = () => {
         <UserTabListing
           authUserId={authUser?._id}
           userDataId={userData?._id}
-          updateFollowersCount={handleRemoveFollowerProfile}
-          updateFollowingsCount={handleRemoveFollowingPrfoile}
+          updateFollowersCount={() => handleRemoveFollowerProfile(setUserData)}
+          updateFollowingsCount={() => handleRemoveFollowingPrfoile(setUserData)}
         />
       )}
     </>

@@ -1,10 +1,16 @@
 import PostGrid from "./PostGrid";
 import PropTypes from "prop-types";
 import ThreadGrid from "./ThreadGrid";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import PostsSkeleton from "../skeletons/PostsSkeleton";
-import { useProfileStore } from "../../store/useProfileStore";
 import ThreadsSkeleton from "../skeletons/ThreadsSkeleton";
+import { useProfileStore } from "../../store/useProfileStore";
+import { useProfileSecondData } from "../../utils/hooks/userProfileSecondData";
+import {
+  handlePostDelete as externalPostDelete,
+  handleThreadDelete as externalThreadDelete,
+  handleRemoveFromSaved as externalRemoveFromSaved
+} from "../../utils/profileSecondDataMethods";
 
 const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, accountType }) => {
 
@@ -19,51 +25,32 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, ac
   const { getUserPosts, getUserSavedPosts, getUserThreads } = useProfileStore();
   const isOwnProfile = authUserId === userDataId;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setUserPosts([]);
-      setUserSavedPosts([]);
-  
-      if (authUserId === userDataId) {
-        setUserPostsLoading(true);
-        const posts = await getUserPosts({ userId: authUserId });
-        setUserPosts(posts);
-        setUserPostsLoading(false);
-  
-        setUserSavedPostsLoading(true);
-        const savedPosts = await getUserSavedPosts();
-        setUserSavedPosts(savedPosts);
-        setUserSavedPostsLoading(false);
-
-        setUserThreadsLoading(true);
-        const threads = await getUserThreads({ userId : authUserId });
-        setUserThreads(threads);
-        setUserThreadsLoading(false);
-      } else if (status === "accepted" || accountType) {
-        setUserPostsLoading(true);
-        const posts = await getUserPosts({ userId: userDataId });
-        setUserPosts(posts);
-        setUserPostsLoading(false);
-      }
-    };
-  
-    fetchData();
-  }, [authUserId, userDataId, status]);
+  useProfileSecondData(
+    {setUserPosts,
+    setUserSavedPosts,
+    authUserId,
+    userDataId,
+    setUserPostsLoading,
+    getUserPosts,
+    setUserSavedPostsLoading,
+    getUserSavedPosts,
+    setUserThreadsLoading,
+    getUserThreads,
+    setUserThreads,
+    status,
+    accountType}
+  );
 
   const handlePostDelete = (id) => {
-    setUserPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
-    updatepostCount()
+    externalPostDelete(id, setUserPosts, updatepostCount);
   };
-
+  
   const handleThreadDelete = (id) => {
-    setUserThreads((prevThreads) => prevThreads.filter((thread) => thread._id !== id));
-    updatepostCount()
-  }
-
+    externalThreadDelete(id, setUserThreads, updatepostCount);
+  };
+  
   const handleRemoveFromSaved = (id) => {
-    setUserSavedPosts((prevSavedPost) =>
-      prevSavedPost.filter((post) => post._id !== id)
-    );
+    externalRemoveFromSaved(id, setUserSavedPosts);
   };
 
   return (
