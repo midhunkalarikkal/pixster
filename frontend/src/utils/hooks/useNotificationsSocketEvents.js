@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 
-export const useNotificationsSocketEvent = (socket, setNotifications, notifications) => {
+export const useNotificationsSocketEvent = (socket, setNotifications) => {
     
     useEffect(() => {
         const handlePushNewNotification = (data) => {
-          const newNotifications = [data.notification, ...notifications];
-          setNotifications(newNotifications);
+          setNotifications((prev) => [data.notification, ...prev]);
         }
     
         socket?.on("followRequest", handlePushNewNotification);
@@ -18,5 +17,5 @@ export const useNotificationsSocketEvent = (socket, setNotifications, notificati
           socket?.off("commentedOnPost", handlePushNewNotification); 
           socket?.off("commentLiked", handlePushNewNotification); 
         }
-      }, [socket, setNotifications, notifications]);
+      }, [socket, setNotifications]);
 }

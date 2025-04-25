@@ -6,7 +6,13 @@ export const useNotificationStore = create((set) => ({
   notifications: [],
   notificationsLoading: false,
 
-  setNotifications: (updatedNotifications) => set({ notifications: updatedNotifications }),
+  setNotifications: (updater) => 
+    set((state) => ({
+      notifications: 
+        typeof updater === 'function' 
+          ? updater(state.notifications)
+          : updater                   
+    })),
 
   getNotifications: async () => {
     set({ notificationsLoading: true });

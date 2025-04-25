@@ -23,7 +23,7 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
-  useNotificationsSocketEvent(socket, setNotifications, notifications);
+  useNotificationsSocketEvent(socket, setNotifications);
 
   return (
     <div className="w-full md:w-11/12 lg:w-10/12 flex h-[88%] md:h-full mt-10 md:mt-0">
