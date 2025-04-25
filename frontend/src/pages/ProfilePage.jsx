@@ -59,6 +59,8 @@ const ProfilePage = () => {
 
   useProfileSocketEvents(socket, userData, setUserData, setRevConnection, setConnectionData);
 
+  console.log("userData : ",userData);
+
   if (searchSelectedUserLoading) {
     return (
       <div className="w-[70%] mx-auto flex justify-center items-center">

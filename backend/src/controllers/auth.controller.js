@@ -190,6 +190,7 @@ export const login = async (req, res) => {
       email: user.email,
       profilePic: user.profilePic,
       about: user.about,
+      public: user.public,
       createdAt: user.createdAt,
     });
   } catch (error) {

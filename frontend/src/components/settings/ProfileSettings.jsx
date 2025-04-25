@@ -1,9 +1,9 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import { canPerformAction } from "../../utils/helpers";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useProfileStore } from "../../store/useProfileStore";
 import { Camera, Loader2, LockIcon, LockOpen, Mail, Text, User } from "lucide-react";
-import { canPerformAction } from "../../utils/helpers";
 
 const ProfileSettings = () => {
 
@@ -193,19 +193,21 @@ const ProfileSettings = () => {
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <div className="text-sm text-zinc-400 flex items-center gap-2">
-                  {authUser.public ? (
-                    <LockIcon className="size-4"/>
-                  ) : (
-                    <LockOpen className="size-4" />
-                  )}
-                  Account Type
+              
+                <div className="space-y-1.5">
+                  <div className="text-sm text-zinc-400 flex items-center gap-2">
+                    {authUser?.public ? (
+                      <LockIcon className="size-4"/>
+                    ) : (
+                      <LockOpen className="size-4" />
+                    )}
+                    Account Type
+                  </div>
+                  <p className="px-4 py-1.5 md:py-2.5 bg-base-200 rounded-lg border text-sm md:text-md">
+                    {authUser?.public ? "Public" : "Private"}
+                  </p>
                 </div>
-                <p className="px-4 py-1.5 md:py-2.5 bg-base-200 rounded-lg border text-sm md:text-md">
-                  {authUser.public ? "Public" : "Private"}
-                </p>
-              </div>
+              
 
             </div>
 
@@ -221,15 +223,17 @@ const ProfileSettings = () => {
                   <span>Remove profile Image</span>
                   <button className="btn btn-sm rounded-lg" onClick={handleRemoveProfileImage}>Remove</button>
                 </div>
-                <div className="flex items-center justify-between py-2">
-                  <span>{authUser.public ? "Make account private" : "Make account public"}</span>
-                  <input
-                    type="checkbox"
-                    className="toggle transition duration-300 rounded-lg"
-                    onChange={(e) => handleAccounttypeChange(e)}
-                    checked={!authUser.public}
-                  />
-                </div>
+                
+                  <div className="flex items-center justify-between py-2">
+                    <span>{authUser.public ? "Make account private" : "Make account public"}</span>
+                    <input
+                      type="checkbox"
+                      className="toggle transition duration-300 rounded-lg"
+                      onChange={(e) => handleAccounttypeChange(e)}
+                      checked={!authUser.public}
+                    />
+                  </div>
+                  
               </div>
             </div>
 
