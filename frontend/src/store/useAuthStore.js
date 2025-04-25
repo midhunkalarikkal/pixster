@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios";
 import { useAuthFormStore } from "./useAuthFormStore";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { useGeminiStore } from "./useGeminiStore";
 // import { exportKeys, generateKeys } from "../utils/helpers";
 
 const BASE_URL =
@@ -131,11 +132,13 @@ export const useAuthStore = create(
       },
 
       logout: async () => {
+        const { setGeminiCaptions } = useGeminiStore.getState();
         try {
           await axiosInstance.post("/auth/logout");
           set({ authUser: null });
           toast.success("Logged out successfully.");
           get().disconnectSocket();
+          setGeminiCaptions([]);
         } catch (error) {
           toast.error(error.response.data.message);
         }

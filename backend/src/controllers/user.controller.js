@@ -521,7 +521,7 @@ export const fetchSuggestions = async (req, res) => {
         $match: {
           $and: [
             {
-              $or: [{ status: "accepted" }, { status: "requested" }],
+              $or: [{ status: "accepted" }, { status: "requested" }, { status: "followed" }, { status : "removed" } ],
             },
             {
               $or: [{ fromUserId: currentUserId }, { toUserId: currentUserId }],
