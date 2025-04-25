@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useProfileStore } from "../../store/useProfileStore";
 import { Camera, Loader2, LockIcon, LockOpen, Mail, Text, User } from "lucide-react";
+import { canPerformAction } from "../../utils/helpers";
 
 const ProfileSettings = () => {
 
@@ -19,7 +20,7 @@ const ProfileSettings = () => {
   } = useAuthStore();
   const { 
     updateAbout, 
-    // accountTypeChangedTime, 
+    accountTypeChangedTime, 
     setAccountTypeChangedTime, 
     changeAccountType 
   } = useProfileStore();
@@ -67,16 +68,14 @@ const ProfileSettings = () => {
   const handleAccounttypeChange = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // toast.info("This feature is currently under  development,  we'ill notify you once it's available");
-    // return;
 
-    // if (!canPerformAction(accountTypeChangedTime)) {
-    //   const remainingTime = Math.ceil(
-    //     (3600000 - (Date.now() - accountTypeChangedTime)) / 60000
-    //   );
-    //   toast.info(`Please wait ${remainingTime} minute(s) before trying again.`);
-    //   return;
-    // }
+    if (!canPerformAction(accountTypeChangedTime)) {
+      const remainingTime = Math.ceil(
+        (3600000 - (Date.now() - accountTypeChangedTime)) / 60000
+      );
+      toast.info(`Please wait ${remainingTime} minute(s) before trying again.`);
+      return;
+    }
 
     const data = await changeAccountType();
     if(data.success) {
@@ -103,7 +102,7 @@ const ProfileSettings = () => {
                 <div className="relative">
                   <img
                     src={
-                      selectedImage || authUser.profilePic || "/user_avatar.jpg"
+                      selectedImage || authUser.profilePic || "https://pixster.onrender.com/user_avatar.jpg"
                     }
                     alt="Profile"
                     className="size-24 md:size-32 rounded-full object-cover border-4 "
