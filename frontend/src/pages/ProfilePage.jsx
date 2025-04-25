@@ -9,9 +9,9 @@ import CustomButton from "../components/Buttons/CustomButton.jsx";
 import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";
+import { useProfileSocketEvents } from "../utils/hooks/useProfileSocketEvents.js";
 
 const ProfilePage = () => {
-
   const [userData, setUserData] = useState(null);
   const [connectionData, setConnectionData] = useState(null);
   const [revConnectionData, setRevConnectionData] = useState(null);
@@ -33,10 +33,8 @@ const ProfilePage = () => {
   const {
     selectedUserId,
     searchSelectedUser,
-
     getSearchSelectedUser,
     searchSelectedUserLoading,
-
     connectionStatusLoading,
     sendConnectionRequest,
     cancelConnectionRequest,
@@ -57,78 +55,29 @@ const ProfilePage = () => {
     }
   }, [selectedUserId, getSearchSelectedUser]);
 
-  useEffect(() => {
-    const handleRevConnectionShow = (data) => {
-      setRevConnection(data.revConnectionData);
-      if(data?.isFollowedPublicAccount) {
-        setUserData({
-          ...userData,
-          followersCount : userData.followersCount + 1
-        })
-      }
-    }
-
-    const handleRevConnectionHide = (data) => {
-      setRevConnection(data.revConnectionData);
-    }
-
-    const handleRequestAcceptUpdateData = (data) => {
-      setRevConnection(data.revConnectionData);
-      setConnectionData(data.connectionData);
-      if(!userData) return;
-      setUserData({
-        ...userData,
-        followersCount : userData.followersCount + 1
-      });
-    }
-
-    const handleUnfollowConnectionUpdateData = () => {
-      if(!userData) return;
-      setUserData({
-        ...userData,
-        followersCount : userData.followersCount === 0 ? 0 : userData.followersCount - 1
-      })
-    }
-
-    const handleRequestRejectUpdateData = (data) => {
-      setRevConnection(data.revConnectionData);
-      setConnectionData(data.connectionData);
-    }
-
-    socket?.on("followRequest" , handleRevConnectionShow);
-    socket?.on("requestCancel", handleRevConnectionHide);
-    socket?.on("requestAccepted", handleRequestAcceptUpdateData);
-    socket?.on("unfollowConnection", handleUnfollowConnectionUpdateData);
-    socket?.on("requestReject", handleRequestRejectUpdateData);
-    return  () => { 
-      socket?.off("followRequest" , handleRevConnectionShow); 
-      socket?.off("requestCancel", handleRevConnectionHide);
-      socket?.off("requestAccepted", handleRequestAcceptUpdateData);
-      socket?.off("unfollowConnection", handleUnfollowConnectionUpdateData);
-      socket?.off("requestReject", handleRequestRejectUpdateData);
-    }
-  },[socket, setRevConnection, userData])
+  useProfileSocketEvents(socket, userData, setUserData, setRevConnection, setConnectionData);
 
   const handlePostDelete = () => {
     setUserData({
       ...userData,
       postsCount: userData.postsCount === 0 ? 0 : userData.postsCount - 1,
-    })
-  }
+    });
+  };
 
   const handleRemoveFollowerProfile = () => {
     setUserData({
       ...userData,
-      followersCount: userData.followersCount - 1
-    })
-  }
+      followersCount: userData.followersCount - 1,
+    });
+  };
 
   const handleRemoveFollowingPrfoile = () => {
     setUserData({
       ...userData,
-      followingsCount: userData.followingsCount === 0 ? 0 : userData.followingsCount - 1,
-    })
-  }
+      followingsCount:
+        userData.followingsCount === 0 ? 0 : userData.followingsCount - 1,
+    });
+  };
 
   if (searchSelectedUserLoading) {
     return (
@@ -167,35 +116,39 @@ const ProfilePage = () => {
 
           <div className="space-y-8">
             {/* Profile Header With Profile image and other details */}
-            <div className="flex items-center">
-              <div className="relative w-4/12 flex justify-center">
+           <div>
+            <div className="flex">
+              <div className="w-4/12 flex justify-center items-center">
                 <img
                   src={userData?.profilePic || "/user_avatar.jpg"}
                   alt="Profile"
-                  className="size-20 md:size-32 rounded-full object-cover border-2 md:border-4"
+                  className="size-20 md:size-28 rounded-full object-cover border-2 md:border-4"
                 />
               </div>
 
               {/* Profile Post, following, followers count, Fullename, about */}
               <div className="flex flex-col w-8/12 justify-center">
-
-                <div className="flex flex-col my-4">
+                <div className="mb-2 md:mb-4">
                   <h2 className="text-md md:text-lg font-semibold">
-                    {userData?.userName}
+                    {userData?.fullName}
                   </h2>
                 </div>
 
-                <div className="flex space-x-12">
+                <div className="flex space-x-10">
                   <div className="flex flex-col items-center">
                     <Image className="size-5 md:size-6 text-zinc-400" />
                     <p className="text-md md:text-lg font-semibold">
                       {userData?.postsCount}
                     </p>
-                    <p className="text-xs md:text-sm text-zinc-400">Posts & Threads</p>
+                    <p className="text-xs md:text-sm text-zinc-400 w-full">
+                      My Feed
+                    </p>
                   </div>
 
                   {userData && authUser?._id !== userData?._id ? (
-                    (connectionData && (connectionData.status === "accepted" || connectionData.status === "followed")) ? (
+                    connectionData &&
+                    (connectionData.status === "accepted" ||
+                      connectionData.status === "followed") ? (
                       <>
                         <UserStat
                           icon={Users}
@@ -260,16 +213,20 @@ const ProfilePage = () => {
                   )}
                 </div>
 
-                {/* Fullname and about */}
-                <div className="flex flex-col mt-4">
-                  <h2 className="text-sm md:text-lg font-semibold">
-                    {userData?.fullName}
-                  </h2>
-                  <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2 w-10/12">
-                    {userData?.about}
-                  </p>
-                </div>
               </div>
+            </div>
+
+            {/* Fullname and about */}
+            <div className="flex w-full justify-center">
+              <div className="flex flex-col mt-1 md:mt-4 w-10/12">
+                <h2 className="text-sm md:text-lg font-semibold">
+                  {userData?.userName}
+                </h2>
+                <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2 w-full">
+                  {userData?.about+ "I’m Midhun K Paniker, a passionate MERN stack developer from Kerala. I specialize in creating dynamic web applications and enjoy tackling complex problems, continuously improving my skills and projects."}
+                </p>
+              </div>
+            </div>
             </div>
 
             {/* MainButton, follow, cancel, unfollow */}
@@ -282,7 +239,13 @@ const ProfilePage = () => {
                 connectionData.status === "cancelled" ||
                 connectionData.status === "removed" ? (
                   <CustomButton
-                    text={connectionStatusLoading ? userData.public ? "Connecting" : "Requesting" : "Follow"}
+                    text={
+                      connectionStatusLoading
+                        ? userData.public
+                          ? "Connecting"
+                          : "Requesting"
+                        : "Follow"
+                    }
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -305,7 +268,8 @@ const ProfilePage = () => {
                     }}
                   />
                 ) : (
-                  (connectionData.status === "accepted"  || connectionData.status === "followed") && (
+                  (connectionData.status === "accepted" ||
+                    connectionData.status === "followed") && (
                     <CustomButton
                       text={
                         connectionStatusLoading ? "Unfollowing" : "Following"
@@ -313,7 +277,11 @@ const ProfilePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        unFollowConnectionRequest(userData?._id, "unfollowed", false);
+                        unFollowConnectionRequest(
+                          userData?._id,
+                          "unfollowed",
+                          false
+                        );
                       }}
                     />
                   )
@@ -330,7 +298,6 @@ const ProfilePage = () => {
                 accountType={userData?.public}
               />
             )}
-
           </div>
         </div>
       </div>
@@ -338,7 +305,6 @@ const ProfilePage = () => {
         <UserTabListing
           authUserId={authUser?._id}
           userDataId={userData?._id}
-          // status={connectionData && connectionData.status}
           updateFollowersCount={handleRemoveFollowerProfile}
           updateFollowingsCount={handleRemoveFollowingPrfoile}
         />

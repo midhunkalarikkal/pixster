@@ -5,8 +5,6 @@ import { useEffect, lazy, Suspense } from "react";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { Navigate, Route, Routes } from "react-router-dom";
-import ScreenSizeIndicator from 'screen-size-indicator';
-
 
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
@@ -36,12 +34,6 @@ const Hello = () => {
 
   return (
     <div data-theme={theme}>
-      <ScreenSizeIndicator
-        position="top-right"
-        bgColor="bg-green-400"
-        textColor="text-black font-bold"
-        textSize="text-2xl"
-      />
       <Suspense
         fallback={
           <div className="flex justify-center items-center h-screen">
