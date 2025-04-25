@@ -77,4 +77,21 @@ export const THEMES = [
     email: "Back to login",
     reset: "Back to login",
   };
+
+export const GEMINI_QUERY_INITAL = "You are a professional social media caption generator. Based on the following user query, suggest 10 unique, creative, and engaging captions, including a mix of captions with and without emojis. The captions should be concise, under 190 characters each. User Query: ";
+
+export const GEMINI_QUERY_END = `. 
+Only return the captions as a plain JavaScript array of strings, comma-separated and wrapped in square brackets, like this example: 
+[
+  "Just got my dream ride! 🚗✨ New adventures await.",
+  "This SUV isn't just a vehicle — it's a lifestyle upgrade.",
+  "Riding high in my new SUV 🛻💨 Ready for the road.",
+  "Comfort. Power. Style. That’s my kind of SUV.",
+  "SUV life: where the city ends and adventure begins 🌄🚙",
+  "This baby handles like a dream. Smooth ride guaranteed.",
+  "Turning heads, one smooth turn at a time 🔥",
+  "New keys, new memories. Let’s roll! 🔑🚗",
+  "My SUV is my new happy place 🖤",
+  "Because adulting is better with horsepower 🐎🚙"
+]`;
   

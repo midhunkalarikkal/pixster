@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateCaption } from "../utils/validator";
 import { useProfileStore } from "../store/useProfileStore";
-import GeminiButton from "../components/GeminiButton";
+import Gemini from "../components/Gemini";
 
 const CreatePost = () => {
   const [caption, setCaption] = useState("");
@@ -13,7 +13,7 @@ const CreatePost = () => {
   const [uploading, setUploading] = useState(false);
   const [captionError, setCaptionError] = useState(null);
   const [isPost, setIsPost] = useState(true);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { uploadPost, postForUpdating, updatePost, setPostForUpdating } =
     useProfileStore();
@@ -84,7 +84,6 @@ const CreatePost = () => {
         setImagePreview("");
         setCaptionError(null);
         setPostForUpdating(null);
-        navigate("/profile");
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -95,11 +94,7 @@ const CreatePost = () => {
     }
   };
 
-  const handleGenerateCaptions = (e) => {
-    e.preventDefault();
-    toast.info("This feature is under development");
-    return;
-  }
+  
 
   if (uploading) {
     return (
@@ -114,7 +109,7 @@ const CreatePost = () => {
   }
 
   return (
-    <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-screen">
+    <div className="md:w-11/12 lg:w-10/12 flex justify-center px-4 py-8 h-full overflow-y-scroll no-scrollbar">
       <div className="p-6 rounded-lg shadow-md w-full lg:w-8/12">
         <h2 className="flex flex-col text-lg md:text-xl font-semibold mb-4">
           {postForUpdating
@@ -207,20 +202,7 @@ const CreatePost = () => {
             )}
           </div>
         </form>
-        <h2 className="text-lg md:text-xl font-semibold mt-10">
-          Ask Gemini for stunning captions for your post
-        </h2>
-        <form onSubmit={handleGenerateCaptions} className="w-full space-y-4 mt-2">
-          <input
-            className={`textarea textarea-bordered w-full ${
-              captionError ? "textarea-error" : ""
-            }`}
-            placeholder="Tell me your taste of caption"
-            value={caption}
-            onChange={handleCaptionChange}
-          />
-          <GeminiButton text={"Generate"}/>
-        </form>
+        <Gemini />
       </div>
     </div>
   );
