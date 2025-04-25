@@ -66,19 +66,12 @@ const ChatContainer = () => {
     };
   }, [socket, selectedUser]);
 
-  if (isMessagesLoading) {
-    return (
-      <div className="flex-1 flex flex-col overflow-auto px-4 py-8 w-9/12">
-        <ChatHeader />
-        <MessageSkeleton />
-        <MessageInput />
-      </div>
-    );
-  }
-
   return (
     <div className="w-full md:w-8/12 flex flex-col overflow-auto md:py-6 border-r border-base-300 mt-5 md:mt-0">
       <ChatHeader />
+      {isMessagesLoading ? (
+        <MessageSkeleton />
+      ) : (    
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
           <div
@@ -119,6 +112,7 @@ const ChatContainer = () => {
           </div>
         ))}
       </div>
+      )}
 
       {isTyping && authUser._id !== messageSenderId && (
         <div className="px-4 pb-1">
