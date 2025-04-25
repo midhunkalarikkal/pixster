@@ -5,6 +5,7 @@ import { useSearchStore } from "../store/useSearchStore";
 import NotificationBar from "../components/NotificationBar";
 import Suggestions from "../components/sidebars/Suggestions";
 import { useNotificationStore } from "../store/useNotificationStores";
+import { useNotificationsSocketEvent } from "../utils/hooks/useNotificationsSocketEvents";
 
 const NotificationsPage = () => {
 
@@ -21,25 +22,8 @@ const NotificationsPage = () => {
   useEffect(() => {
     getNotifications();
   }, []);
-  
-  
-  useEffect(() => {
-    const handlePushNewNotification = (data) => {
-      const newNotifications = [data.notification, ...notifications];
-      setNotifications(newNotifications);
-    }
 
-    socket?.on("followRequest", handlePushNewNotification);
-    socket?.on("postLikeSocket", handlePushNewNotification);
-    socket?.on("commentedOnPost", handlePushNewNotification);
-    socket?.on("commentLiked", handlePushNewNotification);
-    return () => { 
-      socket?.off("followRequest", handlePushNewNotification);
-      socket?.off("postLikeSocket", handlePushNewNotification); 
-      socket?.off("commentedOnPost", handlePushNewNotification); 
-      socket?.off("commentLiked", handlePushNewNotification); 
-    }
-  }, [socket, setNotifications, notifications]);
+  useNotificationsSocketEvent(socket, setNotifications, notifications);
 
   return (
     <div className="w-full md:w-11/12 lg:w-10/12 flex h-[88%] md:h-full mt-10 md:mt-0">
