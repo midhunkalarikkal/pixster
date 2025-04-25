@@ -2,8 +2,8 @@ import Comment from "./Comment";
 import { toast } from "react-toastify";
 import { PlusIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePostStore } from "../store/usePostStore";
-import { useAuthStore } from "../store/useAuthStore";
+import { usePostStore } from "../../store/usePostStore";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const CommentContainer = () => {
   const {

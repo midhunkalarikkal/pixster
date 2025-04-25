@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Image, UserPlus, Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore.js";
-import CustomButton from "../components/CustomButton.jsx";
 import UserStat from "../components/profile/UserStat.jsx";
 import { useSearchStore } from "../store/useSearchStore.js";
 import { useProfileStore } from "../store/useProfileStore.js";
 import UserTabListing from "../components/UserTabListing.jsx";
+import CustomButton from "../components/Buttons/CustomButton.jsx";
 import ProfileSecondData from "../components/profile/ProfileSecondData.jsx";
 import ProfileAcceptReject from "../components/profile/ProfileAcceptReject.jsx";
 import ProfileHeadDropdown from "../components/profile/ProfileHeadDropdown.jsx";

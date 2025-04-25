@@ -1,9 +1,9 @@
 import { toast } from "react-toastify";
+import Gemini from "../components/Gemini";
 import { ImagePlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { validateCaption } from "../utils/validator";
 import { useProfileStore } from "../store/useProfileStore";
-import Gemini from "../components/Gemini";
 
 const CreatePost = () => {
   const [caption, setCaption] = useState("");

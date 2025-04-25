@@ -2,8 +2,8 @@ import model from "../utils/gemini";
 import { toast } from "react-toastify";
 import { CopyIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import GeminiButton from "../components/GeminiButton";
 import { useGeminiStore } from "../store/useGeminiStore";
+import GeminiButton from "../components/Buttons/GeminiButton";
 import { GEMINI_QUERY_END, GEMINI_QUERY_INITAL } from "../utils/constants";
 
 const Gemini = () => {

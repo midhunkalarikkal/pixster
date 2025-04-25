@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { useRef, useState } from "react";
 import { Image, Send, X } from "lucide-react";
-import { useChatStore } from "../store/useChatStore";
-import { useAuthStore } from "../store/useAuthStore";
+import { useChatStore } from "../../store/useChatStore";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const MessageInput = ({ setIsTyping, isTyping, setMessageSenderId }) => {
   const [text, setText] = useState("");

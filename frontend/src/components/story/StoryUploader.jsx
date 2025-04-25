@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
-import { useHomeStore } from "../store/useHomeStore";
-import { FileUpload } from "./ui/file-upload";
+import { useHomeStore } from "../../store/useHomeStore";
+import { FileUpload } from "../ui/file-upload";
 import { useState } from "react";
 import { toast } from "react-toastify";
 

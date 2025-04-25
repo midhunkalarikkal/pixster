@@ -1,4 +1,3 @@
-
 const HomeInfo = () => {
   return (
     <div className="flex flex-col w-full md:w-7/12 bg-base-100 p-6 rounded-2xl shadow-lg">

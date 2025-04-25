@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { usePostStore } from "../store/usePostStore";
-import { useSearchStore } from "../store/useSearchStore";
+import { usePostStore } from "../../store/usePostStore";
+import { useSearchStore } from "../../store/useSearchStore";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
 
 const HomePostsScroller = ({ post }) => {

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import SuggestionCard from "./SuggestionCard";
+import SuggestionCard from "../SuggestionCard";
 import { useNavigate } from "react-router-dom";
-import { useSearchStore } from "../store/useSearchStore";
-import { useSuggestionStore } from "../store/useSuggestionStore";
-import SuggestionCardSkeletion from "./skeletons/SuggestionCardSkeletion";
+import { useSearchStore } from "../../store/useSearchStore";
+import { useSuggestionStore } from "../../store/useSuggestionStore";
+import SuggestionCardSkeletion from "../skeletons/SuggestionCardSkeletion";
 
 const HorizontalScrollingSuggestion = () => {
   const navigate = useNavigate();

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import Stories from "../components/Stories";
-import StoryUploader from "../components/StoryUploader";
+import Stories from "../components/story/Stories";
+import HomeInfo from "../components/home/HomeInfo.jsx";
 import { usePostStore } from "../store/usePostStore.js";
 import { useHomeStore } from "../store/useHomeStore.js";
 import Suggestions from "../components/sidebars/Suggestions";
+import StoryUploader from "../components/story/StoryUploader";
 import FeedSkeleton from "../components/skeletons/FeedSkeleton";
-import HomePostsScroller from "../components/HomePostsScroller";
-import CommentContainer from "../components/CommentContainer.jsx";
-import HomeInfo from "../components/HomeInfo.jsx";
-import HorizontalScrollingSuggestion from "../components/HorizontalScrollingSuggestion.jsx";
+import HomePostsScroller from "../components/home/HomePostsScroller.jsx";
+import CommentContainer from "../components/comment/CommentContainer.jsx";
+import HorizontalScrollingSuggestion from "../components/home/HorizontalScrollingSuggestion.jsx";
 
 const HomePage = () => {
   const [homePostsData, setHomePostsData] = useState([]);
