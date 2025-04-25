@@ -35,7 +35,7 @@ export const useProfileSecondData = (
             const threads = await getUserThreads({ userId : authUserId });
             setUserThreads(threads);
             setUserThreadsLoading(false);
-          } else if (status === "accepted" || accountType) {
+          } else if (status === "accepted" || accountType || status === "followed") {
             setUserPostsLoading(true);
             const posts = await getUserPosts({ userId: userDataId });
             setUserPosts(posts);

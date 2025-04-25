@@ -56,7 +56,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, ac
   return (
     <>
       {authUserId !== userDataId ? (
-        (status === "accepted" || accountType) ? (
+        (status === "accepted" || accountType || status === "followed") ? (
           <div className="border-t-[1px] border-base-300 flex justify-center">
             <div className="flex justify-around w-8/12 mt-4">
               <button
@@ -110,7 +110,7 @@ const ProfileSecondData = ({ authUserId, userDataId, status, updatepostCount, ac
       )}
       <div className="flex flex-col justify-center items-center w-full py-1 md:py-4">
         {tab === 0 &&
-          (isOwnProfile || status === "accepted" || accountType ? (
+          (isOwnProfile || status === "accepted" || accountType || status === "followed" ? (
             userPostsLoading ? (
               <PostsSkeleton />
             ) : userPosts.length > 0 ? (
