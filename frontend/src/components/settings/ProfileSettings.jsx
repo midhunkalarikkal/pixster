@@ -102,7 +102,7 @@ const ProfileSettings = () => {
                 <div className="relative">
                   <img
                     src={
-                      selectedImage || authUser.profilePic || "https://pixster.onrender.com/user_avatar.jpg"
+                      selectedImage || authUser?.profilePic || "/user_avatar.jpg"
                     }
                     alt="Profile"
                     className="size-24 md:size-32 rounded-full object-cover border-4 "

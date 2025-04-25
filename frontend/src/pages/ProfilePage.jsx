@@ -100,7 +100,7 @@ const ProfilePage = () => {
             <div className="flex">
               <div className="w-4/12 flex justify-center items-center">
                 <img
-                  src={userData?.profilePic || "https://pixster.onrender.com/user_avatar.jpg"}
+                  src={userData?.profilePic || "/user_avatar.jpg"}
                   alt="Profile"
                   className="size-20 md:size-28 rounded-full object-cover border-2 md:border-4"
                 />

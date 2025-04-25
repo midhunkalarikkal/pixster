@@ -43,7 +43,7 @@ const MobileBottomBar = () => {
             className={`btn bg-base-100 border-0`}
             onClick={(e) => handleProfileClick(authUser._id, e)}
           >
-            <img src={authUser.profilePic || "https://pixster.onrender.com/user_avatar.jpg"} className="size-6 rounded-full"/>
+            <img src={authUser?.profilePic || "/user_avatar.jpg"} className="size-6 rounded-full"/>
           </button>
         </div>
       )}

@@ -11,7 +11,7 @@ const SuggestionCard = ({ user, showButton, buttonText, onButtonClick, onClickUs
           className="w-24 h-24 rounded-full object-cover"
         />
       </div>
-      <div className="flex flex-col justify-center items-center mt-4">
+      <div className="flex flex-col justify-center items-center mt-4 w-full">
         <p className="text-sm">{user.fullName}</p>
         <p className="text-sm text-base-content/60">{user.userName}</p>
         {showButton && buttonText && onButtonClick && ( 
