@@ -1,7 +1,6 @@
 import { toast } from "react-toastify";
 import { ImagePlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { validateCaption } from "../utils/validator";
 import { useProfileStore } from "../store/useProfileStore";
 import Gemini from "../components/Gemini";
@@ -13,7 +12,6 @@ const CreatePost = () => {
   const [uploading, setUploading] = useState(false);
   const [captionError, setCaptionError] = useState(null);
   const [isPost, setIsPost] = useState(true);
-  // const navigate = useNavigate();
 
   const { uploadPost, postForUpdating, updatePost, setPostForUpdating } =
     useProfileStore();
