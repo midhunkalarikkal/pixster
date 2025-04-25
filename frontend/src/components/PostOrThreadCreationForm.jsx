@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import {
     handleCaptionChange,
@@ -6,18 +7,18 @@ import {
 } from "../utils/createPageMethods";
 import { ImagePlus, X } from "lucide-react";
 import { useProfileStore } from "../store/useProfileStore";
-import PropTypes from "prop-types";
 
 const PostOrThreadCreationForm = (
 {
-    setUploading
+    setUploading,
+    isPost,
+    setIsPost,
 }
 ) => {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [captionError, setCaptionError] = useState(null);
-  const [isPost, setIsPost] = useState(true);
 
   const { uploadPost, postForUpdating, updatePost, setPostForUpdating } =
     useProfileStore();
@@ -76,13 +77,13 @@ const PostOrThreadCreationForm = (
       {/* Caption Field */}
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Caption</span>
+          <span className="label-text">{isPost ? "Caption" : "Thread"}</span>
         </label>
         <textarea
           className={`textarea textarea-bordered h-24 max-h-96 ${
             captionError ? "textarea-error" : ""
           }`}
-          placeholder="Write your caption here, not more than 500 characters"
+          placeholder={isPost ? "Write your caption here, not more than 200 characters" : "Write your thread here"}
           value={caption}
           onChange={(e) => handleCaptionChange(e, setCaption, setCaptionError)}
         ></textarea>
@@ -126,6 +127,8 @@ const PostOrThreadCreationForm = (
 
 PostOrThreadCreationForm.propTypes = {
     setUploading: PropTypes.func,
+    isPost: PropTypes.bool,
+    setIsPost: PropTypes.func,
 }
 
 export default PostOrThreadCreationForm;

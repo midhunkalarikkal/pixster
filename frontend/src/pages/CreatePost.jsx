@@ -43,8 +43,8 @@ const CreatePost = () => {
             You can post only the caption and it will be treated as a thread
           </p>
         )}
-        <PostOrThreadCreationForm setUploading={setUploading}/>
-        <Gemini />
+        <PostOrThreadCreationForm setUploading={setUploading} isPost={isPost} setIsPost={setIsPost}/>
+        <Gemini isPost={isPost} setIsPost={setIsPost}/>
       </div>
     </div>
   );

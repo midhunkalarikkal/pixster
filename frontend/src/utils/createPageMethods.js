@@ -1,5 +1,8 @@
+import model from "./gemini";
 import { toast } from "react-toastify";
 import { validateCaption } from "./validator";
+import { formatTimeForClock } from "./helpers";
+import { GEMINI_QUERY_END, GEMINI_QUERY_INITAL } from "./constants";
 
 export const handlePostSubmit = async (
   event,
@@ -82,3 +85,54 @@ export const handlePostSubmit = async (
     setImagePreview(URL.createObjectURL(file));
     setImage(file);
   };
+
+  export  const handleGenerateCaptions = (
+    e,
+    searchText,
+    requestCount,
+    canGenerate,
+    lastRequestTime,
+    setGeminiCaptions,
+    incrementRequestCount,
+    setLastRequestTime,
+    startCooldown
+) => {
+    e.preventDefault();
+    const query = searchText.current?.value?.trim();
+
+    if (!query) return toast.info("Please tell me your taste of caption");
+
+    if (requestCount >= 2) return toast.warning("Daily limit reached (2/2)");
+
+    if (!canGenerate()) {
+      const wait = Math.floor((lastRequestTime + 180000 - Date.now()) / 1000);
+      return toast.info(`Please wait ${formatTimeForClock(wait)} before generating again`);
+    }
+
+    const geminiQuery =
+      GEMINI_QUERY_INITAL + searchText.current.value + GEMINI_QUERY_END;
+
+      toast.promise(
+        (async () => {
+          try {
+            const result = await model.generateContent(geminiQuery);
+            const response = await result.response;
+            const text = response?.candidates[0]?.content?.parts[0]?.text;
+            const cleanText = text.replace(/```json|```/g, "").trim();
+            const captions = JSON.parse(cleanText);
+            setGeminiCaptions(captions);
+            incrementRequestCount();
+            setLastRequestTime(Date.now());
+            startCooldown();
+          } catch {
+            toast.error("Something went wrong. Try again.");
+          }
+        })(),
+        {
+          pending: "Generating captions...",
+          success: "Captions ready!",
+          error: "Failed to generate.",
+        }
+      );
+  };
+

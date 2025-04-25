@@ -70,3 +70,9 @@ export const formatDate = (date) => {
     const currentTime = Date.now();
     return currentTime - lastActionTime >= cooldownInMillis;
   };
+
+  export const formatTimeForClock = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
