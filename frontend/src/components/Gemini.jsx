@@ -31,7 +31,6 @@ const Gemini = () => {
           localStorage.setItem("lastRequestReset", today);
         }
     
-        // If user has an ongoing cooldown, resume timer
         if (lastRequestTime) {
           const remaining = Math.floor((lastRequestTime + 180000 - Date.now()) / 1000);
           if (remaining > 0) startCooldown(remaining);
@@ -101,7 +100,7 @@ const Gemini = () => {
   };
 
   return (
-    <div className="mb-10">
+    <div className="pb-20">
       <h2 className="text-lg md:text-xl font-semibold mt-10">
         Ask Gemini for stunning captions for your post
       </h2>
