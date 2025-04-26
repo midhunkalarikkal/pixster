@@ -203,7 +203,7 @@ const ProfilePage = () => {
                   {userData?.userName}
                 </h2>
                 <p className="text-zinc-400 text-xs md:text-sm mt-1 line-clamp-2 w-full">
-                  {userData?.about+ "I’m Midhun K Paniker, a passionate MERN stack developer from Kerala. I specialize in creating dynamic web applications and enjoy tackling complex problems, continuously improving my skills and projects."}
+                  {userData?.about}
                 </p>
               </div>
             </div>

@@ -52,14 +52,14 @@ const AuthImagePattern = ({ title, subtitle }) => {
                 className="chat chat-end my-2"
                 ref={(el) => (sendMessageRefs.current[index * 2] = el)}
               >
-                <div className="chat-bubble">{chat.sender.text}</div>
+                <div className="chat-bubble truncate">{chat.sender.text}</div>
               </div>
 
               <div
                 className="chat chat-start my-2"
                 ref={(el) => (recieveMessageRefs.current[index * 2] = el)}
               >
-                <div className="chat-bubble">{chat.receiver.text}</div>
+                <div className="chat-bubble truncate">{chat.receiver.text}</div>
               </div>
             </div>
           ))}

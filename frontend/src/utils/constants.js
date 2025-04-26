@@ -46,15 +46,15 @@ export const THEMES = [
         },
     },
     {
-      sender: {
-          text: "Who created this awesome app?",
-          timestamp: new Date("2023-10-27T10:25:00Z"),
-      },
-      receiver: {
-          text: "Yeah, I know the developer. His name is Midhun K Paniker.",
-          timestamp: new Date("2023-10-27T10:30:00Z"),
-      },
-  }
+        sender: {
+          text: "This could really grow into something big.",
+          timestamp: new Date("2023-10-27T10:20:00Z"),
+        },
+        receiver: {
+          text: "For sure. Has all the features people want.",
+          timestamp: new Date("2023-10-27T10:22:00Z"),
+        },
+      }
 ];
 
  export const PREVIEW_MESSAGES = [
