@@ -8,11 +8,11 @@ const Comment = ({ onLikeOrDislike, liked, isRepliesOn, replyCount, showReplies,
   return (
     <div className="flex rounded-lg hover:bg-base-200 transition items-start gap-3 p-2 lg:p-3">
         
-      <div className="w-[15%] pt-1">
+      <div className="pt-1 shrink-0">
         <img
           src={profilePic || "/user_avatar.jpg"}
           alt="User Avatar"
-          className="size-10 lg:size-12 rounded-full"
+          className="size-8 lg:size-12 rounded-full"
         />
       </div>
 
@@ -47,7 +47,7 @@ const Comment = ({ onLikeOrDislike, liked, isRepliesOn, replyCount, showReplies,
           </div>
         </div>
 
-      <div className="w-[10%] pt-3 flex flex-col justify-center items-center">
+      <div className="pt-3 flex flex-col justify-center items-center">
         <button onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
