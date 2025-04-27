@@ -26,7 +26,17 @@ export const homeScrollerData = async (req, res) => {
 
     const postData = await Connection.aggregate([
       {
-        $match: { fromUserId: user?._id, status: "accepted" },
+        $match: {
+          $and : [
+            { fromUserId: user?._id },
+            { 
+              $or : [
+                { status : "accepted" },
+                { status : "followed" }
+              ]
+            }
+          ] 
+        },
       },
       {
         $lookup: {
@@ -521,7 +531,7 @@ export const fetchSuggestions = async (req, res) => {
         $match: {
           $and: [
             {
-              $or: [{ status: "accepted" }, { status: "requested" }, { status: "followed" }, { status : "removed" } ],
+              $or: [{ status: "accepted" }, { status: "requested" }, { status: "followed" } ],
             },
             {
               $or: [{ fromUserId: currentUserId }, { toUserId: currentUserId }],
@@ -655,8 +665,15 @@ export const fetchMediaGrid = async (req, res) => {
     let mediaPosts = await Connection.aggregate([
       {
         $match: {
-          status: "accepted",
-          fromUserId: currentUserId,
+          $and : [
+            { fromUserId: currentUserId },
+            {
+              $or : [
+                { status: "accepted" },
+                { status: "followed" }
+              ]
+            }
+          ]
         },
       },
       {
