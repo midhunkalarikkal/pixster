@@ -19,8 +19,6 @@ import {
   otpEmailTemplateFirst, 
   otpEmailTemplateLast 
 } from "../utils/constants.js";
-import dotenv from 'dotenv';
-dotenv.config();
 
 export const signup = async (req, res) => {
   try {
