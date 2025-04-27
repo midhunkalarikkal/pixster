@@ -8,7 +8,7 @@ const Stories = () => {
 
   const [ storyHover, setStoryHover ] = useState(false);
 
-  const { setStoryUploaderOpen, setMyStory, myStory, usersStories, getStories, deleteMyStory } =
+  const { setStoryUploaderOpen, setMyStory, myStory, usersStories, getStories, deleteMyStory, userStoriesLoading } =
     useHomeStore();
 
   useEffect(() => {
@@ -71,17 +71,19 @@ const Stories = () => {
           </div>
           <p className="text-xs">My Story</p>
         </div>
-        {usersStories && usersStories.length > 0
-          ? usersStories.map((story) => (
+        {userStoriesLoading  ? (
+          Array.from({ length: 15 }).map((_, index) => (
+            <StorySkeleton key={index} />
+          ))
+        ) : usersStories && usersStories.length > 0 ?(
+           usersStories.map((story) => (
               <Story 
                 key={story.userId}
                 image={story.img}
                 userName={story.userName}
               />
             ))
-          : Array.from({ length: 15 }).map((_, index) => (
-              <StorySkeleton key={index} />
-            ))}
+        ) : null }
       </div>
     </div>
   );
