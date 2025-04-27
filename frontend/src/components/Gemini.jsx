@@ -8,7 +8,7 @@ import GeminiButton from "../components/Buttons/GeminiButton";
 import { handleGenerateCaptions } from "../utils/createPageMethods";
 
 const Gemini = ({ isPost }) => {
-
+  
   const searchText = useRef(null);
   const countdownIntervalRef = useRef(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
@@ -92,13 +92,16 @@ const Gemini = ({ isPost }) => {
         </div>
       )}
 
-      <div className="w-full mt-4 space-y-2">
+      <div
+        className={`w-full mt-4 space-y-2 ${
+          !geminiCaptions?.length && "hidden"
+        }`}
+      >
         <h2 className="text-lg ms:text-xl font-semibold mt-4">
           Here is the AI captions generated for you
         </h2>
         <ul className="list-disc list-inside">
-          {geminiCaptions &&
-            geminiCaptions.length > 0 &&
+          {geminiCaptions?.length > 0 &&
             geminiCaptions.map((caption, index) => (
               <li
                 key={index}
